@@ -1,9 +1,16 @@
 #include "FlashUpdata.h"
 #include <QtWidgets/QApplication>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+
+	QString dir = QApplication::applicationDirPath();
+	QDir::setCurrent(dir);
+	//QApplication::addLibraryPath("./plugins");
+	QApplication::addLibraryPath("./images");
+	a.setWindowIcon(QIcon("./images/logo.ico"));
 
 	int windowXPos, windowYPos, windowWidth, windowHeight;
 	windowXPos = 100;

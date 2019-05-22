@@ -1,25 +1,27 @@
 #ifndef		SINSERIAL_H
 #define  SINSERIAL_H
-#include <QCoreApplication>
-#include <QAtomicPointer>
-#include <QReadWriteLock>
-#include <QMutex>
 #include <qDebug>
 #include <QSerialPort>
+#include <QStringList>
+#include "CSingleTon.h"
+#include "QObject"
 
-
-class SinSerial
+class SinSerial :public QObject
 {
 private:
-	SinSerial();
-	SinSerial(const SinSerial&);
-	SinSerial& operator=(const SinSerial&);
 
-	QReadWriteLock m_internalMutex;
-	static QMutex m_mutex;
-	static QAtomicPointer<QSerialPort> m_instance;
-
+	QSerialPort *serialPort;
+	QSerialPort *getSerialPort();
 public:
-	static QSerialPort& getInstance(void);
+	SinSerial(QObject *parent = 0);
+	~SinSerial();
+
+	QStringList getEnablePorts();
+	QStringList getEnableRates();
+	bool isOPen();
+	int openCom(QString comName, QString rate);
+	void closeCom();
 };
+
+typedef CSingleton<SinSerial> sinserial;
 #endif

@@ -64,20 +64,19 @@ void FlashUpdata::initUi()
 
 
 	QHBoxLayout *progrressLayout = new QHBoxLayout();
-	progrressLayout->addSpacing(30);
-	progrressLayout->addStretch(1);
 	QLabel *progressLabel = new QLabel();
 	progressLabel->setText("´«Êä½ø¶È");
 	progrressLayout->addWidget(progressLabel);
 
-	progrressLayout->addSpacing(10);
 	QProgressBar *progressBar = new QProgressBar();
 	progrressLayout->addWidget(progressBar);
 
 	QLabel *progressValue = new QLabel();
 	progressValue->setText("0%");
 	progrressLayout->addWidget(progressValue);
-	progrressLayout->addStretch(1);
+	progrressLayout->setStretch(0, 1);
+	progrressLayout->setStretch(1, 8);
+	progrressLayout->setStretch(2, 1);
 	workLayout->addLayout(progrressLayout);
 	
 	workLayout->setStretch(0, 4);

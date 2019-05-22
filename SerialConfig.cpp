@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QPushButton>
+#include "SinSerial.h"
 
 SerialConfigWidget::SerialConfigWidget(QWidget*parent){
 	initUi();

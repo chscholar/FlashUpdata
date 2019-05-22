@@ -1,0 +1,5 @@
+*.obj
+*.tlog
+x64/
+*.sdf
+*.opensdf

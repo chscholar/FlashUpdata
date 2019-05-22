@@ -9,6 +9,7 @@
 #include "SerialConfig.h"
 #include <QRadioButton>
 #include <QButtonGroup>
+#include <QProgressBar>
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)
@@ -61,14 +62,32 @@ void FlashUpdata::initUi()
 	logEdit->append("this is log info");
 	workLayout->addWidget(logEdit);
 
+
+	QHBoxLayout *progrressLayout = new QHBoxLayout();
+	progrressLayout->addSpacing(30);
+	progrressLayout->addStretch(1);
+	QLabel *progressLabel = new QLabel();
+	progressLabel->setText("传输进度");
+	progrressLayout->addWidget(progressLabel);
+
+	progrressLayout->addSpacing(10);
+	QProgressBar *progressBar = new QProgressBar();
+	progrressLayout->addWidget(progressBar);
+
+	QLabel *progressValue = new QLabel();
+	progressValue->setText("0%");
+	progrressLayout->addWidget(progressValue);
+	progrressLayout->addStretch(1);
+	workLayout->addLayout(progrressLayout);
 	
 	workLayout->setStretch(0, 4);
 	workLayout->setStretch(1, 6);
+	workLayout->setStretch(2, 1);
 
 	mainLayout->addLayout(workLayout);
 
 	QVBoxLayout *connectLayout = new QVBoxLayout(this);
-
+	connectLayout->addSpacing(10);
 	QTabWidget *connectTab = new QTabWidget(this);
 	connectTab->insertTab(0, new SerialConfigWidget(), "串口设置");
 	connectTab->insertTab(1, new NetWorkConfig(), "网口设置");

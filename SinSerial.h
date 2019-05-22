@@ -12,8 +12,13 @@ private:
 
 	QSerialPort *serialPort;
 	QSerialPort *getSerialPort();
-	QMap<int, int> portMap;
-	QMap<int, int> rateMap;
+	QString findKeyFromMap(QMap<int,QString> fmap,int key);
+	QMap<int, QString> portMap;
+	QMap<int, QString> rateMap;
+	QMap<int, QString> dataMap;
+	QMap<int, QString> stopMap;
+	QMap<int, QString> parityMap;
+	QMap<int, QString> flowMap;
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();

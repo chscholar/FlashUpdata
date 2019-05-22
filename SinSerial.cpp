@@ -33,6 +33,15 @@ QStringList SinSerial::getEnablePorts()
 		QString strPortName = ports.at(i).portName();
 		portList.push_back(strPortName);
 	}
+	
+
+	int index = 1;
+	portMap.clear();
+	for (int j = 0; j < portList.size(); j++)
+	{
+		portMap.insert(index++, portList.at(j));
+	}
+
 	return portList;
 }
 
@@ -46,6 +55,14 @@ QStringList SinSerial::getEnableRates()
 		QString strRate = QString::number(rates.at(i));
 		rateList.push_back(strRate);
 	}
+
+	int index = 1;
+	rateMap.clear();
+	for (int j = 0; j < rateList.size(); j++)
+	{
+		rateMap.insert(index++, rateList.at(j));
+	}
+
 	return rateList;
 }
 
@@ -61,6 +78,13 @@ QStringList SinSerial::getDataBits()
 
 	dataBitList << "5" << "6" << "7" << "8";
 
+	int index = 1;
+	dataMap.clear();
+	for (int j = 0; j < dataBitList.size(); j++)
+	{
+		dataMap.insert(index++, dataBitList.at(j));
+	}
+
 	return dataBitList;
 }
 
@@ -74,6 +98,14 @@ QStringList SinSerial::getStopBits()
 	*/
 	QStringList stopBitsList;
 	stopBitsList << "1" << "2" << "3";
+
+	int index = 1;
+	stopMap.clear();
+	for (int j = 0; j < stopBitsList.size(); j++)
+	{
+		stopMap.insert(index++, stopBitsList.at(j));
+	}
+
 	return stopBitsList;
 }
 
@@ -87,6 +119,12 @@ QStringList SinSerial::getFlowControl()
 	*/
 	QStringList flowControls;
 	flowControls << "无流控" << "硬件流控" << "软件流控";
+
+	flowMap.clear();
+	flowMap.insert(1, "0");
+	flowMap.insert(2, "1");
+	flowMap.insert(3, "2");
+
 	return flowControls;
 }
 
@@ -102,7 +140,14 @@ QStringList SinSerial::getParity()
 	  UnknownParity = -1
 	*/
 
-	parityList << "无校验" << "奇校验" << "偶校验" << "校验位为0" << "校验位为1";
+	parityList << "无校验" << "偶校验" <<  "奇校验" << "校验位为0" << "校验位为1";
+
+	parityMap.clear();
+	parityMap.insert(1, "0");
+	parityMap.insert(2, "2");
+	parityMap.insert(3, "3");
+	parityMap.insert(4, "4");
+	parityMap.insert(5, "5");
 
 	return parityList;
 }
@@ -112,17 +157,31 @@ bool SinSerial::isOPen()
 	return getSerialPort()->isOpen();
 }
 
+QString SinSerial::findKeyFromMap(QMap<int, QString> fmap, int key)
+{
+
+	QMap<int, QString>::iterator it;
+	for (it = fmap.begin(); it != fmap.end();it ++)
+	{
+		if (it.key() == key )
+		{
+			return it.value();
+		}
+	}
+	return "";
+}
+
 int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataIndex, int stopIndex, int parityIndex)
 {
 	
 	
 
-	QString portName = getEnablePorts().at(portIndex);
-	QString rateValue = getEnableRates().at(rateIndex);
-	QString dataValue = getDataBits().at(dataIndex);
-	QString parityValue = getParity().at(parityIndex);
-	QString flowValue = getFlowControl().at(flowIndex);
-	QString stopValue = getStopBits().at(stopIndex);
+	QString portName = findKeyFromMap(portMap, portIndex);
+	QString rateValue = findKeyFromMap(rateMap,rateIndex);
+	QString dataValue = findKeyFromMap(dataMap, dataIndex);
+	QString parityValue = findKeyFromMap(parityMap, parityIndex);
+	QString flowValue = findKeyFromMap(flowMap, flowIndex);
+	QString stopValue = findKeyFromMap(stopMap, stopIndex);
 
 	getSerialPort()->setPortName(portName);
 	if (getSerialPort()->open(QIODevice::ReadWrite))

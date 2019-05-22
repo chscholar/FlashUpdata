@@ -4,6 +4,29 @@
 #include <QComboBox>
 #include <QLabel>
 #pragma execution_character_set("utf-8")
+
+class SerialItem : public QWidget
+{
+	Q_OBJECT
+public:
+	SerialItem(bool isCombox = true,QWidget *parent = 0);
+	~SerialItem();
+	void setTipText(QString);
+	void setValuItems(QStringList strList);
+	void setStatus(bool isOpen);
+	int getSelectIndex();
+protected:
+	
+private:
+	void initUi();
+	bool m_bIsCombox;
+	QLabel *m_pLabel;
+	QComboBox *m_pCombox;
+	QLabel *m_pLabelStatus;
+	QString m_green_SheetStyle;
+	QString m_grey_SheetStyle;
+};
+
 class SerialConfigWidget : public QWidget
 {
 	Q_OBJECT
@@ -15,9 +38,16 @@ void slotOpenCloseCom();
 protected:
 	void initUi();
 private:
-	QComboBox *m_pComBox;
-	QComboBox *m_pRateBox;
+
 	QLabel *m_pStatusLabel;
+
+	SerialItem *m_pPortName;
+	SerialItem *m_pRate;
+	SerialItem *m_pFlow;
+	SerialItem *m_pParity;
+	SerialItem *m_pDataBit;
+	SerialItem *m_pStopDataBit;
+	SerialItem *m_pStatus;
 };
 
 #endif

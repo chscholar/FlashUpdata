@@ -33,7 +33,6 @@ QStringList SinSerial::getEnablePorts()
 		QString strPortName = ports.at(i).portName();
 		portList.push_back(strPortName);
 	}
-
 	return portList;
 }
 
@@ -50,21 +49,89 @@ QStringList SinSerial::getEnableRates()
 	return rateList;
 }
 
+QStringList SinSerial::getDataBits()
+{
+	QStringList dataBitList;
+	/*
+	  Data5 = 5,
+	  Data6 = 6,
+	  Data7 = 7,
+	  Data8 = 8,
+	*/
+
+	dataBitList << "5" << "6" << "7" << "8";
+
+	return dataBitList;
+}
+
+QStringList SinSerial::getStopBits()
+{
+	/*
+	 OneStop = 1,
+	 OneAndHalfStop = 3,
+	 TwoStop = 2,
+	 UnknownStopBits = -1
+	*/
+	QStringList stopBitsList;
+	stopBitsList << "1" << "2" << "3";
+	return stopBitsList;
+}
+
+QStringList SinSerial::getFlowControl()
+{
+	/*
+	  NoFlowControl,
+	  HardwareControl,
+	  SoftwareControl,
+	  UnknownFlowControl = -1
+	*/
+	QStringList flowControls;
+	flowControls << "无流控" << "硬件流控" << "软件流控";
+	return flowControls;
+}
+
+QStringList SinSerial::getParity()
+{
+	QStringList parityList;
+	/*
+	  NoParity = 0,
+	  EvenParity = 2,
+	  OddParity = 3,
+	  SpaceParity = 4,
+	  MarkParity = 5,
+	  UnknownParity = -1
+	*/
+
+	parityList << "无校验" << "奇校验" << "偶校验" << "校验位为0" << "校验位为1";
+
+	return parityList;
+}
+
 bool SinSerial::isOPen()
 {
 	return getSerialPort()->isOpen();
 }
 
-int  SinSerial::openCom(QString comName, QString rate)
+int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataIndex, int stopIndex, int parityIndex)
 {
-	getSerialPort()->setPortName(comName);
+	
+	
+
+	QString portName = getEnablePorts().at(portIndex);
+	QString rateValue = getEnableRates().at(rateIndex);
+	QString dataValue = getDataBits().at(dataIndex);
+	QString parityValue = getParity().at(parityIndex);
+	QString flowValue = getFlowControl().at(flowIndex);
+	QString stopValue = getStopBits().at(stopIndex);
+
+	getSerialPort()->setPortName(portName);
 	if (getSerialPort()->open(QIODevice::ReadWrite))
 	{
-		getSerialPort()->setBaudRate(rate.toInt());
-		getSerialPort()->setDataBits(QSerialPort::Data8);
-		getSerialPort()->setParity(QSerialPort::NoParity);
-		getSerialPort()->setFlowControl(QSerialPort::NoFlowControl);
-		getSerialPort()->setStopBits(QSerialPort::OneStop);
+		getSerialPort()->setBaudRate(rateValue.toInt());
+		getSerialPort()->setDataBits(QSerialPort::DataBits(dataValue.toInt()));
+		getSerialPort()->setParity(QSerialPort::Parity(parityValue.toInt()));
+		getSerialPort()->setFlowControl(QSerialPort::FlowControl(flowValue.toInt()));
+		getSerialPort()->setStopBits(QSerialPort::StopBits(stopValue.toInt()));
 		return 0;
 	}
 	else

@@ -8,6 +8,76 @@
 #include <QStringList>
 #include <QMessageBox>
 
+SerialItem::SerialItem(bool isCombox,  QWidget *parent):
+QWidget(parent)
+{
+	m_bIsCombox = isCombox;
+	initUi();
+	m_green_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:green";
+	m_grey_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:grey";
+}
+
+SerialItem ::~SerialItem()
+{
+
+}
+
+void SerialItem::initUi()
+{
+	QHBoxLayout *itemLayout = new QHBoxLayout();
+	itemLayout->addSpacing(30);
+	m_pLabel = new QLabel();
+	m_pLabel->setText("");
+	itemLayout->addWidget(m_pLabel);
+
+	itemLayout->addSpacing(20);
+	if (m_bIsCombox)
+	{
+		m_pCombox = new QComboBox();
+		m_pCombox->addItem("   ");
+		itemLayout->addWidget(m_pCombox);
+	}
+	else {
+		m_pLabelStatus = new QLabel();
+		m_pLabelStatus->setFixedSize(QSize(20, 20));
+		itemLayout->addWidget(m_pLabelStatus);
+	}
+	
+	itemLayout->addStretch(1);
+	setLayout(itemLayout);
+}
+
+void SerialItem::setTipText(QString str)
+{
+	m_pLabel->setText(str);
+}
+
+void SerialItem::setValuItems(QStringList strList)
+{
+	m_pCombox->addItems(strList);
+}
+
+void SerialItem::setStatus(bool isOpen)
+{
+	if (m_bIsCombox) return;
+	
+	if (isOpen)
+	{
+		m_pLabelStatus->setStyleSheet(m_green_SheetStyle);
+	}
+	else {
+		m_pLabelStatus->setStyleSheet(m_grey_SheetStyle);
+	}
+}
+
+int SerialItem::getSelectIndex()
+{
+	if (!m_bIsCombox) return -1;
+	
+	return m_pCombox->currentIndex();
+	
+}
+
 SerialConfigWidget::SerialConfigWidget(QWidget*parent){
 	initUi();
 }
@@ -19,62 +89,52 @@ SerialConfigWidget::~SerialConfigWidget(){
 void SerialConfigWidget::initUi()
 {
 
-	const QString m_red_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:red";
-	const QString m_green_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:green";
-	const QString m_grey_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:grey";
-	const QString m_yellow_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:yellow";
-
-
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addSpacing(30);
 
-
-	QHBoxLayout *comLayout = new QHBoxLayout();
-	comLayout->addSpacing(30);
-	QLabel *comLabel = new QLabel();
-	comLabel->setText("COM口:");
-	comLayout->addWidget(comLabel);
-
-	comLayout->addSpacing(20);
-	m_pComBox = new QComboBox();
-	m_pComBox->setFixedWidth(60);
-	m_pComBox->addItem("  ");
+	m_pPortName = new SerialItem();
+	m_pPortName->setTipText("串口：");
 	QStringList comList = sinserial::getInstance().getEnablePorts();
-	m_pComBox->addItems(comList);
+	m_pPortName->setValuItems(comList);
+	mainLayout->addWidget(m_pPortName);
 
-	comLayout->addWidget(m_pComBox);
-	comLayout->addStretch(1);
-	mainLayout->addLayout(comLayout);
-
-	mainLayout->addSpacing(10);
-	QHBoxLayout *rateLayout = new QHBoxLayout();
-	rateLayout->addSpacing(30);
-	QLabel *rateLabel = new QLabel();
-	rateLabel->setText("速率:");
-	rateLayout->addWidget(rateLabel);
-	
-	rateLayout->addSpacing(20);
-	m_pRateBox = new QComboBox();
-	m_pRateBox->addItem("   ");
+	m_pRate = new SerialItem();
+	m_pRate->setTipText("速率：");
 	QStringList rateList = sinserial::getInstance().getEnableRates();
-	m_pRateBox->addItems(rateList);
-	rateLayout->addWidget(m_pRateBox);
-	rateLayout->addStretch(1);
-	mainLayout->addLayout(rateLayout);
+	m_pRate->setValuItems(rateList);
+	mainLayout->addWidget(m_pRate);
 
 
-	QHBoxLayout *statusLayout = new QHBoxLayout();
-	statusLayout->addSpacing(30);
-	QLabel *statusLabel = new QLabel();
-	statusLabel->setText("串口状态：");
-	statusLayout->addWidget(statusLabel);
+	m_pFlow = new SerialItem();
+	m_pFlow->setTipText("流控：");
+	QStringList flowList = sinserial::getInstance().getFlowControl();
+	m_pFlow->setValuItems(flowList);
+	mainLayout->addWidget(m_pFlow);
+
+
+	m_pParity = new SerialItem();
+	m_pParity->setTipText("校验");
+	QStringList parityList = sinserial::getInstance().getParity();
+	m_pParity->setValuItems(parityList);
+
 	
-	m_pStatusLabel = new QLabel();
-	m_pStatusLabel->setFixedSize(QSize(20, 20));
-	m_pStatusLabel->setStyleSheet(m_red_SheetStyle);
-	statusLayout->addWidget(m_pStatusLabel);
-	statusLayout->addStretch(1);
-	mainLayout->addLayout(statusLayout);
+	m_pDataBit = new SerialItem();
+	m_pDataBit->setTipText("数据位：");
+	QStringList dataList = sinserial::getInstance().getDataBits();
+	m_pDataBit->setValuItems(dataList);
+	mainLayout->addWidget(m_pDataBit);
+
+
+	m_pStopDataBit = new SerialItem();
+	m_pStopDataBit->setTipText("停止位：");
+	QStringList stoopList = sinserial::getInstance().getStopBits();
+	m_pStopDataBit->setValuItems(stoopList);
+	mainLayout->addWidget(m_pStopDataBit);
+
+	m_pStatus = new SerialItem(false);
+	m_pStatus->setTipText("串口状态：");
+	m_pStatus->setStatus(false);
+	mainLayout->addWidget(m_pStatus);
 
 
 	mainLayout->addSpacing(20);
@@ -95,37 +155,37 @@ void SerialConfigWidget::initUi()
 
 void SerialConfigWidget::slotOpenCloseCom()
 {
-	const QString m_red_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:red";
-	const QString m_green_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:green";
-	const QString m_grey_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:grey";
-	const QString m_yellow_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:yellow";
 
-	QString strPortName = m_pComBox->currentText();
-	QString strRate = m_pRateBox->currentText();
+	int portIndex = m_pPortName->getSelectIndex();
+	int rateIndex = m_pRate->getSelectIndex();
+	int flowIndex = m_pFlow->getSelectIndex();
+	int dataIndex = m_pDataBit->getSelectIndex();
+	int stopData = m_pStopDataBit->getSelectIndex();
+	int parityIndex = m_pParity->getSelectIndex();
 
-	strPortName.remove(QRegExp("\\s"));
-	strRate.remove(QRegExp("\\s"));
-	
-	if (strPortName.isEmpty() || strRate.isEmpty() || strPortName.isNull() || strRate.isNull())
+	if (portIndex <= 0 || rateIndex <= 0 || flowIndex <= 0 || dataIndex <= 0 || stopData <= 0 || parityIndex <= 0)
 	{
-		QMessageBox::information(NULL, "错误", "请选择端口或速率", QMessageBox::Ok);
+		QMessageBox::information(NULL, "错误", "请选择端口,速率,流控，数据位，校验位，停止位", QMessageBox::Ok);
 		return;
 	}
 
+
 	bool isOpen = sinserial::getInstance().isOPen();
-	if (isOpen)
+	/*if (isOpen)
 	{
 		sinserial::getInstance().closeCom();
-		m_pStatusLabel->setStyleSheet(m_red_SheetStyle);
+		m_pStatus->setStatus(false);
 	}
 	else {
 		int nResult = sinserial::getInstance().openCom(strPortName, strRate);
 		if (nResult == 0)
 		{
-			m_pStatusLabel->setStyleSheet(m_green_SheetStyle);
-		}else {
-			m_pStatusLabel->setStyleSheet(m_red_SheetStyle);
+			m_pStatus->setStatus(true);
 		}
-	}
+		else {
+			m_pStatus->setStatus(false);
+		}
+
+*/
 	
 }

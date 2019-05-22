@@ -5,21 +5,27 @@
 #include <QStringList>
 #include "CSingleTon.h"
 #include "QObject"
-
+#pragma execution_character_set("utf-8")
 class SinSerial :public QObject
 {
 private:
 
 	QSerialPort *serialPort;
 	QSerialPort *getSerialPort();
+	QMap<int, int> portMap;
+	QMap<int, int> rateMap;
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();
 
 	QStringList getEnablePorts();
 	QStringList getEnableRates();
+	QStringList getDataBits();
+	QStringList getStopBits();
+	QStringList getFlowControl();
+	QStringList getParity();
 	bool isOPen();
-	int openCom(QString comName, QString rate);
+	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
 };
 

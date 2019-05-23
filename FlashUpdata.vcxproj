@@ -117,6 +117,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetWorkConfigWidget.cpp" />
     <ClCompile Include="SerialConfigWidget.cpp" />
+    <ClCompile Include="SinByte.cpp" />
     <ClCompile Include="SinSerial.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,11 +140,13 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ComStruct.h" />
     <ClInclude Include="CSingleTon.h" />
     <QtMoc Include="FileConfigWidget.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort</IncludePath>
     </QtMoc>
+    <ClInclude Include="SinByte.h" />
     <ClInclude Include="SinSerial.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort</IncludePath>

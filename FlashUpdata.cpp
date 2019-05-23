@@ -37,15 +37,17 @@ void FlashUpdata::initUi()
 	QButtonGroup *radioGroup = new QButtonGroup();
 	QHBoxLayout *radioLayout = new QHBoxLayout();
 	radioLayout->addStretch(1);
-	QRadioButton *uploadRadio = new QRadioButton("上传");
-	radioLayout->addWidget(uploadRadio);
-	radioLayout->addStretch(1);
 	QRadioButton *downloadRadio = new QRadioButton("下载");
 	radioLayout->addWidget(downloadRadio);
 
+	radioLayout->addStretch(1);
+	QRadioButton *uploadRadio = new QRadioButton("上传");
+	radioLayout->addWidget(uploadRadio);
+	
+
 	connect(radioGroup, SIGNAL(buttonToggled(int, bool)), this, SLOT(slotSwitchRadio(int, bool)));
 
-	uploadRadio->setChecked(true);
+	downloadRadio->setChecked(true);
 	radioGroup->addButton(uploadRadio);
 	radioGroup->setId(uploadRadio, RADIOID_UPLOAD);
 	radioGroup->addButton(downloadRadio);
@@ -57,6 +59,7 @@ void FlashUpdata::initUi()
 	m_pFileConfigWidget = new FileConfigWidget();
 	fileConfigArea->setWidget(m_pFileConfigWidget);
 	fileConfigArea->setWidgetResizable(true);
+	fileConfigArea->setFrameShape(QFrame::NoFrame);
 	configLayout->addWidget(fileConfigArea);
 
 	QHBoxLayout *buttonLayout = new QHBoxLayout();

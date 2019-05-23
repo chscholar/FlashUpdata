@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QCheckBox>
 
 FileConfigItem::FileConfigItem(int itemId,QWidget *parent)
 	:QWidget(parent)
@@ -20,6 +21,11 @@ void FileConfigItem::initUi()
 {
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	//mainLayout->addSpacing(20);
+
+	QCheckBox *fileCheckbox = new QCheckBox();
+	fileCheckbox->setChecked(true);
+	mainLayout->addWidget(fileCheckbox);
+
 
 	m_pAddressLabel = new QLabel("上传文件路径：");
 	mainLayout->addWidget(m_pAddressLabel);
@@ -46,11 +52,13 @@ void FileConfigItem::initUi()
 
 	//mainLayout->addSpacing(10);
 	mainLayout->setStretch(0, 1);
-	mainLayout->setStretch(1, 10);
-	mainLayout->setStretch(2, 1);
+	mainLayout->setStretch(1, 1);
+	mainLayout->setStretch(2, 10);
 	mainLayout->setStretch(3, 1);
 	mainLayout->setStretch(4, 1);
+	mainLayout->setStretch(5, 1);
 	
+	mainLayout->addStretch(5);
 	setLayout(mainLayout);
 
 	connect(addButton, SIGNAL(clicked()), this, SIGNAL(signalAddFileConfig()));
@@ -106,9 +114,6 @@ FileConfigWidget::~FileConfigWidget()
 
 void FileConfigWidget::initUi()
 {
-
-	
-	
 		mainUpLoadLayout = new QVBoxLayout(this);
 		mainUpLoadLayout->setMargin(10);
 		FileConfigItem *item = new FileConfigItem(++m_iItemId);
@@ -116,6 +121,7 @@ void FileConfigWidget::initUi()
 		connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
 		connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
 		mainUpLoadLayout->addWidget(item);
+		mainUpLoadLayout->addStretch(5);
 
 		fileConfigVec.push_back(item);
 		setLayout(mainUpLoadLayout);
@@ -162,9 +168,9 @@ void FileConfigWidget::flushWidget()
 		else {
 			item->setNiddle();
 		}
-
 		mainUpLoadLayout->addWidget(fileConfigVec[i]);
 	}
+	mainUpLoadLayout->addStretch(5);
 }
 
 void FileConfigWidget::slotAddFileConfig()
@@ -186,6 +192,12 @@ void FileConfigWidget::delAllWidgetFromLayout()
 		FileConfigItem *item = fileConfigVec[i];
 		mainUpLoadLayout->removeWidget(item);
 		
+	}
+
+	for (int i = 0; i < mainUpLoadLayout->count();i++)
+	{
+		QLayoutItem *item = mainUpLoadLayout->itemAt(i);
+		mainUpLoadLayout->removeItem(item);
 	}
 }
 

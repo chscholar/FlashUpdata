@@ -48,6 +48,9 @@
     <ClCompile Include="SerialConfigWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SinByte.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="FlashUpdata.h">
@@ -78,6 +81,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CSingleTon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SinByte.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

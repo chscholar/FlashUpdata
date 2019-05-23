@@ -4,10 +4,11 @@
 #include <QPushButton>
 #include <QLineEdit>
 
-FileConfigItem::FileConfigItem(bool isFrist, bool isEnd,QWidget *parent)
+FileConfigItem::FileConfigItem(int itemId,QWidget *parent)
 	:QWidget(parent)
 {
-	initUi(isFrist,isEnd);
+	initUi();
+	m_iItemId = itemId;
 }
 
 FileConfigItem::~FileConfigItem()
@@ -15,7 +16,7 @@ FileConfigItem::~FileConfigItem()
 
 }
 
-void FileConfigItem::initUi(bool isFrist,bool isEnd)
+void FileConfigItem::initUi()
 {
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	mainLayout->addStretch(1);
@@ -34,25 +35,15 @@ void FileConfigItem::initUi(bool isFrist,bool isEnd)
 	
 	mainLayout->addSpacing(10);
 
-	QPushButton *addButton = new QPushButton();
+	addButton = new QPushButton();
 	addButton->setStyleSheet("QPushButton{background-image: url(./images/file_add.png)}");
 	addButton->setFixedSize(QSize(20, 20));
 	mainLayout->addWidget(addButton);
 
-	QPushButton *minButton = new QPushButton();
-	minButton->setStyleSheet("QPushButton{background-image: url(./images/file_del.png)}");
-	minButton->setFixedSize(QSize(20, 20));
-	mainLayout->addWidget(minButton);
-
-	//if (isFrist)
-	//{
-	//	minButton->hide();
-	//}
-	//
-	//if (isEnd)
-	//{
-	//	addButton->show();
-	//}
+	delButton = new QPushButton();
+	delButton->setStyleSheet("QPushButton{background-image: url(./images/file_del.png)}");
+	delButton->setFixedSize(QSize(20, 20));
+	mainLayout->addWidget(delButton);
 
 	mainLayout->addSpacing(10);
 
@@ -64,14 +55,41 @@ void FileConfigItem::initUi(bool isFrist,bool isEnd)
 	setLayout(mainLayout);
 
 	connect(addButton, SIGNAL(clicked()), this, SIGNAL(signalAddFileConfig()));
-	connect(minButton, SIGNAL(clicked()), this, SIGNAL(signalDelFileConfig()));
+	connect(delButton, SIGNAL(clicked()), this, SLOT(slotDel()));
 
 }
 
+void FileConfigItem::slotDel()
+{
+	emit signalDelFileConfig(m_iItemId);
+}
+
+int FileConfigItem::findItemById(int itemId) {
+	return m_iItemId;
+}
+
+void FileConfigItem::setFirst()
+{
+	addButton->show();
+	delButton->hide();
+}
+
+void FileConfigItem::setEnd()
+{
+	addButton->show();
+	delButton->show();
+}
+
+void FileConfigItem::setNiddle()
+{
+	addButton->hide();
+	delButton->show();
+}
 
 FileConfigWidget::FileConfigWidget(QWidget *parent) :
 QWidget(parent)
 {
+	m_iItemId = 0;
 	initUi();
 }
 
@@ -85,9 +103,10 @@ void FileConfigWidget::initUi()
 
 	mainLayout = new QVBoxLayout(this);
 	
-	FileConfigItem *item = new FileConfigItem(true);
+	FileConfigItem *item = new FileConfigItem(++m_iItemId);
+	item->setFirst();
 	connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
-	connect(item, SIGNAL(signalDelFileConfig()), this, SLOT(slotDelFileConfig()));
+	connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
 	mainLayout->addWidget(item);
 
 	fileConfigVec.push_back(item);
@@ -99,15 +118,34 @@ void FileConfigWidget::flushWidget()
 	delAllWidgetFromLayout();
 	for (int i = 0; i < fileConfigVec.size();i++)
 	{
+		FileConfigItem *item = fileConfigVec[i];
+		if (i == 0)
+		{
+			if (fileConfigVec.size() > 1)
+			{
+				item->setNiddle();
+			}
+			else {
+				item->setFirst();
+			}
+		}
+		else if (i == fileConfigVec.size() - 1){
+			item->setEnd();
+		}
+		else {
+			item->setNiddle();
+		}
+
 		mainLayout->addWidget(fileConfigVec[i]);
 	}
 }
 
 void FileConfigWidget::slotAddFileConfig()
 {
-	FileConfigItem *item = new FileConfigItem();
+	FileConfigItem *item = new FileConfigItem(++m_iItemId);
+	item->setEnd();
 	connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
-	connect(item, SIGNAL(signalDelFileConfig()), this, SLOT(slotDelFileConfig()));
+	connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
 
 	fileConfigVec.push_back(item);
 	flushWidget();
@@ -120,11 +158,23 @@ void FileConfigWidget::delAllWidgetFromLayout()
 	{
 		FileConfigItem *item = fileConfigVec[i];
 		mainLayout->removeWidget(item);
-		//item->deleteLater();
+		
 	}
 }
 
 
-void FileConfigWidget::slotDelFileConfig()
+void FileConfigWidget::slotDelFileConfig(int itemId)
 {
+	for (int i = 0; i < fileConfigVec.size(); i++)
+	{
+		FileConfigItem *item = fileConfigVec[i];
+		if (item->findItemById(itemId) == itemId)
+		{
+			item->deleteLater();
+			fileConfigVec.removeAt(i);
+		}
+
+	}
+	flushWidget();
+	
 }

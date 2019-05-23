@@ -4,20 +4,30 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QVector>
+#include <QPushButton>
 #pragma execution_character_set("utf-8")
 class FileConfigItem : public QWidget
 {
 	Q_OBJECT
 public:
-	FileConfigItem( bool isFirst = false,bool isEnd = false,QWidget *parent = 0);
+	FileConfigItem(int itemId,QWidget *parent = 0);
 	~FileConfigItem();
+	void setFirst();
+	void setEnd();
+	void setNiddle();
+	int findItemById(int itemId);
 protected:
-	void initUi(bool isFirst,bool isEnd);
+	void initUi();
+
 	public slots:
+	void slotDel();
 signals :
 	void signalAddFileConfig();
-		void signalDelFileConfig();
+		void signalDelFileConfig(int itemId);
 private:
+	QPushButton *addButton;
+	QPushButton *delButton;
+	int m_iItemId;
 };
 
 
@@ -33,11 +43,12 @@ protected:
 	void delAllWidgetFromLayout();
 	public slots:
 	void slotAddFileConfig();
-	void slotDelFileConfig();
+	void slotDelFileConfig(int );
 private:
 
 	QVBoxLayout *mainLayout;
 	QVector < FileConfigItem*> fileConfigVec ;
+	int m_iItemId;
 };
 
 #endif

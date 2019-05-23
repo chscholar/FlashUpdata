@@ -36,13 +36,16 @@
     <ClCompile Include="FlashUpdata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SerialConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetWorkConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SinSerial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileConfigWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWorkConfigWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialConfigWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +53,13 @@
     <QtMoc Include="FlashUpdata.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="SerialConfig.h">
+    <QtMoc Include="FileConfigWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="NetWorkConfig.h">
+    <QtMoc Include="NetWorkConfigWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SerialConfigWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

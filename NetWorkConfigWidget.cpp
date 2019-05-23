@@ -1,19 +1,19 @@
-#include "NetWorkConfig.h"
+#include "NetWorkConfigWidget.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QComboBox>
 #include <QPushButton>
 
-NetWorkConfig::NetWorkConfig(QWidget *parent){
+NetWorkConfigWidget::NetWorkConfigWidget(QWidget *parent){
 	initUi();
 }
 
-NetWorkConfig::~NetWorkConfig(){
+NetWorkConfigWidget::~NetWorkConfigWidget(){
 
 }
 
-void NetWorkConfig::initUi(){
+void NetWorkConfigWidget::initUi(){
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 

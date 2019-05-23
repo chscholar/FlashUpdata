@@ -1,4 +1,4 @@
-#include "SerialConfig.h"
+#include "SerialConfigWidget.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -15,6 +15,7 @@ QWidget(parent)
 	initUi();
 	m_green_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:green";
 	m_grey_SheetStyle = "min-width: 16px; min-height: 16px;max-width:16px; max-height: 16px;border-radius: 8px;  border:1px solid black;background:grey";
+	m_combox_sheetStyle = "";
 }
 
 SerialItem ::~SerialItem()
@@ -27,7 +28,10 @@ void SerialItem::initUi()
 	QHBoxLayout *itemLayout = new QHBoxLayout();
 	itemLayout->addSpacing(30);
 	m_pLabel = new QLabel();
+	m_pLabel->setFixedWidth(40);
+	m_pLabel->setAlignment(Qt::AlignLeft);
 	m_pLabel->setText("");
+	
 	itemLayout->addWidget(m_pLabel);
 
 	itemLayout->addSpacing(20);
@@ -35,6 +39,7 @@ void SerialItem::initUi()
 	{
 		m_pCombox = new QComboBox();
 		m_pCombox->addItem("   ");
+		m_pCombox->setFixedWidth(100);
 		itemLayout->addWidget(m_pCombox);
 	}
 	else {
@@ -113,7 +118,7 @@ void SerialConfigWidget::initUi()
 
 
 	m_pParity = new SerialItem();
-	m_pParity->setTipText("校验");
+	m_pParity->setTipText("校验：");
 	QStringList parityList = sinserial::getInstance().getParity();
 	m_pParity->setValuItems(parityList);
 	mainLayout->addWidget(m_pParity);
@@ -142,16 +147,16 @@ void SerialConfigWidget::initUi()
 	QHBoxLayout *buttonLayout = new QHBoxLayout();
 	buttonLayout->addStretch(2);
 
-	QPushButton *openCloseCom = new QPushButton();
-	openCloseCom->setText("打开串口");
-	buttonLayout->addWidget(openCloseCom);
+	m_pCloseOpenButton = new QPushButton();
+	m_pCloseOpenButton->setText("打开串口");
+	buttonLayout->addWidget(m_pCloseOpenButton);
 	buttonLayout->addStretch(2);
 	mainLayout->addLayout(buttonLayout);
 
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
-	connect(openCloseCom, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
+	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
 }
 
 void SerialConfigWidget::slotOpenCloseCom()
@@ -166,7 +171,7 @@ void SerialConfigWidget::slotOpenCloseCom()
 
 	if (portIndex <= 0 || rateIndex <= 0 || flowIndex <= 0 || dataIndex <= 0 || stopIndex <= 0 || parityIndex <= 0)
 	{
-		QMessageBox::information(NULL, "错误", "请选择端口,速率,流控，数据位，校验位，停止位", QMessageBox::Ok);
+		QMessageBox::information(this, "错误", "请选择端口,速率,流控，数据位，校验位，停止位", QMessageBox::Ok);
 		return;
 	}
 
@@ -176,15 +181,18 @@ void SerialConfigWidget::slotOpenCloseCom()
 	{
 		sinserial::getInstance().closeCom();
 		m_pStatus->setStatus(false);
+		m_pCloseOpenButton->setText("打开串口");
 	}
 	else {
 		int nResult = sinserial::getInstance().openCom(portIndex, rateIndex, flowIndex, dataIndex, stopIndex, parityIndex);
 		if (nResult == 0)
 		{
 			m_pStatus->setStatus(true);
+			m_pCloseOpenButton->setText("关闭串口");
 		}
 		else {
 			m_pStatus->setStatus(false);
+			m_pCloseOpenButton->setText("打开串口");
 		}
 	}
 

@@ -1,5 +1,6 @@
 *.obj
 *.tlog
 x64/
+GeneratedFiles/
 *.sdf
 *.opensdf

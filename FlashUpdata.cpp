@@ -5,11 +5,13 @@
 #include <QLabel>
 #include <QTabWidget>
 #include <QTextEdit>
-#include "NetWorkConfig.h"
-#include "SerialConfig.h"
+#include "NetWorkConfigWidget.h"
+#include "SerialConfigWidget.h"
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <QProgressBar>
+#include <QScrollArea>
+#include "FileConfigWidget.h"
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)
@@ -47,14 +49,10 @@ void FlashUpdata::initUi()
 	radioLayout->addStretch(1);
 	configLayout->addLayout(radioLayout);
 
+	QScrollArea *fileConfigArea = new QScrollArea();
+	fileConfigArea->setWidget(new FileConfigWidget());
 
-	QLabel *fileConfigLabel = new QLabel(configBox);
-	fileConfigLabel->setText("保存位置");
-	configLayout->addWidget(fileConfigLabel);
-
-	QLabel *fileLabel = new QLabel(configBox);
-	fileLabel->setText("文件");
-	configLayout->addWidget(fileLabel);
+	configLayout->addWidget(fileConfigArea);
 
 	configBox->setLayout(configLayout);
 
@@ -89,7 +87,7 @@ void FlashUpdata::initUi()
 	connectLayout->addSpacing(10);
 	QTabWidget *connectTab = new QTabWidget(this);
 	connectTab->insertTab(0, new SerialConfigWidget(), "串口设置");
-	connectTab->insertTab(1, new NetWorkConfig(), "网口设置");
+	connectTab->insertTab(1, new NetWorkConfigWidget(), "网口设置");
 
 	connectLayout->addWidget(connectTab);
 

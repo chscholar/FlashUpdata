@@ -1,8 +1,9 @@
-#ifndef SERIALCONFIG_H
-#define  SERIALCONFIG_H
+#ifndef SERIALCONFIGWIDGET_H
+#define  SERIALCONFIGWIDGET_H
 #include <QWidget>
 #include <QComboBox>
 #include <QLabel>
+#include <QPushButton>
 #pragma execution_character_set("utf-8")
 
 class SerialItem : public QWidget
@@ -25,6 +26,7 @@ private:
 	QLabel *m_pLabelStatus;
 	QString m_green_SheetStyle;
 	QString m_grey_SheetStyle;
+	QString m_combox_sheetStyle;
 };
 
 class SerialConfigWidget : public QWidget
@@ -48,6 +50,8 @@ private:
 	SerialItem *m_pDataBit;
 	SerialItem *m_pStopDataBit;
 	SerialItem *m_pStatus;
+
+	QPushButton *m_pCloseOpenButton;
 };
 
 #endif

@@ -51,8 +51,21 @@ void FlashUpdata::initUi()
 
 	QScrollArea *fileConfigArea = new QScrollArea();
 	fileConfigArea->setWidget(new FileConfigWidget());
-
+	fileConfigArea->setWidgetResizable(true);
 	configLayout->addWidget(fileConfigArea);
+
+	QHBoxLayout *buttonLayout = new QHBoxLayout();
+	buttonLayout->addSpacing(10);
+	buttonLayout->addStretch(1);
+	QPushButton *confirmButton = new QPushButton("确认");
+	buttonLayout->addWidget(confirmButton);
+
+	buttonLayout->addStretch(3);
+	QPushButton *cancleButton = new QPushButton("取消");
+	buttonLayout->addWidget(cancleButton);
+	buttonLayout->addStretch(1);
+	buttonLayout->addSpacing(10);
+	configLayout->addLayout(buttonLayout);
 
 	configBox->setLayout(configLayout);
 

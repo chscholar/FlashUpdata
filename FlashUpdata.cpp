@@ -43,14 +43,19 @@ void FlashUpdata::initUi()
 	QRadioButton *downloadRadio = new QRadioButton("обть");
 	radioLayout->addWidget(downloadRadio);
 
+	connect(radioGroup, SIGNAL(buttonToggled(int, bool)), this, SLOT(slotSwitchRadio(int, bool)));
+
 	uploadRadio->setChecked(true);
 	radioGroup->addButton(uploadRadio);
+	radioGroup->setId(uploadRadio, RADIOID_UPLOAD);
 	radioGroup->addButton(downloadRadio);
+	radioGroup->setId(downloadRadio, RADIO_DOWNLOAD);
 	radioLayout->addStretch(1);
 	configLayout->addLayout(radioLayout);
 
 	QScrollArea *fileConfigArea = new QScrollArea();
-	fileConfigArea->setWidget(new FileConfigWidget());
+	m_pFileConfigWidget = new FileConfigWidget();
+	fileConfigArea->setWidget(m_pFileConfigWidget);
 	fileConfigArea->setWidgetResizable(true);
 	configLayout->addWidget(fileConfigArea);
 
@@ -112,4 +117,17 @@ void FlashUpdata::initUi()
 	this->centralWidget()->setLayout(mainLayout);
 	//setLayout(mainLayout);
 
+}
+
+void FlashUpdata::slotSwitchRadio(int radioID, bool bCheck)
+{
+	if (bCheck && radioID == RADIO_DOWNLOAD)
+	{
+		m_pFileConfigWidget->switchWidget(true);
+	}
+
+	if (bCheck && radioID == RADIO_DOWNLOAD)
+	{
+		m_pFileConfigWidget->switchWidget(false);
+	}
 }

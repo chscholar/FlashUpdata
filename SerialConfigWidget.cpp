@@ -26,29 +26,30 @@ SerialItem ::~SerialItem()
 void SerialItem::initUi()
 {
 	QHBoxLayout *itemLayout = new QHBoxLayout();
-	itemLayout->addSpacing(30);
+	itemLayout->addSpacing(20);
 	m_pLabel = new QLabel();
-	m_pLabel->setFixedWidth(40);
-	m_pLabel->setAlignment(Qt::AlignLeft);
+	m_pLabel->setAlignment(Qt::AlignHCenter);
 	m_pLabel->setText("");
+	itemLayout->setStretch(1, 1);
 	
 	itemLayout->addWidget(m_pLabel);
 
-	itemLayout->addSpacing(20);
 	if (m_bIsCombox)
 	{
 		m_pCombox = new QComboBox();
 		m_pCombox->addItem("   ");
-		m_pCombox->setFixedWidth(100);
 		itemLayout->addWidget(m_pCombox);
+		itemLayout->setStretch(2, 4);
 	}
 	else {
 		m_pLabelStatus = new QLabel();
 		m_pLabelStatus->setFixedSize(QSize(20, 20));
 		itemLayout->addWidget(m_pLabelStatus);
 	}
+	itemLayout->addSpacing(20);
+	itemLayout->addStretch(2);
+
 	
-	itemLayout->addStretch(1);
 	setLayout(itemLayout);
 }
 

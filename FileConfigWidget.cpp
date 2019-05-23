@@ -19,21 +19,20 @@ FileConfigItem::~FileConfigItem()
 void FileConfigItem::initUi()
 {
 	QHBoxLayout *mainLayout = new QHBoxLayout();
-	mainLayout->addStretch(1);
-	mainLayout->addSpacing(20);
+	//mainLayout->addSpacing(20);
 
-	QLabel *addressLabel = new QLabel("文件路径：");
-	mainLayout->addWidget(addressLabel);
+	m_pAddressLabel = new QLabel("上传文件路径：");
+	mainLayout->addWidget(m_pAddressLabel);
 
-	mainLayout->addSpacing(10);
+	//mainLayout->addSpacing(10);
 	QLineEdit *addressEdit = new QLineEdit();
 	mainLayout->addWidget(addressEdit);
 
-	mainLayout->addSpacing(10);
+	//mainLayout->addSpacing(10);
 	QPushButton *browButton = new QPushButton("浏览...");
 	mainLayout->addWidget(browButton);
 	
-	mainLayout->addSpacing(10);
+	//mainLayout->addSpacing(10);
 
 	addButton = new QPushButton();
 	addButton->setStyleSheet("QPushButton{background-image: url(./images/file_add.png)}");
@@ -45,13 +44,13 @@ void FileConfigItem::initUi()
 	delButton->setFixedSize(QSize(20, 20));
 	mainLayout->addWidget(delButton);
 
-	mainLayout->addSpacing(10);
-
-
-	mainLayout->addStretch(1);
+	//mainLayout->addSpacing(10);
 	mainLayout->setStretch(0, 1);
-	mainLayout->setStretch(1, 8);
+	mainLayout->setStretch(1, 10);
 	mainLayout->setStretch(2, 1);
+	mainLayout->setStretch(3, 1);
+	mainLayout->setStretch(4, 1);
+	
 	setLayout(mainLayout);
 
 	connect(addButton, SIGNAL(clicked()), this, SIGNAL(signalAddFileConfig()));
@@ -86,6 +85,13 @@ void FileConfigItem::setNiddle()
 	delButton->show();
 }
 
+void FileConfigItem::setDownload()
+{
+	addButton->hide();
+	m_pAddressLabel->setText("保存文件路径：");
+	delButton->hide();
+}
+
 FileConfigWidget::FileConfigWidget(QWidget *parent) :
 QWidget(parent)
 {
@@ -101,16 +107,37 @@ FileConfigWidget::~FileConfigWidget()
 void FileConfigWidget::initUi()
 {
 
-	mainLayout = new QVBoxLayout(this);
 	
-	FileConfigItem *item = new FileConfigItem(++m_iItemId);
-	item->setFirst();
-	connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
-	connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
-	mainLayout->addWidget(item);
+	
+		mainUpLoadLayout = new QVBoxLayout(this);
+		mainUpLoadLayout->setMargin(10);
+		FileConfigItem *item = new FileConfigItem(++m_iItemId);
+		item->setFirst();
+		connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
+		connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
+		mainUpLoadLayout->addWidget(item);
 
-	fileConfigVec.push_back(item);
-	setLayout(mainLayout);
+		fileConfigVec.push_back(item);
+		setLayout(mainUpLoadLayout);
+	
+		mainDownLoadLayout = new QVBoxLayout(this);
+		mainDownLoadLayout->setMargin(10);
+		FileConfigItem *itemdown = new FileConfigItem(++m_iItemId);
+		itemdown->setDownload();
+		mainDownLoadLayout->addWidget(itemdown);
+		//setLayout(mainDownLoadLayout);
+	
+}
+
+void FileConfigWidget::switchWidget(bool isUpLoad)
+{
+	if (isUpLoad)
+	{
+		this->setLayout(mainUpLoadLayout);
+	}
+	else {
+		this->setLayout(mainDownLoadLayout);
+	}
 }
 
 void FileConfigWidget::flushWidget()
@@ -136,7 +163,7 @@ void FileConfigWidget::flushWidget()
 			item->setNiddle();
 		}
 
-		mainLayout->addWidget(fileConfigVec[i]);
+		mainUpLoadLayout->addWidget(fileConfigVec[i]);
 	}
 }
 
@@ -157,7 +184,7 @@ void FileConfigWidget::delAllWidgetFromLayout()
 	for (int i = 0; i < fileConfigVec.size(); i++)
 	{
 		FileConfigItem *item = fileConfigVec[i];
-		mainLayout->removeWidget(item);
+		mainUpLoadLayout->removeWidget(item);
 		
 	}
 }

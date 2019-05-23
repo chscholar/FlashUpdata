@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QVector>
 #include <QPushButton>
+#include <QLabel>
 #pragma execution_character_set("utf-8")
 class FileConfigItem : public QWidget
 {
@@ -15,6 +16,7 @@ public:
 	void setFirst();
 	void setEnd();
 	void setNiddle();
+	void setDownload();
 	int findItemById(int itemId);
 protected:
 	void initUi();
@@ -25,6 +27,7 @@ signals :
 	void signalAddFileConfig();
 		void signalDelFileConfig(int itemId);
 private:
+	QLabel *m_pAddressLabel;
 	QPushButton *addButton;
 	QPushButton *delButton;
 	int m_iItemId;
@@ -37,6 +40,7 @@ class FileConfigWidget : public QWidget
 public:
 	FileConfigWidget(QWidget *parent = 0);
 	~FileConfigWidget();
+	void switchWidget(bool isUpLoad);
 protected:
 	void initUi();
 	void flushWidget();
@@ -46,7 +50,8 @@ protected:
 	void slotDelFileConfig(int );
 private:
 
-	QVBoxLayout *mainLayout;
+	QVBoxLayout *mainUpLoadLayout;
+	QVBoxLayout *mainDownLoadLayout;
 	QVector < FileConfigItem*> fileConfigVec ;
 	int m_iItemId;
 };

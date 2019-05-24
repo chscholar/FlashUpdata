@@ -155,71 +155,32 @@ int TabView::tabAt(const QPoint &pos)
 
 
 SinTabWindow::SinTabWindow(QWidget *parent) :
-QMainWindow(parent),
-d_ptr(new TabbedWindowPrivate(this))
+QMainWindow(parent)
 {
+	tabs = new TabView();
+	tabs->setDocumentMode(true);
+	this->setCentralWidget(tabs);
 }
 
 
 SinTabWindow::~SinTabWindow()
 {
-	delete d_ptr;
+	delete tabs;
 }
 
 
 QWidget* SinTabWindow::currentView()
 {
-	return d_ptr->currentView();
-}
-
-
-QWidget* TabbedWindowPrivate::currentView()
-{
 	return tabs->currentWidget();
 }
 
-
 void SinTabWindow::setCurrentView(int index)
-{
-	d_ptr->setCurrentView(index);
-}
-
-
-int SinTabWindow::insertView(const QPoint &pos, QWidget *page,
-	const QString &text)
-{
-	return d_ptr->insertView(pos, page, text);
-}
-
-
-int SinTabWindow::addView(QWidget *view, const QString &title)
-{
-	return d_ptr->addView(view, title);
-}
-
-
-void SinTabWindow::removeView(int index)
-{
-	d_ptr->removeView(index);
-}
-
-
-TabbedWindowPrivate::TabbedWindowPrivate(SinTabWindow* q_ptr)
-{
-	tabs = new TabView();
-	tabs->setDocumentMode(true);
-	this->q_ptr = q_ptr;
-	this->q_ptr->setCentralWidget(tabs);
-}
-
-
-void TabbedWindowPrivate::setCurrentView(int index)
 {
 	tabs->setCurrentIndex(index);
 }
 
 
-int TabbedWindowPrivate::insertView(const QPoint &pos, QWidget *page,
+int SinTabWindow::insertView(const QPoint &pos, QWidget *page,
 	const QString &text)
 {
 	int index = tabs->tabAt(tabs->mapFromGlobal(pos));
@@ -227,14 +188,13 @@ int TabbedWindowPrivate::insertView(const QPoint &pos, QWidget *page,
 }
 
 
-int TabbedWindowPrivate::addView(QWidget *view, const QString &title)
+int SinTabWindow::addView(QWidget *view, const QString &title)
 {
 	return tabs->addTab(view, title);
 }
 
 
-void TabbedWindowPrivate::removeView(int index)
+void SinTabWindow::removeView(int index)
 {
 	tabs->removeTab(index);
 }
-

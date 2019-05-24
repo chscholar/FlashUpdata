@@ -56,24 +56,6 @@ public:
 	int tabAt(const QPoint &pos);
 };
 
-class TabbedWindowPrivate : public QObject
-{
-	Q_OBJECT
-
-public:
-	TabbedWindowPrivate(SinTabWindow* q_ptr);
-
-	int addView(QWidget* view, const QString &title);
-	int insertView(const QPoint &pos, QWidget *page, const QString &text);
-	void removeView(int index);
-	void setCurrentView(int index);
-	QWidget* currentView();
-
-private:
-	SinTabWindow *q_ptr;
-	TabView* tabs;
-};
-
 class SinTabWindow:public QMainWindow
 {
 	Q_OBJECT
@@ -89,7 +71,7 @@ public:
 	QWidget* currentView();
 
 private:
-	TabbedWindowPrivate* d_ptr;
+	TabView* tabs;
 };
 
 #endif

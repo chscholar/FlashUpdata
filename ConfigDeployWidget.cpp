@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QButtonGroup>
 #include <FileConfigWidget.h>
+#include <QMessageBox>
 
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
@@ -45,7 +46,7 @@ void ConfigDeployWidget::initUi()
 	mainLayout->addLayout(radioLayout);
 
 	QScrollArea *fileConfigArea = new QScrollArea();
-	FileConfigWidget *m_pFileConfigWidget = new FileConfigWidget();
+	m_pFileConfigWidget = new FileConfigWidget();
 	fileConfigArea->setWidget(m_pFileConfigWidget);
 	fileConfigArea->setWidgetResizable(true);
 	fileConfigArea->setFrameShape(QFrame::NoFrame);
@@ -56,6 +57,7 @@ void ConfigDeployWidget::initUi()
 	buttonLayout->addStretch(1);
 	QPushButton *confirmButton = new QPushButton("确认");
 	buttonLayout->addWidget(confirmButton);
+	connect(confirmButton, SIGNAL(clicked()), this, SLOT(slotConfirmTrans()));
 
 	buttonLayout->addStretch(3);
 	QPushButton *cancleButton = new QPushButton("取消");
@@ -65,5 +67,15 @@ void ConfigDeployWidget::initUi()
 	mainLayout->addLayout(buttonLayout);
 
 	setLayout(mainLayout);
+}
 
+
+void ConfigDeployWidget::slotConfirmTrans()
+{
+	QStringList pathList = m_pFileConfigWidget->getAllSelectPath();
+	if (pathList.size() <= 0)
+	{
+		QMessageBox::information(this, "请选择文件", "请选择文件", QMessageBox::Ok);
+		return;
+	}
 }

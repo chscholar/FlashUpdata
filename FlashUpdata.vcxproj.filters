@@ -80,6 +80,9 @@
     <QtMoc Include="ConfigEditWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ConfigDeployWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="FlashUpdata.ui">
@@ -102,9 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SinByte.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigDeployWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

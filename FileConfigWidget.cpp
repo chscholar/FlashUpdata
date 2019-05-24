@@ -4,6 +4,8 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 FileConfigItem::FileConfigItem(int itemId,QWidget *parent)
 	:QWidget(parent)
@@ -22,17 +24,17 @@ void FileConfigItem::initUi()
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	//mainLayout->addSpacing(20);
 
-	QCheckBox *fileCheckbox = new QCheckBox();
-	fileCheckbox->setChecked(true);
-	mainLayout->addWidget(fileCheckbox);
+	m_pFileCheckbox = new QCheckBox();
+	m_pFileCheckbox->setChecked(true);
+	mainLayout->addWidget(m_pFileCheckbox);
 
 
 	m_pAddressLabel = new QLabel("上传文件路径：");
 	mainLayout->addWidget(m_pAddressLabel);
 
 	//mainLayout->addSpacing(10);
-	QLineEdit *addressEdit = new QLineEdit();
-	mainLayout->addWidget(addressEdit);
+	m_pAddressEdit = new QLineEdit();
+	mainLayout->addWidget(m_pAddressEdit);
 
 	//mainLayout->addSpacing(10);
 	QPushButton *browButton = new QPushButton("浏览...");
@@ -63,12 +65,30 @@ void FileConfigItem::initUi()
 
 	connect(addButton, SIGNAL(clicked()), this, SIGNAL(signalAddFileConfig()));
 	connect(delButton, SIGNAL(clicked()), this, SLOT(slotDel()));
+	connect(browButton, SIGNAL(clicked()), this, SLOT(slotBrowFile()));
+}
 
+QString FileConfigItem::getFilePath(){
+	QString path = m_pAddressEdit->text();
+	if (m_pFileCheckbox->isChecked() && !path.isEmpty())
+	{
+		return path;
+	}
+	return "";
 }
 
 void FileConfigItem::slotDel()
 {
 	emit signalDelFileConfig(m_iItemId);
+}
+
+void FileConfigItem::slotBrowFile()
+{
+	QString path = QFileDialog::getOpenFileName(this, tr("Open File"), "./", tr("Text File(*.*)"));
+	if (!path.isEmpty())
+	{
+		m_pAddressEdit->setText(path);
+	}
 }
 
 int FileConfigItem::findItemById(int itemId) {
@@ -216,4 +236,19 @@ void FileConfigWidget::slotDelFileConfig(int itemId)
 	}
 	flushWidget();
 	
+}
+
+QStringList FileConfigWidget::getAllSelectPath()
+{
+	QStringList pathList;
+	for (int i = 0; i < fileConfigVec.size();i++)
+	{
+		QString path =  fileConfigVec.at(i)->getFilePath();
+		if (!path.isEmpty())
+		{
+			pathList.push_back(path);
+		}
+	}
+
+	return pathList;
 }

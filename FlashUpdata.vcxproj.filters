@@ -51,6 +51,9 @@
     <ClCompile Include="SinByte.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SinTabWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="FlashUpdata.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="SerialConfigWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SinTabWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

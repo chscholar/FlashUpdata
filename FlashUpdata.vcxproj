@@ -112,6 +112,7 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigDeployWidget.cpp" />
     <ClCompile Include="FileConfigWidget.cpp" />
     <ClCompile Include="FlashUpdata.cpp" />
     <ClCompile Include="main.cpp" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComStruct.h" />
+    <ClInclude Include="ConfigDeployWidget.h" />
     <ClInclude Include="CSingleTon.h" />
     <QtMoc Include="SinTabWindow.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort</IncludePath>

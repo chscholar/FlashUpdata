@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_FlashUpdata.h"
 #include <FileConfigWidget.h>
+#include "SinTabWindow.h"
 #pragma execution_character_set("utf-8")
 
 enum RadioId
@@ -23,6 +24,7 @@ private:
 	void initUi();
 
 	FileConfigWidget *m_pFileConfigWidget;
+	SinTabWindow *m_pTabWindow;
 public slots:
 	void slotSwitchRadio(int, bool);
 };

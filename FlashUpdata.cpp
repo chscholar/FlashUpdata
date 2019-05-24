@@ -12,6 +12,8 @@
 #include <QProgressBar>
 #include <QScrollArea>
 #include "FileConfigWidget.h"
+#include "SinTabWindow.h"
+#include "ConfigDeployWidget.h"
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)
@@ -27,55 +29,14 @@ void FlashUpdata::initUi()
 	QVBoxLayout  *workLayout = new QVBoxLayout(this);
 	workLayout->addSpacing(10);
 
-	QGroupBox *configBox = new QGroupBox(this);
-	configBox->setTitle("属性配置");
-	workLayout->addWidget(configBox);
+	m_pTabWindow = new SinTabWindow();
+	workLayout->addWidget(m_pTabWindow);
 
-	QVBoxLayout *configLayout = new QVBoxLayout(configBox);
+	ConfigDeployWidget *configDeploy = new ConfigDeployWidget();
+	m_pTabWindow->addView(configDeploy, "属性配置");
 
-
-	QButtonGroup *radioGroup = new QButtonGroup();
-	QHBoxLayout *radioLayout = new QHBoxLayout();
-	radioLayout->addStretch(1);
-	QRadioButton *downloadRadio = new QRadioButton("下载");
-	radioLayout->addWidget(downloadRadio);
-
-	radioLayout->addStretch(1);
-	QRadioButton *uploadRadio = new QRadioButton("上传");
-	radioLayout->addWidget(uploadRadio);
-	
-
-	connect(radioGroup, SIGNAL(buttonToggled(int, bool)), this, SLOT(slotSwitchRadio(int, bool)));
-
-	downloadRadio->setChecked(true);
-	radioGroup->addButton(uploadRadio);
-	radioGroup->setId(uploadRadio, RADIOID_UPLOAD);
-	radioGroup->addButton(downloadRadio);
-	radioGroup->setId(downloadRadio, RADIO_DOWNLOAD);
-	radioLayout->addStretch(1);
-	configLayout->addLayout(radioLayout);
-
-	QScrollArea *fileConfigArea = new QScrollArea();
-	m_pFileConfigWidget = new FileConfigWidget();
-	fileConfigArea->setWidget(m_pFileConfigWidget);
-	fileConfigArea->setWidgetResizable(true);
-	fileConfigArea->setFrameShape(QFrame::NoFrame);
-	configLayout->addWidget(fileConfigArea);
-
-	QHBoxLayout *buttonLayout = new QHBoxLayout();
-	buttonLayout->addSpacing(10);
-	buttonLayout->addStretch(1);
-	QPushButton *confirmButton = new QPushButton("确认");
-	buttonLayout->addWidget(confirmButton);
-
-	buttonLayout->addStretch(3);
-	QPushButton *cancleButton = new QPushButton("取消");
-	buttonLayout->addWidget(cancleButton);
-	buttonLayout->addStretch(1);
-	buttonLayout->addSpacing(10);
-	configLayout->addLayout(buttonLayout);
-
-	configBox->setLayout(configLayout);
+	QMainWindow *configEdit = new QMainWindow();
+	m_pTabWindow->addView(configEdit, "属性编辑");
 
 	QTextEdit *logEdit = new QTextEdit();
 	logEdit->append("this is log info");

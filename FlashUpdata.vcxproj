@@ -116,10 +116,10 @@
     <ClCompile Include="FlashUpdata.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetWorkConfigWidget.cpp" />
-    <ClCompile Include="SinTabWindow.cpp" />
     <ClCompile Include="SerialConfigWidget.cpp" />
     <ClCompile Include="SinByte.cpp" />
     <ClCompile Include="SinSerial.cpp" />
+    <ClCompile Include="SinTabWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="FlashUpdata.h" />

@@ -14,6 +14,7 @@
 #include "FileConfigWidget.h"
 #include "SinTabWindow.h"
 #include "ConfigDeployWidget.h"
+#include <ConfigEditWidget.h>
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)
@@ -35,7 +36,7 @@ void FlashUpdata::initUi()
 	ConfigDeployWidget *configDeploy = new ConfigDeployWidget();
 	m_pTabWindow->addView(configDeploy, " Ù–‘≈‰÷√");
 
-	QMainWindow *configEdit = new QMainWindow();
+	ConfigEditWidget *configEdit = new ConfigEditWidget();
 	m_pTabWindow->addView(configEdit, " Ù–‘±‡º≠");
 
 	QTextEdit *logEdit = new QTextEdit();

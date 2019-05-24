@@ -21,16 +21,7 @@ ConfigDeployWidget::~ConfigDeployWidget()
 
 void ConfigDeployWidget::initUi()
 {
-	//configDeploy->setStyleSheet("QMainWindow { background-color: red; }");
-	//configEdit->setStyleSheet("QMainWindow { background-color: blue; }");
-	QVBoxLayout *workLayout = new QVBoxLayout();
-
-	QGroupBox *configBox = new QGroupBox(this);
-	configBox->setTitle("ÊôÐÔÅäÖÃ");
-	workLayout->addWidget(configBox);
-
-	QVBoxLayout *configLayout = new QVBoxLayout(configBox);
-
+	QVBoxLayout *mainLayout = new QVBoxLayout();
 
 	QButtonGroup *radioGroup = new QButtonGroup();
 	QHBoxLayout *radioLayout = new QHBoxLayout();
@@ -51,14 +42,14 @@ void ConfigDeployWidget::initUi()
 	radioGroup->addButton(downloadRadio);
 	radioGroup->setId(downloadRadio, 1);
 	radioLayout->addStretch(1);
-	configLayout->addLayout(radioLayout);
+	mainLayout->addLayout(radioLayout);
 
 	QScrollArea *fileConfigArea = new QScrollArea();
 	FileConfigWidget *m_pFileConfigWidget = new FileConfigWidget();
 	fileConfigArea->setWidget(m_pFileConfigWidget);
 	fileConfigArea->setWidgetResizable(true);
 	fileConfigArea->setFrameShape(QFrame::NoFrame);
-	configLayout->addWidget(fileConfigArea);
+	mainLayout->addWidget(fileConfigArea);
 
 	QHBoxLayout *buttonLayout = new QHBoxLayout();
 	buttonLayout->addSpacing(10);
@@ -71,9 +62,8 @@ void ConfigDeployWidget::initUi()
 	buttonLayout->addWidget(cancleButton);
 	buttonLayout->addStretch(1);
 	buttonLayout->addSpacing(10);
-	configLayout->addLayout(buttonLayout);
+	mainLayout->addLayout(buttonLayout);
 
-	configBox->setLayout(configLayout);
-	setLayout(workLayout);
+	setLayout(mainLayout);
 
 }

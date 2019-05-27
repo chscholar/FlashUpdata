@@ -27,11 +27,6 @@ class SinByte
 public:
 	SinByte();
 	~SinByte();
-	void operator = (QString str);
-	QList<TransInterFace> toDecode(const char ch[] = 0);
-private:
-	TransInterFace toTransFace(const char ch[]);
-	TransInterFace transIFace;
 };
 
 

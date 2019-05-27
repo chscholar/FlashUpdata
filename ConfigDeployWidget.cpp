@@ -8,9 +8,7 @@
 #include <QButtonGroup>
 #include <FileConfigWidget.h>
 #include <QMessageBox>
-#include "SinByte.h"
-#include <QFile>
-#include <QTextStream>
+#include "FileUtil.h"
 
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
@@ -82,26 +80,6 @@ void ConfigDeployWidget::slotConfirmTrans()
 		return;
 	};
 
-	SinByte *byte = new SinByte();
-
-	for (int i = 0; i < pathList.size();i++)
-	{
-		QString fileName = pathList.at(i);
-		QFile file(fileName);
-		
-		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-			return;
-
-		int nFileSize = file.bytesAvailable();
-
-		QByteArray fileData = file.read(nFileSize);
-		//QString text = QString(ba);
-
-		QList<TransInterFace> ResultfileData = byte->toDecode(fileData);
-		file.close();
-	}
-
-
-	byte->toDecode("12");
-
+	FileUtil *futil = new FileUtil();
+	futil->getDataFramFromFilePath(pathList);
 }

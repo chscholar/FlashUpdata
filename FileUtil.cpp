@@ -77,21 +77,36 @@ TransInterFace FileUtil::toTransFace(QByteArray byteData)
 }
 
 
-QList<TransInterFace> FileUtil::toDecode(QByteArray fileByteData){
+QList<QByteArray> FileUtil::toFileDataDecode(QByteArray fileByteData){
 
-	QList <TransInterFace> Result;
-	for (int i = 0; i < fileByteData.size(); i += 100)
+	QList <QByteArray> Result;
+	/*for (int i = 0; i < fileByteData.size(); i += 100)
 	{
 		TransInterFace transIFace;
 		transIFace = toTransFace(fileByteData);
 		Result.push_back(transIFace);
+	}*/
+	SinByte *sByte = new SinByte(fileByteData);
+	int nResult = fileByteData.size() / 1000;
+	int nDiv = fileByteData.size() - nResult * 1000;
+
+	while (nResult >=1)
+	{
+		QByteArray data = sByte->getNData(1000);
+		Result.push_back(data);
+		nResult--;
 	}
+
+	QByteArray data = sByte->getNData(nDiv);
+	Result.push_back(data);
+	
+
 	return Result;
 }
 
-QList<QList<TransInterFace>> FileUtil::getDataFramFromFilePath(QStringList pathList)
+QList<QList<QByteArray>> FileUtil::getDataFramFromFilePath(QStringList pathList)
 {
-	QList<QList<TransInterFace>> result;
+	QList<QList<QByteArray>> result;
 	for (int i = 0; i < pathList.size(); i++)
 	{
 		QString fileName = pathList.at(i);
@@ -103,8 +118,8 @@ QList<QList<TransInterFace>> FileUtil::getDataFramFromFilePath(QStringList pathL
 		int nFileSize = file.bytesAvailable();
 		QByteArray fileData = file.read(nFileSize);
 
-		QList<TransInterFace> FileResultfileData = toDecode(fileData);
-		result.push_back(FileResultfileData);
+		QList<QByteArray> FileDivData = toFileDataDecode(fileData);
+		result.push_back(FileDivData);
 		file.close();
 	}
 

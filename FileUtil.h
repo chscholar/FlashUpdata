@@ -10,9 +10,9 @@ class FileUtil : public QObject
 public:
 	FileUtil(QObject *parent = 0);
 	~FileUtil();
-	QList<QList<TransInterFace>> getDataFramFromFilePath(QStringList pathList);
+	QList<QList<QByteArray>> getDataFramFromFilePath(QStringList pathList);
 private:
-	QList<TransInterFace> toDecode(QByteArray byteData);
+	QList<QByteArray> toFileDataDecode(QByteArray byteData);
 	TransInterFace toTransFace(QByteArray byteData);
 	void fillStructItem();
 };

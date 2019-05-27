@@ -18,7 +18,7 @@ SinByte::~SinByte()
 QByteArray SinByte::getNData(int n)
 {
 	QByteArray byteData;
-	for (int i = m_nCurrentId; m_nCurrentId+n < m_nTotalSize; i++)
+	for (int i = m_nCurrentId; m_nCurrentId+n <= m_nTotalSize; i++)
 	{
 		if (i < m_nCurrentId+n)
 		{

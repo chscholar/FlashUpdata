@@ -11,9 +11,10 @@ public:
 	FileUtil(QObject *parent = 0);
 	~FileUtil();
 	QList<QList<TransInterFace>> getDataFramFromFilePath(QStringList pathList);
-	QList<TransInterFace> toDecode(QByteArray byteData);
 private:
+	QList<TransInterFace> toDecode(QByteArray byteData);
 	TransInterFace toTransFace(QByteArray byteData);
+	void fillStructItem();
 };
 
 #endif

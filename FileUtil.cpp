@@ -13,49 +13,65 @@ FileUtil::~FileUtil()
 
 }
 
+void FileUtil::fillStructItem()
+{
+	
+}
 
 TransInterFace FileUtil::toTransFace(QByteArray byteData)
 {
+
+	/*
+	QByteArray Header; //头标记 固定值
+	QByteArray Length; //后面所有数据长度（出去header 和本字段外） 如果是命令包则到dataLength字段
+	QByteArray Command; //命令 见含义
+	QByteArray BinFileId; //当前烧录文件id,boot中记录每个文件id 以及对应flash地址
+	QByteArray BinFileSize; //当前输入文件总大小
+	QByteArray TransId; //每个文件传输事务id， 如果有多个文件则每个文件传输id不一样
+	QByteArray TransSeqNum; //传输包序列
+	QByteArray DataLength; //data 数据长度
+	QByteArray DataCRC; //校验算法
+	QByteArray Padding; //填充字段，保证每个字段4字节对齐
+	QByteArray data;
+	*/
+
 	TransInterFace tif;
 	int nSizeOf = sizeof(tif);
 
+	SinByte *sByte = new SinByte(byteData);
 
+	QByteArray hedadrData = sByte->getNData(4);
+	tif.Header = hedadrData;
 
-	int nHeader = sizeof(tif.Header) / sizeof(char);
-	strncpy(tif.Header, byteData, nHeader);
-	byteData += nHeader;
+	QByteArray lengthData = sByte->getNData(4);
+	tif.Length = lengthData;
 
-	int nLength = sizeof(tif.Length) / sizeof(char);
-	strncpy(tif.Length, byteData, nLength);
-	byteData += nLength;
+	QByteArray commonData = sByte->getNData(4);
+	tif.Command = lengthData;
 
-	int nComman = sizeof(tif.Command) / sizeof(char);
-	strncpy(tif.Command, byteData, nComman);
-	byteData += nComman;
+	QByteArray BinFileIdData = sByte->getNData(4);
+	tif.BinFileId = BinFileIdData;
 
-	int nBinFileId = sizeof(tif.BinFileId) / sizeof(char);
-	strncpy(tif.BinFileId, byteData, nBinFileId);
-	byteData += nBinFileId;
+	QByteArray BinFileSizeData = sByte->getNData(4);
+	tif.BinFileSize = BinFileSizeData;
 
-	int nBinFileSize = sizeof(tif.BinFileSize) / sizeof(char);
-	strncpy(tif.BinFileId, byteData, nBinFileSize);
-	byteData += nBinFileSize;
+	QByteArray TransIdData = sByte->getNData(4);
+	tif.TransId = TransIdData;
 
-	int nTransId = sizeof(tif.TransId) / sizeof(char);
-	strncpy(tif.TransId, byteData, nTransId);
-	byteData += nBinFileSize;
+	QByteArray TransSeqNumData = sByte->getNData(4);
+	tif.TransSeqNum = TransSeqNumData;
 
-	int nTransSeqNum = sizeof(tif.TransSeqNum) / sizeof(char);
-	strncpy(tif.TransSeqNum, byteData, nTransSeqNum);
-	byteData += nTransSeqNum;
+	QByteArray DataLengthData = sByte->getNData(4);
+	tif.DataLength = DataLengthData;
 
-	int nDataLength = sizeof(tif.DataLength) / sizeof(char);
-	strncpy(tif.DataLength, byteData, nDataLength);
-	byteData += nDataLength;
+	QByteArray DataCRCData = sByte->getNData(4);
+	tif.DataCRC = DataCRCData;
 
-	int nDataCRC = sizeof(tif.DataCRC) / sizeof(char);
-	strncpy(tif.DataCRC, byteData, nDataCRC);
-	byteData += nDataCRC;
+	QByteArray PaddingData = sByte->getNData(4);
+	tif.Padding = PaddingData;
+
+	QByteArray DataData = sByte->getNData(4);
+	tif.data = DataData;
 
 	return tif;
 }
@@ -64,7 +80,7 @@ TransInterFace FileUtil::toTransFace(QByteArray byteData)
 QList<TransInterFace> FileUtil::toDecode(QByteArray fileByteData){
 
 	QList <TransInterFace> Result;
-	for (int i = 0; i < fileByteData.size(); i += 10)
+	for (int i = 0; i < fileByteData.size(); i += 100)
 	{
 		TransInterFace transIFace;
 		transIFace = toTransFace(fileByteData);

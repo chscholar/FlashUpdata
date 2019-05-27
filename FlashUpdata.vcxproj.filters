@@ -101,9 +101,6 @@
     <ClInclude Include="CSingleTon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ComStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SinByte.h">
       <Filter>Header Files</Filter>
     </ClInclude>

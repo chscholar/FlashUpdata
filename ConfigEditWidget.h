@@ -1,6 +1,7 @@
 #ifndef CONFIGEDITWIDGET_H
 #define CONFIGEDITWIDGET_H
 #include <QWidget>
+#include "SinXml.h"
 
 class ConfigEditWidget : public QWidget
 {
@@ -10,7 +11,7 @@ public:
 	~ConfigEditWidget();
 protected:
 	void initUi();
-	void initXml();
+	SinXml *m_pXml;
 private:
 };
 

@@ -123,6 +123,7 @@
     <ClCompile Include="SinByte.cpp" />
     <ClCompile Include="SinSerial.cpp" />
     <ClCompile Include="SinTabWindow.cpp" />
+    <ClCompile Include="SinXml.cpp" />
     <ClCompile Include="SinXmlHighlighter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SinXml.h" />
     <QtMoc Include="SinXmlHighlighter.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml</IncludePath>

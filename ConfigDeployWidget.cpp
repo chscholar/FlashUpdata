@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include "FileUtil.h"
 #include "SinSerial.h"
+#include "ConfigEditWidget.h"
 
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
@@ -67,7 +68,6 @@ void ConfigDeployWidget::initUi()
 	buttonLayout->addStretch(1);
 	buttonLayout->addSpacing(10);
 	mainLayout->addLayout(buttonLayout);
-
 	setLayout(mainLayout);
 }
 

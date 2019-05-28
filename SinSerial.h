@@ -5,6 +5,8 @@
 #include <QStringList>
 #include "CSingleTon.h"
 #include "QObject"
+#include "SinByte.h"
+
 #pragma execution_character_set("utf-8")
 class SinSerial :public QObject
 {
@@ -13,6 +15,7 @@ private:
 	QSerialPort *serialPort;
 	QSerialPort *getSerialPort();
 	QString findKeyFromMap(QMap<int,QString> fmap,int key);
+
 	QMap<int, QString> portMap;
 	QMap<int, QString> rateMap;
 	QMap<int, QString> dataMap;
@@ -29,10 +32,12 @@ public:
 	QStringList getStopBits();
 	QStringList getFlowControl();
 	QStringList getParity();
+
+	void sendData(QList<QList <QByteArray>>);
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
 };
 
-typedef CSingleton<SinSerial> sinserial;
+typedef CSingleton<SinSerial> sinserialSingle;
 #endif

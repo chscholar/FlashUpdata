@@ -100,41 +100,41 @@ void SerialConfigWidget::initUi()
 
 	m_pPortName = new SerialItem();
 	m_pPortName->setTipText("串口：");
-	QStringList comList = sinserial::getInstance().getEnablePorts();
+	QStringList comList = sinserialSingle::getInstance().getEnablePorts();
 	m_pPortName->setValuItems(comList);
 	mainLayout->addWidget(m_pPortName);
 
 	m_pRate = new SerialItem();
 	m_pRate->setTipText("速率：");
-	QStringList rateList = sinserial::getInstance().getEnableRates();
+	QStringList rateList = sinserialSingle::getInstance().getEnableRates();
 	m_pRate->setValuItems(rateList);
 	mainLayout->addWidget(m_pRate);
 
 
 	m_pFlow = new SerialItem();
 	m_pFlow->setTipText("流控：");
-	QStringList flowList = sinserial::getInstance().getFlowControl();
+	QStringList flowList = sinserialSingle::getInstance().getFlowControl();
 	m_pFlow->setValuItems(flowList);
 	mainLayout->addWidget(m_pFlow);
 
 
 	m_pParity = new SerialItem();
 	m_pParity->setTipText("校验：");
-	QStringList parityList = sinserial::getInstance().getParity();
+	QStringList parityList = sinserialSingle::getInstance().getParity();
 	m_pParity->setValuItems(parityList);
 	mainLayout->addWidget(m_pParity);
 
 	
 	m_pDataBit = new SerialItem();
 	m_pDataBit->setTipText("数据位：");
-	QStringList dataList = sinserial::getInstance().getDataBits();
+	QStringList dataList = sinserialSingle::getInstance().getDataBits();
 	m_pDataBit->setValuItems(dataList);
 	mainLayout->addWidget(m_pDataBit);
 
 
 	m_pStopDataBit = new SerialItem();
 	m_pStopDataBit->setTipText("停止位：");
-	QStringList stoopList = sinserial::getInstance().getStopBits();
+	QStringList stoopList = sinserialSingle::getInstance().getStopBits();
 	m_pStopDataBit->setValuItems(stoopList);
 	mainLayout->addWidget(m_pStopDataBit);
 
@@ -177,15 +177,15 @@ void SerialConfigWidget::slotOpenCloseCom()
 	}
 
 
-	bool isOpen = sinserial::getInstance().isOPen();
+	bool isOpen = sinserialSingle::getInstance().isOPen();
 	if (isOpen)
 	{
-		sinserial::getInstance().closeCom();
+		sinserialSingle::getInstance().closeCom();
 		m_pStatus->setStatus(false);
 		m_pCloseOpenButton->setText("打开串口");
 	}
 	else {
-		int nResult = sinserial::getInstance().openCom(portIndex, rateIndex, flowIndex, dataIndex, stopIndex, parityIndex);
+		int nResult = sinserialSingle::getInstance().openCom(portIndex, rateIndex, flowIndex, dataIndex, stopIndex, parityIndex);
 		if (nResult == 0)
 		{
 			m_pStatus->setStatus(true);

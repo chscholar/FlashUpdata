@@ -5,7 +5,7 @@
 #include <QList>
 
 #pragma pack(1) 
-struct TransInterFace
+struct ReqInterrFace
 {
 	QByteArray Header; //头标记 固定值
 	QByteArray Length; //后面所有数据长度（出去header 和本字段外） 如果是命令包则到dataLength字段

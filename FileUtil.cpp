@@ -18,7 +18,7 @@ void FileUtil::fillStructItem()
 	
 }
 
-TransInterFace FileUtil::toTransFace(QByteArray byteData)
+ReqInterrFace FileUtil::toTransFace(QByteArray byteData)
 {
 
 	/*
@@ -35,7 +35,7 @@ TransInterFace FileUtil::toTransFace(QByteArray byteData)
 	QByteArray data;
 	*/
 
-	TransInterFace tif;
+	ReqInterrFace tif;
 	int nSizeOf = sizeof(tif);
 
 	SinByte *sByte = new SinByte(byteData);

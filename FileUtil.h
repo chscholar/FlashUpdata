@@ -13,7 +13,7 @@ public:
 	QList<QList<QByteArray>> getDataFramFromFilePath(QStringList pathList);
 private:
 	QList<QByteArray> toFileDataDecode(QByteArray byteData);
-	TransInterFace toTransFace(QByteArray byteData);
+	ReqInterrFace toTransFace(QByteArray byteData);
 	void fillStructItem();
 };
 

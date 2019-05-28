@@ -9,6 +9,7 @@
 #include <FileConfigWidget.h>
 #include <QMessageBox>
 #include "FileUtil.h"
+#include "SinSerial.h"
 
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
@@ -81,5 +82,6 @@ void ConfigDeployWidget::slotConfirmTrans()
 	};
 
 	FileUtil *futil = new FileUtil();
-	futil->getDataFramFromFilePath(pathList);
+	QList<QList<QByteArray>> fileListData =  futil->getDataFramFromFilePath(pathList);
+	sinserialSingle::getInstance().sendData(fileListData);
 }

@@ -10,7 +10,7 @@
 #include <QMessageBox>
 #include "FileUtil.h"
 #include "SinSerial.h"
-#include "ConfigEditWidget.h"
+#include "SinXml.h"
 
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
@@ -74,6 +74,11 @@ void ConfigDeployWidget::initUi()
 
 void ConfigDeployWidget::slotConfirmTrans()
 {
+	SinXml *xml = new SinXml();
+	//xml->addUpLoadFile(true,"1","check","./test.txt");
+	xml->deleUpLoadFile(true, "1");
+	
+
 	QStringList pathList = m_pFileConfigWidget->getAllSelectPath();
 	if (pathList.size() <= 0)
 	{

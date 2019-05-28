@@ -64,6 +64,73 @@ void SinXml::initXml()
 
 }
 
+QDomNode SinXml::findNodByName(QDomElement elemtnt, QString nodeName)
+{
+	QDomNode temp;
+	if (temp.nodeName() == nodeName)
+	{
+		return temp;
+	}
+
+	QDomNodeList childs = elemtnt.childNodes();
+	for (int i = 0; i < childs.size(); i++)
+	{
+		temp = childs.at(i);
+		QString qstrNodeName = temp.nodeName();
+		if (qstrNodeName == nodeName)
+		{
+			return temp;
+		}
+		if (temp.hasChildNodes())
+		{
+			findNodByName(temp.toElement(), nodeName);
+
+		}
+	}
+
+	if (temp.nodeName() != nodeName)
+	{
+		QDomNode temp1;
+		return temp1;
+	}
+
+}
+
+void SinXml::appendChilds(QDomDocument doc,QDomElement element, QString fileId, QString fileCheck, QString filePath)
+{
+
+	QDomElement FileElement = doc.createElement("File");
+
+	QDomAttr fileIdAttr = doc.createAttribute("id");
+	fileIdAttr.setValue(fileId);
+	FileElement.setAttributeNode(fileIdAttr);
+
+	QDomAttr checkAttr = doc.createAttribute("checked");
+	checkAttr.setValue(fileCheck);
+	FileElement.setAttributeNode(checkAttr);
+
+	QDomText text = doc.createTextNode(filePath);
+	FileElement.appendChild(text);
+	element.appendChild(FileElement);
+}
+
+void SinXml::deleChild(QDomElement element, QString fileId){
+
+	QDomNode temp;
+	QDomNodeList childs = element.childNodes();
+	for (int i = 0; i < childs.size(); i++)
+	{
+		temp = childs.at(i);
+		QString qstrNodeName = temp.nodeName();
+		QString strfileId =  temp.toElement().attribute("id");
+		if (strfileId == fileId)
+		{
+			element.removeChild(temp);
+		}
+	}
+}
+
+
 void SinXml::addUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, QString filePath)
 {
 	QFile file(configFileName);
@@ -80,22 +147,55 @@ void SinXml::addUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, QSt
 
 	QDomElement root = doc.documentElement();
 
-	QDomNodeList childs = doc.childNodes();
+	QString elementName;
+	if (isUpLoad)
+	{
+		elementName = "uploadConfig";
+	}
+	else {
+		elementName = "downLoadConfig";
+	}
 
+	QDomNode node =  findNodByName(root,elementName);
+	QString nodeName = node.nodeName();
+	appendChilds(doc,node.toElement(), fileId, fileCheck, filePath);
 
-	QDomElement book = doc.createElement("book");
-	book.setAttribute("id", 3);
-	book.setAttribute("time", "1813/1/27");
-	QDomElement title = doc.createElement("title");
-	QDomText text;
-	text = doc.createTextNode("Pride and Prejudice");
-	title.appendChild(text);
-	book.appendChild(title);
-	QDomElement author = doc.createElement("author");
-	text = doc.createTextNode("Jane Austen");
-	author.appendChild(text);
-	book.appendChild(author);
-	root.appendChild(book);
+	if (!file.open(QFile::WriteOnly | QFile::Truncate))
+		return;
+	QTextStream out_stream(&file);
+	doc.save(out_stream, 4); //Ëõ½ø4¸ñ
+	file.close();
+
+}
+
+void SinXml::deleUpLoadFile(bool isUpLoad,QString fileId)
+{
+	QFile file(configFileName);
+	if (!file.open(QFile::ReadOnly))
+		return;
+
+	QDomDocument doc;
+	if (!doc.setContent(&file))
+	{
+		file.close();
+		return;
+	}
+	file.close();
+
+	QDomElement root = doc.documentElement();
+
+	QString elementName;
+	if (isUpLoad)
+	{
+		elementName = "uploadConfig";
+	}
+	else {
+		elementName = "downLoadConfig";
+	}
+
+	QDomNode node = findNodByName(root, elementName);
+	QString nodeName = node.nodeName();
+	deleChild(node.toElement(), fileId);
 
 	if (!file.open(QFile::WriteOnly | QFile::Truncate))
 		return;
@@ -110,7 +210,3 @@ void SinXml::updateUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, 
 
 }
 
-void SinXml::deleUpLoadFile(bool isUpLoad, int fileId)
-{
-
-}

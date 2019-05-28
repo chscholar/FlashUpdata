@@ -32,6 +32,7 @@ void SinXml::initXml()
 	doc.appendChild(root);
 	QDomElement uploadConfig = doc.createElement("uploadConfig");
 	QDomElement File = doc.createElement("File");
+
 	QDomAttr fileId = doc.createAttribute("id");
 	fileId.setValue("0");
 	File.setAttributeNode(fileId);
@@ -39,10 +40,12 @@ void SinXml::initXml()
 	QDomAttr check = doc.createAttribute("checked");
 	check.setValue("check");
 	File.setAttributeNode(check);
-	QDomText text;
-	text = doc.createTextNode("./upload/test.txt");
+
+	QDomAttr path = doc.createAttribute("path");
+	path.setValue("./upload/test.txt");
+	File.setAttributeNode(path);
+
 	uploadConfig.appendChild(File);
-	File.appendChild(text);
 	root.appendChild(uploadConfig);
 
 	QDomElement downloadConfig = doc.createElement("downLoadConfig");
@@ -50,12 +53,16 @@ void SinXml::initXml()
 	fileId = doc.createAttribute("id");
 	fileId.setValue("0");
 	File.setAttributeNode(fileId);
+
 	check = doc.createAttribute("checked");
 	check.setValue("uncheck");
 	File.setAttributeNode(check);
-	text = doc.createTextNode("./download/test.txt");
+
+	path = doc.createAttribute("path");
+	path.setValue("./download/test.txt");
+	File.setAttributeNode(path);
+
 	downloadConfig.appendChild(File);
-	File.appendChild(text);
 	root.appendChild(downloadConfig);
 
 	QTextStream out_stream(&file);
@@ -109,8 +116,10 @@ void SinXml::appendChilds(QDomDocument doc,QDomElement element, QString fileId, 
 	checkAttr.setValue(fileCheck);
 	FileElement.setAttributeNode(checkAttr);
 
-	QDomText text = doc.createTextNode(filePath);
-	FileElement.appendChild(text);
+	QDomAttr pathcAttr = doc.createAttribute("path");
+	pathcAttr.setValue(filePath);
+	FileElement.setAttributeNode(pathcAttr);
+	
 	element.appendChild(FileElement);
 }
 
@@ -130,6 +139,25 @@ void SinXml::deleChild(QDomElement element, QString fileId){
 	}
 }
 
+void SinXml::updateChild(QDomElement element, QString fileId, QString fileCheck, QString filePath)
+{
+	QDomNode temp;
+	QDomNodeList childs = element.childNodes();
+	for (int i = 0; i < childs.size(); i++)
+	{
+		temp = childs.at(i);
+		QString qstrNodeName = temp.nodeName();
+		QString strfileId = temp.toElement().attribute("id");
+		if (strfileId == fileId)
+		{
+			//element.removeChild(temp);
+			//temp.toElement().setAttribute("id", fileId);
+			temp.toElement().setAttribute("checked", fileCheck);
+			temp.toElement().setAttribute("path", filePath);
+		}
+	}
+
+}
 
 void SinXml::addUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, QString filePath)
 {
@@ -207,6 +235,38 @@ void SinXml::deleUpLoadFile(bool isUpLoad,QString fileId)
 
 void SinXml::updateUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, QString filePath)
 {
+	QFile file(configFileName);
+	if (!file.open(QFile::ReadOnly))
+		return;
+
+	QDomDocument doc;
+	if (!doc.setContent(&file))
+	{
+		file.close();
+		return;
+	}
+	file.close();
+
+	QDomElement root = doc.documentElement();
+
+	QString elementName;
+	if (isUpLoad)
+	{
+		elementName = "uploadConfig";
+	}
+	else {
+		elementName = "downLoadConfig";
+	}
+
+	QDomNode node = findNodByName(root, elementName);
+	QString nodeName = node.nodeName();
+	updateChild(node.toElement(), fileId, fileCheck, filePath);
+
+	if (!file.open(QFile::WriteOnly | QFile::Truncate))
+		return;
+	QTextStream out_stream(&file);
+	doc.save(out_stream, 4); //Ëõ½ø4¸ñ
+	file.close();
 
 }
 

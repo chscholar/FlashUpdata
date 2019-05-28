@@ -76,7 +76,8 @@ void ConfigDeployWidget::slotConfirmTrans()
 {
 	SinXml *xml = new SinXml();
 	//xml->addUpLoadFile(true,"1","check","./test.txt");
-	xml->deleUpLoadFile(true, "1");
+	//xml->deleUpLoadFile(true, "1");
+	xml->updateUpLoadFile(true, "1", "uncheck", "./upload/demo.text");
 	
 
 	QStringList pathList = m_pFileConfigWidget->getAllSelectPath();

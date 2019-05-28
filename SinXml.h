@@ -16,6 +16,7 @@ protected:
 	QDomNode findNodByName(QDomElement elemtnt, QString nodeName);
 	void appendChilds(QDomDocument doc,QDomElement element, QString fileId, QString fileCheck, QString filePath);
 	void deleChild(QDomElement element, QString fileId);
+	void updateChild(QDomElement element, QString fileId, QString fileCheck, QString filePath);
 private:
 };
 

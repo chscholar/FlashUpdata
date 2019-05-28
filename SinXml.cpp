@@ -150,8 +150,6 @@ void SinXml::updateChild(QDomElement element, QString fileId, QString fileCheck,
 		QString strfileId = temp.toElement().attribute("id");
 		if (strfileId == fileId)
 		{
-			//element.removeChild(temp);
-			//temp.toElement().setAttribute("id", fileId);
 			temp.toElement().setAttribute("checked", fileCheck);
 			temp.toElement().setAttribute("path", filePath);
 		}

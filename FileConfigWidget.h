@@ -9,6 +9,8 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QStringList>
+#include "SinXml.h"
+
 #pragma execution_character_set("utf-8")
 class FileConfigItem : public QWidget
 {
@@ -21,12 +23,14 @@ public:
 	void setNiddle();
 	void setDownload();
 	int findItemById(int itemId);
+	QString getCheckedStatus();
 	QString getFilePath();
 protected:
 	void initUi();
 
 	public slots:
 	void slotDel();
+	void slotAdd();
 	void slotBrowFile();
 signals :
 	void signalAddFileConfig();
@@ -38,6 +42,7 @@ private:
 	QPushButton *addButton;
 	QPushButton *delButton;
 	int m_iItemId;
+	SinXml *m_pXml;
 };
 
 

@@ -7,10 +7,13 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+
 FileConfigItem::FileConfigItem(int itemId,QWidget *parent)
 	:QWidget(parent)
 {
+	m_pXml = new SinXml();
 	initUi();
+
 	m_iItemId = itemId;
 }
 
@@ -63,9 +66,21 @@ void FileConfigItem::initUi()
 	mainLayout->addStretch(5);
 	setLayout(mainLayout);
 
-	connect(addButton, SIGNAL(clicked()), this, SIGNAL(signalAddFileConfig()));
+	connect(addButton, SIGNAL(clicked()), this, SLOT(slotAdd()));
 	connect(delButton, SIGNAL(clicked()), this, SLOT(slotDel()));
 	connect(browButton, SIGNAL(clicked()), this, SLOT(slotBrowFile()));
+}
+
+QString FileConfigItem::getCheckedStatus()
+{
+	bool checked = m_pFileCheckbox->isChecked();
+
+	if (checked)
+	{
+		return "check";
+	}
+
+	return "uncheck";
 }
 
 QString FileConfigItem::getFilePath(){
@@ -77,9 +92,16 @@ QString FileConfigItem::getFilePath(){
 	return "";
 }
 
+void FileConfigItem::slotAdd()
+{
+	emit signalAddFileConfig();
+	m_pXml->addUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), "");
+}
+
 void FileConfigItem::slotDel()
 {
 	emit signalDelFileConfig(m_iItemId);
+	m_pXml->deleUpLoadFile(true, QString::number(m_iItemId));
 }
 
 void FileConfigItem::slotBrowFile()
@@ -88,6 +110,7 @@ void FileConfigItem::slotBrowFile()
 	if (!path.isEmpty())
 	{
 		m_pAddressEdit->setText(path);
+		m_pXml->updateUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), path);
 	}
 }
 

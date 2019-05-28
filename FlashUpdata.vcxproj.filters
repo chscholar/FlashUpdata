@@ -63,6 +63,9 @@
     <ClCompile Include="FileUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SinXmlHighlighter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="FlashUpdata.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="FileUtil.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SinXmlHighlighter.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

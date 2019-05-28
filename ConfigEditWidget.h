@@ -10,6 +10,7 @@ public:
 	~ConfigEditWidget();
 protected:
 	void initUi();
+	void initXml();
 private:
 };
 

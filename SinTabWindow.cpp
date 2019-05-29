@@ -152,8 +152,6 @@ int TabView::tabAt(const QPoint &pos)
 	return tabBar()->tabAt(pos);
 }
 
-
-
 SinTabWindow::SinTabWindow(QWidget *parent) :
 QMainWindow(parent)
 {

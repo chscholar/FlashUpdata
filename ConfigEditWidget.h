@@ -1,6 +1,9 @@
 #ifndef CONFIGEDITWIDGET_H
 #define CONFIGEDITWIDGET_H
 #include <QWidget>
+#include <QPaintEvent>
+#include <QTextEdit>
+#include <QShowEvent>
 #include "SinXml.h"
 
 class ConfigEditWidget : public QWidget
@@ -11,7 +14,10 @@ public:
 	~ConfigEditWidget();
 protected:
 	void initUi();
+	void updateEditContent();
+	void showEvent(QShowEvent *e);
 	SinXml *m_pXml;
+	QTextEdit *m_pConfigEdit;
 private:
 };
 

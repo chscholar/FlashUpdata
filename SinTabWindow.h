@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMainWindow>
 #include <QTabBar>
+#include <QShowEvent>
 
 class SinTabWindow;
 class TabBar;
@@ -69,7 +70,6 @@ public:
 	void removeView(int index);
 	void setCurrentView(int index);
 	QWidget* currentView();
-
 private:
 	TabView* tabs;
 };

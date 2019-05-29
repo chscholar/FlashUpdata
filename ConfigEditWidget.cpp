@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QTextEdit>
+#include <QPainter>
 #include "SinXmlHighlighter.h"
 
 const QString configFileName = "config.xml";
@@ -34,19 +35,29 @@ void ConfigEditWidget::initUi()
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	mainLayout->addSpacing(10);
 
-	QTextEdit *configEdit = new QTextEdit();
-	mainLayout->addWidget(configEdit);
+	m_pConfigEdit = new QTextEdit();
+	mainLayout->addWidget(m_pConfigEdit);
 
+	updateEditContent();
+
+	mainLayout->addSpacing(10);
+	mainLayout->setStretch(1, 8);
+	setLayout(mainLayout);
+}
+
+void ConfigEditWidget::updateEditContent()
+{
 	QFile file(configFileName);
 	file.open(QIODevice::ReadOnly);
 	QByteArray configXml = file.readAll();
 	file.close();
 
-	SinXmlHighlighter *highlighter = new SinXmlHighlighter(configEdit);
-	configEdit->setPlainText(configXml);
-	
-	mainLayout->addSpacing(10);
-	mainLayout->setStretch(1, 8);
-	setLayout(mainLayout);
+	SinXmlHighlighter *highlighter = new SinXmlHighlighter(m_pConfigEdit);
+	m_pConfigEdit->setPlainText(configXml);
+}
 
+void ConfigEditWidget::showEvent(QShowEvent *e)
+{
+	updateEditContent();
+	m_pConfigEdit->update();
 }

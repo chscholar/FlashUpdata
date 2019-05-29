@@ -3,7 +3,8 @@
 #include <QDomDocument>
 #include <QTextStream>
 
-const QString configFileName = "config.xml";
+
+const QString configFileName = "./config.xml";
 
 SinXml::SinXml(QObject *parent)
 	:QObject(parent){
@@ -15,10 +16,10 @@ SinXml::SinXml(QObject *parent)
 		initXml();
 	}
 	file.close();
-
 	m_pFileWatcher = new QFileSystemWatcher();
 	bool isWather =  m_pFileWatcher->addPath(configFileName);
-	connect(m_pFileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChange(QString)));
+	//connect(m_pFileWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(Function_1(QString)));
+	connect(m_pFileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(configFileChange(QString)));
 }
 
 SinXml::~SinXml()
@@ -231,9 +232,9 @@ void SinXml::reload(QString qstrContent)
 
 }
 
-void SinXml::fileChange(QString strFilePath)
+void SinXml::configFileChange(QString strFilePath)
 {
-	int a = 1;
+	emit signalsConfigChange();
 }
 
 QDomDocument SinXml::readConfigFile()

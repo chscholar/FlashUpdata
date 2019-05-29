@@ -127,7 +127,7 @@
     <ClInclude Include="src\CSingleTon.h" />
     <ClInclude Include="src\SinByte.h" />
     <ClInclude Include="src\SinSerial.h" />
-    <ClInclude Include="src\SinXml.h" />
+    <QtMoc Include="src\SinXml.h" />
     <QtMoc Include="src\SinXmlHighlighter.h" />
     <QtMoc Include="src\SinTabWindow.h" />
     <QtMoc Include="src\SerialConfigWidget.h" />

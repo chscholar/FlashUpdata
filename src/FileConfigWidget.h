@@ -67,6 +67,9 @@ private:
 	QVBoxLayout *mainDownLoadLayout;
 	QVector < FileConfigItemWidget*> fileConfigVec ;
 	int m_iItemId;
+public slots:
+void slotConfigFileChange();
+
 };
 
 #endif

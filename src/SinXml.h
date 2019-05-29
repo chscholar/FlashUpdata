@@ -18,6 +18,7 @@ struct FileConfigItem
 
 class SinXml : public QObject
 {
+	Q_OBJECT
 public:
 	SinXml(QObject *parent = 0);
 	~SinXml();
@@ -38,7 +39,9 @@ protected:
 	QString getElementName(bool isUpLoad);
 	QFileSystemWatcher *m_pFileWatcher;
 public slots:
-	void fileChange(QString strPath);
+	void configFileChange(QString strPath);
+signals:
+	void signalsConfigChange();
 private:
 };
 

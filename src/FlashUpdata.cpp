@@ -14,7 +14,7 @@
 #include "FileConfigWidget.h"
 #include "SinTabWindow.h"
 #include "ConfigDeployWidget.h"
-#include <ConfigEditWidget.h>
+#include "ConfigEditWidget.h"
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)

@@ -6,7 +6,7 @@
 #include <QScrollArea>
 #include <QPushButton>
 #include <QButtonGroup>
-#include <FileConfigWidget.h>
+#include "FileConfigWidget.h"
 #include <QMessageBox>
 #include "FileUtil.h"
 #include "SinSerial.h"

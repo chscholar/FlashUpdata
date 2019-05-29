@@ -1,7 +1,7 @@
 #ifndef CONFIDEPLOYWIDGET_H
 #define CONFIDEPLOYWIDGET_H
 #include <QWidget>
-#include <FileConfigWidget.h>
+#include "FileConfigWidget.h"
 
 class ConfigDeployWidget : public QWidget
 {

@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_FlashUpdata.h"
-#include <FileConfigWidget.h>
+#include "FileConfigWidget.h"
 #include "SinTabWindow.h"
 #pragma execution_character_set("utf-8")
 

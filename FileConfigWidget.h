@@ -16,7 +16,7 @@ class FileConfigItemWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	FileConfigItemWidget(int itemId,QWidget *parent = 0);
+	FileConfigItemWidget(int itemId = 0,QString fileChecked = "checked",QString filePath = "", QWidget *parent = 0);
 	~FileConfigItemWidget();
 	void setFirst();
 	void setEnd();
@@ -42,6 +42,8 @@ private:
 	QPushButton *addButton;
 	QPushButton *delButton;
 	int m_iItemId;
+	QString m_sFileChecked;
+	QString m_sFilePath;
 };
 
 

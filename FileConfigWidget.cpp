@@ -9,12 +9,13 @@
 #include "SinXml.h"
 
 
-FileConfigItemWidget::FileConfigItemWidget(int itemId,QWidget *parent)
+FileConfigItemWidget::FileConfigItemWidget(int itemId ,QString fileCheck,QString filePath,QWidget *parent)
 	:QWidget(parent)
 {
-	initUi();
-
 	m_iItemId = itemId;
+	m_sFileChecked = fileCheck;
+	m_sFilePath = filePath;
+	initUi();
 }
 
 FileConfigItemWidget::~FileConfigItemWidget()
@@ -28,15 +29,21 @@ void FileConfigItemWidget::initUi()
 	//mainLayout->addSpacing(20);
 
 	m_pFileCheckbox = new QCheckBox();
-	m_pFileCheckbox->setChecked(true);
+	if (m_sFileChecked == "check")
+	{
+		m_pFileCheckbox->setChecked(true);
+	}
+	else {
+		m_pFileCheckbox->setChecked(false);
+	}
+	
 	mainLayout->addWidget(m_pFileCheckbox);
-
-
 	m_pAddressLabel = new QLabel("上传文件路径：");
 	mainLayout->addWidget(m_pAddressLabel);
 
 	//mainLayout->addSpacing(10);
 	m_pAddressEdit = new QLineEdit();
+	m_pAddressEdit->setText(m_sFilePath);
 	mainLayout->addWidget(m_pAddressEdit);
 
 	//mainLayout->addSpacing(10);
@@ -95,13 +102,11 @@ QString FileConfigItemWidget::getFilePath(){
 void FileConfigItemWidget::slotAdd()
 {
 	emit signalAddFileConfig();
-	sinXmlSingle::getInstance().addUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), "");
 }
 
 void FileConfigItemWidget::slotDel()
 {
 	emit signalDelFileConfig(m_iItemId);
-	sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(m_iItemId));
 }
 
 void FileConfigItemWidget::slotBrowFile()
@@ -160,21 +165,47 @@ void FileConfigWidget::initUi()
 		mainUpLoadLayout = new QVBoxLayout(this);
 		mainUpLoadLayout->setMargin(10);
 
-		FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
+
+		QList<FileConfigItem> itemLists = sinXmlSingle::getInstance().getFileConfigItemFromXmlConfig(true);
+		fileConfigVec.clear();
+		for (int i = 0; i < itemLists.size();i++)
+		{
+			FileConfigItem item = itemLists.at(i);
+			QString qstrId = item.fileConfigId;
+			QString qstrChecked = item.fileConfigChecked;
+			QString qstrPath = item.fileConfigPath;
+
+			if (m_iItemId <= qstrId.toInt())
+			{
+				m_iItemId = qstrId.toInt();
+			}
+
+			FileConfigItemWidget *itemWidget = new FileConfigItemWidget(qstrId.toInt(), qstrChecked, qstrPath);
+			if (i == 0)
+			{
+				itemWidget->setFirst();
+			}
+			connect(itemWidget, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
+			connect(itemWidget, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
+			mainUpLoadLayout->addWidget(itemWidget);
+			fileConfigVec.push_back(itemWidget);
+			mainUpLoadLayout->addSpacing(10);
+		}
+		mainUpLoadLayout->addStretch(3);
+
+		/*FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
 		item->setFirst();
 		connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
 		connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
 		mainUpLoadLayout->addWidget(item);
-		mainUpLoadLayout->addStretch(5);
-
-		fileConfigVec.push_back(item);
+		mainUpLoadLayout->addStretch(5);*/
 		setLayout(mainUpLoadLayout);
 	
-		mainDownLoadLayout = new QVBoxLayout(this);
-		mainDownLoadLayout->setMargin(10);
-		FileConfigItemWidget *itemdown = new FileConfigItemWidget(++m_iItemId);
-		itemdown->setDownload();
-		mainDownLoadLayout->addWidget(itemdown);
+		/*	mainDownLoadLayout = new QVBoxLayout(this);
+			mainDownLoadLayout->setMargin(10);
+			FileConfigItemWidget *itemdown = new FileConfigItemWidget(++m_iItemId);
+			itemdown->setDownload();
+			mainDownLoadLayout->addWidget(itemdown);*/
 		//setLayout(mainDownLoadLayout);
 	
 }
@@ -224,6 +255,7 @@ void FileConfigWidget::slotAddFileConfig()
 	connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
 	connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
 
+	sinXmlSingle::getInstance().addUpLoadFile(true, QString::number(m_iItemId), item->getCheckedStatus(), "");
 	fileConfigVec.push_back(item);
 	flushWidget();
 }
@@ -254,6 +286,7 @@ void FileConfigWidget::slotDelFileConfig(int itemId)
 		if (item->findItemById(itemId) == itemId)
 		{
 			item->deleteLater();
+			sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(m_iItemId));
 			fileConfigVec.removeAt(i);
 		}
 

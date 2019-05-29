@@ -34,9 +34,6 @@ protected:
 	void slotAdd();
 	void slotBrowFile();
 	void slotChecboxStateChange(int);
-signals :
-	void signalAddFileConfig();
-		void signalDelFileConfig(int itemId);
 private:
 	QCheckBox *m_pFileCheckbox;
 	QLabel *m_pAddressLabel;
@@ -64,9 +61,6 @@ protected:
 	void delAllWidgetFromLayout();
 	void showEvent(QShowEvent *e);
 	void fillItemVecFromConfig();
-	public slots:
-	void slotAddFileConfig();
-	void slotDelFileConfig(int );
 private:
 
 	QVBoxLayout *mainUpLoadLayout;

@@ -103,12 +103,12 @@ QString FileConfigItemWidget::getFilePath(){
 
 void FileConfigItemWidget::slotAdd()
 {
-	emit signalAddFileConfig();
+	sinXmlSingle::getInstance().addUpLoadFile(true, QString::number(++m_iItemId), getCheckedStatus(), "");
 }
 
 void FileConfigItemWidget::slotDel()
 {
-	emit signalDelFileConfig(m_iItemId);
+	sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(m_iItemId));
 }
 
 void FileConfigItemWidget::slotBrowFile()
@@ -253,18 +253,6 @@ void FileConfigWidget::flushWidget()
 	mainUpLoadLayout->addStretch(5);
 }
 
-void FileConfigWidget::slotAddFileConfig()
-{
-	FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
-	item->setEnd();
-	connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
-	connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
-
-	sinXmlSingle::getInstance().addUpLoadFile(true, QString::number(m_iItemId), item->getCheckedStatus(), "");
-	fileConfigVec.push_back(item);
-	flushWidget();
-}
-
 void FileConfigWidget::delAllWidgetFromLayout()
 {
 
@@ -282,24 +270,6 @@ void FileConfigWidget::delAllWidgetFromLayout()
 		item->widget()->deleteLater();
 		mainUpLoadLayout->removeItem(item);
 	}
-}
-
-
-void FileConfigWidget::slotDelFileConfig(int itemId)
-{
-	for (int i = 0; i < fileConfigVec.size(); i++)
-	{
-		FileConfigItemWidget *item = fileConfigVec[i];
-		if (item->findItemById(itemId) == itemId)
-		{
-			item->deleteLater();
-			sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(itemId));
-			fileConfigVec.removeAt(i);
-		}
-
-	}
-	flushWidget();
-	
 }
 
 QStringList FileConfigWidget::getAllSelectPath()

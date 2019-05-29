@@ -162,129 +162,57 @@ void SinXml::updateChild(QDomElement element, QString fileId, QString fileCheck,
 
 void SinXml::addUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, QString filePath)
 {
-	QFile file(configFileName);
-	if (!file.open(QFile::ReadOnly))
-		return;
+	
 
-	QDomDocument doc;
-	if (!doc.setContent(&file))
-	{
-		file.close();
-		return;
-	}
-	file.close();
+	QDomDocument doc = readConfigFile();
 
 	QDomElement root = doc.documentElement();
-
-	QString elementName;
-	if (isUpLoad)
-	{
-		elementName = "uploadConfig";
-	}
-	else {
-		elementName = "downLoadConfig";
-	}
+	QString elementName = getElementName(isUpLoad);;
 
 	QDomNode node =  findNodByName(root,elementName);
 	QString nodeName = node.nodeName();
 	appendChilds(doc,node.toElement(), fileId, fileCheck, filePath);
 
-	if (!file.open(QFile::WriteOnly | QFile::Truncate))
-		return;
-	QTextStream out_stream(&file);
-	doc.save(out_stream, 4); //缩进4格
-	file.close();
+	writeConfigFile(doc);
 
 }
 
 void SinXml::deleUpLoadFile(bool isUpLoad,QString fileId)
 {
-	QFile file(configFileName);
-	if (!file.open(QFile::ReadOnly))
-		return;
-
-	QDomDocument doc;
-	if (!doc.setContent(&file))
-	{
-		file.close();
-		return;
-	}
-	file.close();
-
+	QDomDocument doc = readConfigFile();
 	QDomElement root = doc.documentElement();
 
-	QString elementName;
-	if (isUpLoad)
-	{
-		elementName = "uploadConfig";
-	}
-	else {
-		elementName = "downLoadConfig";
-	}
+	QString elementName = getElementName(isUpLoad);;
 
 	QDomNode node = findNodByName(root, elementName);
 	QString nodeName = node.nodeName();
 	deleChild(node.toElement(), fileId);
 
-	if (!file.open(QFile::WriteOnly | QFile::Truncate))
-		return;
-	QTextStream out_stream(&file);
-	doc.save(out_stream, 4); //缩进4格
-	file.close();
+	writeConfigFile(doc);
 
 }
 
 void SinXml::updateUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, QString filePath)
 {
-	QFile file(configFileName);
-	if (!file.open(QFile::ReadOnly))
-		return;
-
-	QDomDocument doc;
-	if (!doc.setContent(&file))
-	{
-		file.close();
-		return;
-	}
-	file.close();
+	QDomDocument doc = readConfigFile();
 
 	QDomElement root = doc.documentElement();
 
-	QString elementName;
-	if (isUpLoad)
-	{
-		elementName = "uploadConfig";
-	}
-	else {
-		elementName = "downLoadConfig";
-	}
+	QString elementName = getElementName(isUpLoad);
 
 	QDomNode node = findNodByName(root, elementName);
 	QString nodeName = node.nodeName();
 	updateChild(node.toElement(), fileId, fileCheck, filePath);
 
-	if (!file.open(QFile::WriteOnly | QFile::Truncate))
-		return;
-	QTextStream out_stream(&file);
-	doc.save(out_stream, 4); //缩进4格
-	file.close();
+	writeConfigFile(doc);
 
 }
 
 void SinXml::reload(QString qstrContent)
 {
+	QDomDocument doc = readConfigFile();
+
 	QFile file(configFileName);
-	if (!file.open(QFile::ReadOnly))
-		return;
-
-	QDomDocument doc;
-	if (!doc.setContent(&file))
-	{
-		file.close();
-		return;
-	}
-	file.close();
-
 	const QString &content = qstrContent;
 	doc.setContent(content);
 	if (!file.open(QFile::WriteOnly | QFile::Truncate))
@@ -298,4 +226,50 @@ void SinXml::reload(QString qstrContent)
 void SinXml::fileChange(QString strFilePath)
 {
 	int a = 1;
+}
+
+QDomDocument SinXml::readConfigFile()
+{
+	QDomDocument doc;
+	QFile file(configFileName);
+	if (!file.open(QFile::ReadOnly))
+		return doc;
+
+	
+	if (!doc.setContent(&file))
+	{
+		file.close();
+		return doc;
+	}
+	file.close();
+	return doc;
+}
+
+void SinXml::writeConfigFile(QDomDocument doc)
+{
+	QFile file(configFileName);
+	if (!file.open(QFile::WriteOnly | QFile::Truncate))
+		return;
+	QTextStream out_stream(&file);
+	doc.save(out_stream, 4); //缩进4格
+	file.close();
+}
+
+QString SinXml::getElementName(bool isUpLoad)
+{
+	QString elementName;
+	if (isUpLoad)
+	{
+		return elementName = "uploadConfig";
+	}
+	else {
+		return elementName = "downLoadConfig";
+	}
+}
+
+QList<FileConfigItem> SinXml::getFileConfigItemFromXmlConfig(bool isUpLoad)
+{
+	QList<FileConfigItem> result;
+	QDomDocument doc = readConfigFile();
+	return result;
 }

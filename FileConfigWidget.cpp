@@ -8,7 +8,7 @@
 #include <QMessageBox>
 
 
-FileConfigItem::FileConfigItem(int itemId,QWidget *parent)
+FileConfigItemWidget::FileConfigItemWidget(int itemId,QWidget *parent)
 	:QWidget(parent)
 {
 	m_pXml = new SinXml();
@@ -17,12 +17,12 @@ FileConfigItem::FileConfigItem(int itemId,QWidget *parent)
 	m_iItemId = itemId;
 }
 
-FileConfigItem::~FileConfigItem()
+FileConfigItemWidget::~FileConfigItemWidget()
 {
 
 }
 
-void FileConfigItem::initUi()
+void FileConfigItemWidget::initUi()
 {
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	//mainLayout->addSpacing(20);
@@ -71,7 +71,7 @@ void FileConfigItem::initUi()
 	connect(browButton, SIGNAL(clicked()), this, SLOT(slotBrowFile()));
 }
 
-QString FileConfigItem::getCheckedStatus()
+QString FileConfigItemWidget::getCheckedStatus()
 {
 	bool checked = m_pFileCheckbox->isChecked();
 
@@ -83,7 +83,7 @@ QString FileConfigItem::getCheckedStatus()
 	return "uncheck";
 }
 
-QString FileConfigItem::getFilePath(){
+QString FileConfigItemWidget::getFilePath(){
 	QString path = m_pAddressEdit->text();
 	if (m_pFileCheckbox->isChecked() && !path.isEmpty())
 	{
@@ -92,19 +92,19 @@ QString FileConfigItem::getFilePath(){
 	return "";
 }
 
-void FileConfigItem::slotAdd()
+void FileConfigItemWidget::slotAdd()
 {
 	emit signalAddFileConfig();
 	m_pXml->addUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), "");
 }
 
-void FileConfigItem::slotDel()
+void FileConfigItemWidget::slotDel()
 {
 	emit signalDelFileConfig(m_iItemId);
 	m_pXml->deleUpLoadFile(true, QString::number(m_iItemId));
 }
 
-void FileConfigItem::slotBrowFile()
+void FileConfigItemWidget::slotBrowFile()
 {
 	QString path = QFileDialog::getOpenFileName(this, tr("Open File"), "./", tr("Text File(*.*)"));
 	if (!path.isEmpty())
@@ -114,29 +114,29 @@ void FileConfigItem::slotBrowFile()
 	}
 }
 
-int FileConfigItem::findItemById(int itemId) {
+int FileConfigItemWidget::findItemById(int itemId) {
 	return m_iItemId;
 }
 
-void FileConfigItem::setFirst()
+void FileConfigItemWidget::setFirst()
 {
 	addButton->show();
 	delButton->hide();
 }
 
-void FileConfigItem::setEnd()
+void FileConfigItemWidget::setEnd()
 {
 	addButton->show();
 	delButton->show();
 }
 
-void FileConfigItem::setNiddle()
+void FileConfigItemWidget::setNiddle()
 {
 	addButton->hide();
 	delButton->show();
 }
 
-void FileConfigItem::setDownload()
+void FileConfigItemWidget::setDownload()
 {
 	addButton->hide();
 	m_pAddressLabel->setText("保存文件路径：");
@@ -159,7 +159,7 @@ void FileConfigWidget::initUi()
 {
 		mainUpLoadLayout = new QVBoxLayout(this);
 		mainUpLoadLayout->setMargin(10);
-		FileConfigItem *item = new FileConfigItem(++m_iItemId);
+		FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
 		item->setFirst();
 		connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
 		connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
@@ -171,7 +171,7 @@ void FileConfigWidget::initUi()
 	
 		mainDownLoadLayout = new QVBoxLayout(this);
 		mainDownLoadLayout->setMargin(10);
-		FileConfigItem *itemdown = new FileConfigItem(++m_iItemId);
+		FileConfigItemWidget *itemdown = new FileConfigItemWidget(++m_iItemId);
 		itemdown->setDownload();
 		mainDownLoadLayout->addWidget(itemdown);
 		//setLayout(mainDownLoadLayout);
@@ -194,7 +194,7 @@ void FileConfigWidget::flushWidget()
 	delAllWidgetFromLayout();
 	for (int i = 0; i < fileConfigVec.size();i++)
 	{
-		FileConfigItem *item = fileConfigVec[i];
+		FileConfigItemWidget *item = fileConfigVec[i];
 		if (i == 0)
 		{
 			if (fileConfigVec.size() > 1)
@@ -218,7 +218,7 @@ void FileConfigWidget::flushWidget()
 
 void FileConfigWidget::slotAddFileConfig()
 {
-	FileConfigItem *item = new FileConfigItem(++m_iItemId);
+	FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
 	item->setEnd();
 	connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
 	connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
@@ -232,7 +232,7 @@ void FileConfigWidget::delAllWidgetFromLayout()
 
 	for (int i = 0; i < fileConfigVec.size(); i++)
 	{
-		FileConfigItem *item = fileConfigVec[i];
+		FileConfigItemWidget *item = fileConfigVec[i];
 		mainUpLoadLayout->removeWidget(item);
 		
 	}
@@ -249,7 +249,7 @@ void FileConfigWidget::slotDelFileConfig(int itemId)
 {
 	for (int i = 0; i < fileConfigVec.size(); i++)
 	{
-		FileConfigItem *item = fileConfigVec[i];
+		FileConfigItemWidget *item = fileConfigVec[i];
 		if (item->findItemById(itemId) == itemId)
 		{
 			item->deleteLater();

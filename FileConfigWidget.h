@@ -12,12 +12,12 @@
 #include "SinXml.h"
 
 #pragma execution_character_set("utf-8")
-class FileConfigItem : public QWidget
+class FileConfigItemWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	FileConfigItem(int itemId,QWidget *parent = 0);
-	~FileConfigItem();
+	FileConfigItemWidget(int itemId,QWidget *parent = 0);
+	~FileConfigItemWidget();
 	void setFirst();
 	void setEnd();
 	void setNiddle();
@@ -65,7 +65,7 @@ private:
 
 	QVBoxLayout *mainUpLoadLayout;
 	QVBoxLayout *mainDownLoadLayout;
-	QVector < FileConfigItem*> fileConfigVec ;
+	QVector < FileConfigItemWidget*> fileConfigVec ;
 	int m_iItemId;
 };
 

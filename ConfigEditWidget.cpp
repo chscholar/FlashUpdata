@@ -9,20 +9,10 @@
 #include <QPainter>
 #include <QPushButton>
 #include "SinXmlHighlighter.h"
-
-const QString configFileName = "config.xml";
+#include "SinXml.h"
 
 ConfigEditWidget::ConfigEditWidget(QWidget *parent) {
 
-	m_pXml = new SinXml();
-	QFile file(configFileName);
-	if (!file.exists())
-	{
-		file.open(QIODevice::ReadWrite | QIODevice::Text);
-		m_pXml->initXml();
-	}
-	file.close();
-		
 	initUi();
 }
 
@@ -67,13 +57,9 @@ void ConfigEditWidget::initUi()
 
 void ConfigEditWidget::updateEditContent()
 {
-	QFile file(configFileName);
-	file.open(QIODevice::ReadOnly);
-	QByteArray configXml = file.readAll();
-	file.close();
-
+	QByteArray configFileContent = sinXmlSingle::getInstance().getConfigFileContent();
 	SinXmlHighlighter *highlighter = new SinXmlHighlighter(m_pConfigEdit);
-	m_pConfigEdit->setPlainText(configXml);
+	m_pConfigEdit->setPlainText(configFileContent);
 }
 
 void ConfigEditWidget::showEvent(QShowEvent *e)
@@ -94,7 +80,7 @@ void ConfigEditWidget::slotSaveEditContent()
 	m_pConfigEdit->setReadOnly(true);
 	
 	QString qstrContent = m_pConfigEdit->toPlainText();
-	m_pXml->reload(qstrContent);
+	sinXmlSingle::getInstance().reload(qstrContent);
 
 	updateEditContent();
 	m_pConfigEdit->update();

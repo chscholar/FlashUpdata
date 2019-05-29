@@ -42,7 +42,6 @@ private:
 	QPushButton *addButton;
 	QPushButton *delButton;
 	int m_iItemId;
-	SinXml *m_pXml;
 };
 
 

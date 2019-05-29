@@ -8,6 +8,14 @@ const QString configFileName = "config.xml";
 SinXml::SinXml(QObject *parent)
 	:QObject(parent){
 
+	QFile file(configFileName);
+	if (!file.exists())
+	{
+		file.open(QIODevice::ReadWrite | QIODevice::Text);
+		initXml();
+	}
+	file.close();
+
 	m_pFileWatcher = new QFileSystemWatcher();
 	bool isWather =  m_pFileWatcher->addPath(configFileName);
 	connect(m_pFileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChange(QString)));
@@ -267,9 +275,41 @@ QString SinXml::getElementName(bool isUpLoad)
 	}
 }
 
+QByteArray SinXml::getConfigFileContent()
+{
+	QFile file(configFileName);
+	file.open(QIODevice::ReadOnly);
+	QByteArray configXml = file.readAll();
+	file.close();
+
+	return configXml;
+}
+
 QList<FileConfigItem> SinXml::getFileConfigItemFromXmlConfig(bool isUpLoad)
 {
 	QList<FileConfigItem> result;
 	QDomDocument doc = readConfigFile();
+	QDomElement root = doc.documentElement();
+
+	QString qstrElement = getElementName(isUpLoad);
+	QDomNode node = findNodByName(root,qstrElement);
+
+	bool isHasChild = node.hasChildNodes();
+	
+	QDomNodeList childList = node.childNodes();
+	for (int i = 0; i < childList.size(); i++)
+	{
+		QDomNode temp =  childList.item(i);
+		FileConfigItem item;
+		QString fileCnnfigChecked = temp.toElement().attribute("checked");
+		item.fileConfigChecked = fileCnnfigChecked;
+		QString fileConfigId = temp.toElement().attribute("id");
+		item.fileConfigId = fileConfigId;
+		QString fileConfigPath = temp.toElement().attribute("path");
+		item.fileConfigPath = fileConfigPath;
+
+		result.push_back(item);
+	}
+
 	return result;
 }

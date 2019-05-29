@@ -4,7 +4,7 @@
 #include <QPaintEvent>
 #include <QTextEdit>
 #include <QShowEvent>
-#include "SinXml.h"
+
 #pragma execution_character_set("utf-8")
 class ConfigEditWidget : public QWidget
 {
@@ -16,7 +16,6 @@ protected:
 	void initUi();
 	void updateEditContent();
 	void showEvent(QShowEvent *e);
-	SinXml *m_pXml;
 	QTextEdit *m_pConfigEdit;
 	public slots:
 	void slotUpdateEdit();

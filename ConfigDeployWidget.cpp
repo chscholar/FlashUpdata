@@ -15,6 +15,7 @@
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
 {
+
 	initUi();
 }
 

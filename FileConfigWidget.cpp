@@ -6,12 +6,12 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QMessageBox>
+#include "SinXml.h"
 
 
 FileConfigItemWidget::FileConfigItemWidget(int itemId,QWidget *parent)
 	:QWidget(parent)
 {
-	m_pXml = new SinXml();
 	initUi();
 
 	m_iItemId = itemId;
@@ -95,13 +95,13 @@ QString FileConfigItemWidget::getFilePath(){
 void FileConfigItemWidget::slotAdd()
 {
 	emit signalAddFileConfig();
-	m_pXml->addUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), "");
+	sinXmlSingle::getInstance().addUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), "");
 }
 
 void FileConfigItemWidget::slotDel()
 {
 	emit signalDelFileConfig(m_iItemId);
-	m_pXml->deleUpLoadFile(true, QString::number(m_iItemId));
+	sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(m_iItemId));
 }
 
 void FileConfigItemWidget::slotBrowFile()
@@ -110,7 +110,7 @@ void FileConfigItemWidget::slotBrowFile()
 	if (!path.isEmpty())
 	{
 		m_pAddressEdit->setText(path);
-		m_pXml->updateUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), path);
+		sinXmlSingle::getInstance().updateUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), path);
 	}
 }
 
@@ -159,6 +159,7 @@ void FileConfigWidget::initUi()
 {
 		mainUpLoadLayout = new QVBoxLayout(this);
 		mainUpLoadLayout->setMargin(10);
+
 		FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
 		item->setFirst();
 		connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));

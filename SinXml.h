@@ -5,6 +5,8 @@
 #include <QDomDocument>
 #include <QList>
 #include <QFileSystemWatcher>
+#include <QByteArray>
+#include "CSingleTon.h"
 
 
 struct FileConfigItem
@@ -25,6 +27,7 @@ public:
 	void deleUpLoadFile(bool isUpLoad, QString fileId);
 	void reload(QString qstrContent);
 	QList<FileConfigItem> getFileConfigItemFromXmlConfig(bool isUpLoad);
+	QByteArray getConfigFileContent();
 protected:
 	QDomNode findNodByName(QDomElement elemtnt, QString nodeName);
 	void appendChilds(QDomDocument doc,QDomElement element, QString fileId, QString fileCheck, QString filePath);
@@ -39,4 +42,5 @@ public slots:
 private:
 };
 
+typedef CSingleton<SinXml> sinXmlSingle;
 #endif

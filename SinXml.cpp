@@ -8,6 +8,9 @@ const QString configFileName = "config.xml";
 SinXml::SinXml(QObject *parent)
 	:QObject(parent){
 
+	m_pFileWatcher = new QFileSystemWatcher();
+	bool isWather =  m_pFileWatcher->addPath(configFileName);
+	connect(m_pFileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChange(QString)));
 }
 
 SinXml::~SinXml()
@@ -268,3 +271,31 @@ void SinXml::updateUpLoadFile(bool isUpLoad, QString fileId, QString fileCheck, 
 
 }
 
+void SinXml::reload(QString qstrContent)
+{
+	QFile file(configFileName);
+	if (!file.open(QFile::ReadOnly))
+		return;
+
+	QDomDocument doc;
+	if (!doc.setContent(&file))
+	{
+		file.close();
+		return;
+	}
+	file.close();
+
+	const QString &content = qstrContent;
+	doc.setContent(content);
+	if (!file.open(QFile::WriteOnly | QFile::Truncate))
+		return;
+	QTextStream out_stream(&file);
+	doc.save(out_stream, 4); //Ëõ½ø4¸ñ
+	file.close();
+
+}
+
+void SinXml::fileChange(QString strFilePath)
+{
+	int a = 1;
+}

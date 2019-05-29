@@ -76,6 +76,7 @@ void FileConfigItemWidget::initUi()
 	connect(addButton, SIGNAL(clicked()), this, SLOT(slotAdd()));
 	connect(delButton, SIGNAL(clicked()), this, SLOT(slotDel()));
 	connect(browButton, SIGNAL(clicked()), this, SLOT(slotBrowFile()));
+	connect(m_pFileCheckbox, SIGNAL(int state), this, SLOT(slotChecboxStateChange(int)));;
 }
 
 QString FileConfigItemWidget::getCheckedStatus()
@@ -118,6 +119,21 @@ void FileConfigItemWidget::slotBrowFile()
 		sinXmlSingle::getInstance().updateUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), path);
 	}
 }
+
+void FileConfigItemWidget::slotChecboxStateChange(int state)
+{
+	QString qstrFileChecked;
+	if (state == Qt::Checked)
+	{
+		qstrFileChecked = "check";
+	} else if (state == Qt::Unchecked)
+	{
+		qstrFileChecked = "uncheck";
+	}
+	QString qstrfilePath = getFilePath();
+	sinXmlSingle::getInstance().updateUpLoadFile(true, QString::number(m_iItemId), qstrFileChecked, qstrfilePath);
+}
+
 
 int FileConfigItemWidget::findItemById(int itemId) {
 	return m_iItemId;
@@ -192,13 +208,6 @@ void FileConfigWidget::initUi()
 			mainUpLoadLayout->addSpacing(10);
 		}
 		mainUpLoadLayout->addStretch(3);
-
-		/*FileConfigItemWidget *item = new FileConfigItemWidget(++m_iItemId);
-		item->setFirst();
-		connect(item, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
-		connect(item, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
-		mainUpLoadLayout->addWidget(item);
-		mainUpLoadLayout->addStretch(5);*/
 		setLayout(mainUpLoadLayout);
 	
 		/*	mainDownLoadLayout = new QVBoxLayout(this);
@@ -286,7 +295,7 @@ void FileConfigWidget::slotDelFileConfig(int itemId)
 		if (item->findItemById(itemId) == itemId)
 		{
 			item->deleteLater();
-			sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(m_iItemId));
+			sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(itemId));
 			fileConfigVec.removeAt(i);
 		}
 

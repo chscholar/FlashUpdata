@@ -32,6 +32,7 @@ protected:
 	void slotDel();
 	void slotAdd();
 	void slotBrowFile();
+	void slotChecboxStateChange(int);
 signals :
 	void signalAddFileConfig();
 		void signalDelFileConfig(int itemId);

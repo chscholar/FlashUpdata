@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QStringList>
+#include <QShowEvent>
 #include "SinXml.h"
 
 #pragma execution_character_set("utf-8")
@@ -56,10 +57,13 @@ public:
 	~FileConfigWidget();
 	void switchWidget(bool isUpLoad);
 	QStringList getAllSelectPath();
+	
 protected:
 	void initUi();
 	void flushWidget();
 	void delAllWidgetFromLayout();
+	void showEvent(QShowEvent *e);
+	void fillItemVecFromConfig();
 	public slots:
 	void slotAddFileConfig();
 	void slotDelFileConfig(int );

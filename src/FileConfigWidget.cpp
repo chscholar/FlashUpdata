@@ -6,6 +6,7 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDomDocument>
 #include "SinXml.h"
 
 
@@ -76,7 +77,7 @@ void FileConfigItemWidget::initUi()
 	connect(addButton, SIGNAL(clicked()), this, SLOT(slotAdd()));
 	connect(delButton, SIGNAL(clicked()), this, SLOT(slotDel()));
 	connect(browButton, SIGNAL(clicked()), this, SLOT(slotBrowFile()));
-	connect(m_pFileCheckbox, SIGNAL(int state), this, SLOT(slotChecboxStateChange(int)));;
+	connect(m_pFileCheckbox, SIGNAL(stateChanged(int)), this, SLOT(slotChecboxStateChange(int)));;
 }
 
 QString FileConfigItemWidget::getCheckedStatus()
@@ -93,7 +94,7 @@ QString FileConfigItemWidget::getCheckedStatus()
 
 QString FileConfigItemWidget::getFilePath(){
 	QString path = m_pAddressEdit->text();
-	if (m_pFileCheckbox->isChecked() && !path.isEmpty())
+	if (!path.isEmpty())
 	{
 		return path;
 	}
@@ -179,35 +180,6 @@ FileConfigWidget::~FileConfigWidget()
 void FileConfigWidget::initUi()
 {
 		mainUpLoadLayout = new QVBoxLayout(this);
-		mainUpLoadLayout->setMargin(10);
-
-
-		QList<FileConfigItem> itemLists = sinXmlSingle::getInstance().getFileConfigItemFromXmlConfig(true);
-		fileConfigVec.clear();
-		for (int i = 0; i < itemLists.size();i++)
-		{
-			FileConfigItem item = itemLists.at(i);
-			QString qstrId = item.fileConfigId;
-			QString qstrChecked = item.fileConfigChecked;
-			QString qstrPath = item.fileConfigPath;
-
-			if (m_iItemId <= qstrId.toInt())
-			{
-				m_iItemId = qstrId.toInt();
-			}
-
-			FileConfigItemWidget *itemWidget = new FileConfigItemWidget(qstrId.toInt(), qstrChecked, qstrPath);
-			if (i == 0)
-			{
-				itemWidget->setFirst();
-			}
-			connect(itemWidget, SIGNAL(signalAddFileConfig()), this, SLOT(slotAddFileConfig()));
-			connect(itemWidget, SIGNAL(signalDelFileConfig(int)), this, SLOT(slotDelFileConfig(int)));
-			mainUpLoadLayout->addWidget(itemWidget);
-			fileConfigVec.push_back(itemWidget);
-			mainUpLoadLayout->addSpacing(10);
-		}
-		mainUpLoadLayout->addStretch(3);
 		setLayout(mainUpLoadLayout);
 	
 		/*	mainDownLoadLayout = new QVBoxLayout(this);
@@ -230,9 +202,33 @@ void FileConfigWidget::switchWidget(bool isUpLoad)
 	}
 }
 
+void FileConfigWidget::fillItemVecFromConfig()
+{
+	fileConfigVec.clear();
+	m_iItemId = 0;
+	QList<FileConfigItem> itemList = sinXmlSingle::getInstance().getFileConfigItemFromXmlConfig(true);
+	for (int i = 0; i < itemList.size();i++)
+	{
+		QString qstrId = itemList.at(i).fileConfigId;
+		QString qstrChecked = itemList.at(i).fileConfigChecked;
+		QString qstrPath = itemList.at(i).fileConfigPath;
+
+		if (m_iItemId <= qstrId.toInt())
+		{
+			m_iItemId = qstrId.toInt();
+		}
+
+		FileConfigItemWidget *itemWidget = new FileConfigItemWidget(qstrId.toInt(), qstrChecked, qstrPath);
+		fileConfigVec.push_back(itemWidget);
+	}
+
+}
+
 void FileConfigWidget::flushWidget()
 {
 	delAllWidgetFromLayout();
+	fileConfigVec.clear();
+	fillItemVecFromConfig();
 	for (int i = 0; i < fileConfigVec.size();i++)
 	{
 		FileConfigItemWidget *item = fileConfigVec[i];
@@ -275,6 +271,7 @@ void FileConfigWidget::delAllWidgetFromLayout()
 	for (int i = 0; i < fileConfigVec.size(); i++)
 	{
 		FileConfigItemWidget *item = fileConfigVec[i];
+		item->deleteLater();
 		mainUpLoadLayout->removeWidget(item);
 		
 	}
@@ -282,6 +279,7 @@ void FileConfigWidget::delAllWidgetFromLayout()
 	for (int i = 0; i < mainUpLoadLayout->count();i++)
 	{
 		QLayoutItem *item = mainUpLoadLayout->itemAt(i);
+		item->widget()->deleteLater();
 		mainUpLoadLayout->removeItem(item);
 	}
 }
@@ -317,4 +315,10 @@ QStringList FileConfigWidget::getAllSelectPath()
 	}
 
 	return pathList;
+}
+
+void FileConfigWidget::showEvent(QShowEvent *e)
+{
+	flushWidget();
+	this->update();
 }

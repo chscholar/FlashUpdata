@@ -14,6 +14,8 @@ public:
 	~SinSerialThreadManager();
 	void start();
 	void stop();
+	void setWriteData(QList<QList<QByteArray>> fileListData);
+	void getReadData();
 protected:
 	SinSerialReadThread *m_pRedeThread;
 	SinSerialWriteThread *m_pWriteThread;

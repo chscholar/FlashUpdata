@@ -23,3 +23,13 @@ void SinSerialThreadManager::stop()
 	m_pWriteThread->stop();
 	m_pRedeThread->stop();
 }
+
+void SinSerialThreadManager::setWriteData(QList<QList<QByteArray>> fileListData)
+{
+	m_pWriteThread->setWriteData(fileListData);
+}
+
+void SinSerialThreadManager::getReadData()
+{
+	m_pRedeThread->getReadData();
+}

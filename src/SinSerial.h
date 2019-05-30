@@ -33,7 +33,7 @@ public:
 	QStringList getFlowControl();
 	QStringList getParity();
 
-	void sendData(QList<QList <QByteArray>>);
+	void sendData(ReqInterrFace req);
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();

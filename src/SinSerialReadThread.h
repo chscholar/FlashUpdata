@@ -12,6 +12,7 @@ public:
 	~SinSerialReadThread();
 	void start();
 	void stop();
+	void getReadData();
 protected:
 
 private:

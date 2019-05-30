@@ -20,3 +20,8 @@ void SinSerialReadThread::stop()
 {
 
 }
+
+void SinSerialReadThread::getReadData()
+{
+
+}

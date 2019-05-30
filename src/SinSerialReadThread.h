@@ -12,7 +12,7 @@ public:
 	~SinSerialReadThread();
 	void start();
 	void stop();
-	void getReadData();
+	QByteArray getReadData();
 protected:
 
 private:

@@ -2,6 +2,7 @@
 #include <QSerialPortInfo>
 #include <QSettings>
 #include <QSerialPortInfo>
+#include <QDataStream>
 
 SinSerial::SinSerial(QObject *parent):
 QObject(parent)
@@ -206,7 +207,67 @@ void SinSerial::closeCom()
 
 void SinSerial::sendData(ReqInterrFace req)
 {
+	QByteArray writeByte;
 
-	char *ch = "124";
-	getSerialPort()->write(ch);
+	QDataStream out(&writeByte, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_5_6);
+	out << req.Header;
+	out.device()->seek(0);
+
+	getSerialPort()->write(writeByte);
 }
+
+
+QByteArray SinSerial::getReadData()
+{
+	QByteArray readData =  getSerialPort()->readAll();
+	return readData;
+
+}
+
+
+/*
+void Client::sendMessage()
+{
+message  message_send;
+message_send.SN=88;
+message_send.IP="192.168.1.21";
+message_send.Condition="READY";
+QByteArray block;
+QDataStream out (&block,QIODevice::WriteOnly);
+out.setVersion(QDataStream::Qt_4_3);
+out<<quint16(0)<<quint8('C')<<message_send.SN<<message_send.IP<<message_send.Condition;
+out.device()->seek(0);
+out<<quint16(block.size()-sizeof(quint16));
+
+//tcpSocket  *clientConnection = tcpServer->nextPendingConnection();
+// connect(clientConnection, SIGNAL(disconnected()),clientConnection, SLOT(deleteLater()));
+
+tcpSocket->write(block);
+tcpSocket->disconnectFromHost();
+}
+
+oid MyThread::readyRead()
+{
+message message_rev;
+QDataStream in(socket);
+in.setVersion(QDataStream::Qt_4_3);
+forever{
+if(nextBlockSize == 0){
+if(socket->bytesAvailable()<sizeof(quint16))
+break;
+in>>nextBlockSize;
+}
+if(nextBlockSize==0xFFFF){
+break;
+}
+if(socket->bytesAvailable()<nextBlockSize)
+break;
+quint8 requestType;
+in>>requestType;
+if(requestType=='C')
+in>>message_rev.SN>>message_rev.IP>>message_rev.Condition;
+}
+qDebug()<<message_rev.SN<<message_rev.IP<<message_rev.Condition;
+}
+*/

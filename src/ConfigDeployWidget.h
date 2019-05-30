@@ -11,6 +11,7 @@ public:
 	~ConfigDeployWidget();
 	public slots:
 	void slotConfirmTrans();
+	void slotSwitchRadio(int, bool);
 protected:
 	void initUi();
 private:

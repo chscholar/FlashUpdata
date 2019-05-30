@@ -15,8 +15,9 @@ public:
 	void setWriteData(QList<QList<QByteArray>> fileListData);
 	void sendData();
 protected:
-
-	QList<QList<QByteArray>> m_pWriteData;
+	//QList<QList<QByteArray>> m_pWriteData;
+	QList<ReqInterrFace> m_pWriteData;
+	int m_nCurrentWriteIndex;
 private:
 };
 

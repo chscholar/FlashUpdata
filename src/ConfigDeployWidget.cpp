@@ -31,17 +31,17 @@ void ConfigDeployWidget::initUi()
 	QButtonGroup *radioGroup = new QButtonGroup();
 	QHBoxLayout *radioLayout = new QHBoxLayout();
 	radioLayout->addStretch(1);
+	
+	QRadioButton *uploadRadio = new QRadioButton("上传");
+	radioLayout->addWidget(uploadRadio);
+	radioLayout->addStretch(1);
+
 	QRadioButton *downloadRadio = new QRadioButton("下载");
 	radioLayout->addWidget(downloadRadio);
 
-	radioLayout->addStretch(1);
-	QRadioButton *uploadRadio = new QRadioButton("上传");
-	radioLayout->addWidget(uploadRadio);
+	connect(radioGroup, SIGNAL(buttonToggled(int, bool)), this, SLOT(slotSwitchRadio(int, bool)));
 
-
-	//connect(radioGroup, SIGNAL(buttonToggled(int, bool)), this, SLOT(slotSwitchRadio(int, bool)));
-
-	downloadRadio->setChecked(true);
+	uploadRadio->setChecked(true);
 	radioGroup->addButton(uploadRadio);
 	radioGroup->setId(uploadRadio, 0);
 	radioGroup->addButton(downloadRadio);
@@ -70,6 +70,21 @@ void ConfigDeployWidget::initUi()
 	buttonLayout->addSpacing(10);
 	mainLayout->addLayout(buttonLayout);
 	setLayout(mainLayout);
+}
+
+void ConfigDeployWidget::slotSwitchRadio(int index, bool isChecked)
+{
+	if (isChecked)
+	{
+		if (index == 0) //upload
+		{
+			m_pFileConfigWidget->switchWidget(true);
+		}
+		else {
+			m_pFileConfigWidget->switchWidget(false);
+		}
+	}
+
 }
 
 

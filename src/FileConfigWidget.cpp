@@ -10,12 +10,13 @@
 #include "SinXml.h"
 
 
-FileConfigItemWidget::FileConfigItemWidget(int itemId ,QString fileCheck,QString filePath,QWidget *parent)
+FileConfigItemWidget::FileConfigItemWidget(bool isUpLoad, int itemId ,QString fileCheck,QString filePath,QWidget *parent)
 	:QWidget(parent)
 {
 	m_iItemId = itemId;
 	m_sFileChecked = fileCheck;
 	m_sFilePath = filePath;
+	m_bisUpLoad = isUpLoad;
 	initUi();
 }
 
@@ -103,12 +104,12 @@ QString FileConfigItemWidget::getFilePath(){
 
 void FileConfigItemWidget::slotAdd()
 {
-	sinXmlSingle::getInstance().addUpLoadFile(true, QString::number(++m_iItemId), getCheckedStatus(), "");
+	sinXmlSingle::getInstance().addUpLoadFile(m_bisUpLoad, QString::number(++m_iItemId), getCheckedStatus(), "");
 }
 
 void FileConfigItemWidget::slotDel()
 {
-	sinXmlSingle::getInstance().deleUpLoadFile(true, QString::number(m_iItemId));
+	sinXmlSingle::getInstance().deleUpLoadFile(m_bisUpLoad, QString::number(m_iItemId));
 }
 
 void FileConfigItemWidget::slotBrowFile()
@@ -117,7 +118,7 @@ void FileConfigItemWidget::slotBrowFile()
 	if (!path.isEmpty())
 	{
 		m_pAddressEdit->setText(path);
-		sinXmlSingle::getInstance().updateUpLoadFile(true, QString::number(m_iItemId), getCheckedStatus(), path);
+		sinXmlSingle::getInstance().updateUpLoadFile(m_bisUpLoad, QString::number(m_iItemId), getCheckedStatus(), path);
 	}
 }
 
@@ -158,6 +159,13 @@ void FileConfigItemWidget::setNiddle()
 	delButton->show();
 }
 
+void FileConfigItemWidget::setDownLoadStatus()
+{
+	delButton->hide();
+	addButton->hide();
+	m_pAddressLabel->setText("保存文件路径:");
+}
+
 void FileConfigItemWidget::setDownload()
 {
 	addButton->hide();
@@ -169,6 +177,7 @@ FileConfigWidget::FileConfigWidget(QWidget *parent) :
 QWidget(parent)
 {
 	m_iItemId = 0;
+	m_bUpLoadChecked = true;
 	connect(&sinXmlSingle::getInstance(), SIGNAL(signalsConfigChange()), this, SLOT(slotConfigFileChange()));
 	initUi();
 }
@@ -182,32 +191,19 @@ void FileConfigWidget::initUi()
 {
 		mainUpLoadLayout = new QVBoxLayout(this);
 		setLayout(mainUpLoadLayout);
-	
-		/*	mainDownLoadLayout = new QVBoxLayout(this);
-			mainDownLoadLayout->setMargin(10);
-			FileConfigItemWidget *itemdown = new FileConfigItemWidget(++m_iItemId);
-			itemdown->setDownload();
-			mainDownLoadLayout->addWidget(itemdown);*/
-		//setLayout(mainDownLoadLayout);
-	
 }
 
 void FileConfigWidget::switchWidget(bool isUpLoad)
 {
-	if (isUpLoad)
-	{
-		this->setLayout(mainUpLoadLayout);
-	}
-	else {
-		this->setLayout(mainDownLoadLayout);
-	}
+	m_bUpLoadChecked = isUpLoad;
+	flushWidget();
 }
 
-void FileConfigWidget::fillItemVecFromConfig()
+void FileConfigWidget::fillItemVecFromConfig(bool isUpLoad)
 {
 	fileConfigVec.clear();
 	m_iItemId = 0;
-	QList<FileConfigItem> itemList = sinXmlSingle::getInstance().getFileConfigItemFromXmlConfig(true);
+	QList<FileConfigItem> itemList = sinXmlSingle::getInstance().getFileConfigItemFromXmlConfig(isUpLoad);
 	for (int i = 0; i < itemList.size();i++)
 	{
 		QString qstrId = itemList.at(i).fileConfigId;
@@ -219,7 +215,7 @@ void FileConfigWidget::fillItemVecFromConfig()
 			m_iItemId = qstrId.toInt();
 		}
 
-		FileConfigItemWidget *itemWidget = new FileConfigItemWidget(qstrId.toInt(), qstrChecked, qstrPath);
+		FileConfigItemWidget *itemWidget = new FileConfigItemWidget(isUpLoad,qstrId.toInt(), qstrChecked, qstrPath);
 		fileConfigVec.push_back(itemWidget);
 	}
 
@@ -227,9 +223,10 @@ void FileConfigWidget::fillItemVecFromConfig()
 
 void FileConfigWidget::flushWidget()
 {
+	bool isUpLoad = m_bUpLoadChecked;;
 	delAllWidgetFromLayout();
 	fileConfigVec.clear();
-	fillItemVecFromConfig();
+	fillItemVecFromConfig(isUpLoad);
 	for (int i = 0; i < fileConfigVec.size();i++)
 	{
 		FileConfigItemWidget *item = fileConfigVec[i];
@@ -248,6 +245,11 @@ void FileConfigWidget::flushWidget()
 		}
 		else {
 			item->setNiddle();
+		}
+
+		if (!isUpLoad)
+		{
+			item->setDownLoadStatus();
 		}
 		mainUpLoadLayout->addWidget(fileConfigVec[i]);
 	}

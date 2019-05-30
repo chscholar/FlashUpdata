@@ -16,8 +16,9 @@ public:
 	void stop();
 	void setWriteData(QList<QList<QByteArray>> fileListData);
 	void getReadData();
+	void handShake();
 protected:
-	SinSerialReadThread *m_pRedeThread;
+	SinSerialReadThread *m_pReadThread;
 	SinSerialWriteThread *m_pWriteThread;
 private:
 };

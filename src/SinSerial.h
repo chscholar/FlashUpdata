@@ -34,6 +34,7 @@ public:
 	QStringList getParity();
 
 	void sendData(ReqInterrFace req);
+	QByteArray getReadData();
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();

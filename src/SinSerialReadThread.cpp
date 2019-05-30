@@ -21,7 +21,8 @@ void SinSerialReadThread::stop()
 
 }
 
-void SinSerialReadThread::getReadData()
+QByteArray SinSerialReadThread::getReadData()
 {
-
+	QByteArray readData = sinserialSingle::getInstance().getReadData();
+	return readData;
 }

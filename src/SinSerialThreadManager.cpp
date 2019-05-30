@@ -1,10 +1,17 @@
 #include "SinSerialThreadManager.h"
+#include <QThread>
 
 SinSerialThreadManager::SinSerialThreadManager(QObject *parent)
 	:QObject(parent)
 {
-	m_pRedeThread = new SinSerialReadThread();
+	m_pReadThread = new SinSerialReadThread();
 	m_pWriteThread = new SinSerialWriteThread();
+
+	QThread workThread;
+
+	m_pReadThread->moveToThread(&workThread);
+	m_pWriteThread->moveToThread(&workThread);
+	
 }
 
 SinSerialThreadManager::~SinSerialThreadManager()
@@ -15,13 +22,13 @@ SinSerialThreadManager::~SinSerialThreadManager()
 void SinSerialThreadManager::start()
 {
 	m_pWriteThread->start();
-	m_pRedeThread->start();
+	m_pReadThread->start();
 }
 
 void SinSerialThreadManager::stop()
 {
-	m_pWriteThread->stop();
-	m_pRedeThread->stop();
+	m_pReadThread->stop();
+	m_pReadThread->stop();
 }
 
 void SinSerialThreadManager::setWriteData(QList<QList<QByteArray>> fileListData)
@@ -31,5 +38,13 @@ void SinSerialThreadManager::setWriteData(QList<QList<QByteArray>> fileListData)
 
 void SinSerialThreadManager::getReadData()
 {
-	m_pRedeThread->getReadData();
+	m_pReadThread->getReadData();
+}
+
+//握手协议，PC读取串口指定信息，并发送回应
+void SinSerialThreadManager::handShake()
+{
+	QByteArray readData =  m_pReadThread->getReadData();
+
+	m_pWriteThread->sendData();
 }

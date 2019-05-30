@@ -17,12 +17,13 @@ class FileConfigItemWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	FileConfigItemWidget(int itemId = 0,QString fileChecked = "checked",QString filePath = "", QWidget *parent = 0);
+	FileConfigItemWidget(bool isUpLoad = true,int itemId = 0,QString fileChecked = "checked",QString filePath = "", QWidget *parent = 0);
 	~FileConfigItemWidget();
 	void setFirst();
 	void setEnd();
 	void setNiddle();
 	void setDownload();
+	void setDownLoadStatus();
 	int findItemById(int itemId);
 	QString getCheckedStatus();
 	QString getFilePath();
@@ -43,6 +44,7 @@ private:
 	int m_iItemId;
 	QString m_sFileChecked;
 	QString m_sFilePath;
+	bool m_bisUpLoad;
 };
 
 
@@ -60,13 +62,14 @@ protected:
 	void flushWidget();
 	void delAllWidgetFromLayout();
 	void showEvent(QShowEvent *e);
-	void fillItemVecFromConfig();
+	void fillItemVecFromConfig(bool isUpLoad = true);
 private:
 
 	QVBoxLayout *mainUpLoadLayout;
 	QVBoxLayout *mainDownLoadLayout;
 	QVector < FileConfigItemWidget*> fileConfigVec ;
 	int m_iItemId;
+	bool m_bUpLoadChecked;
 public slots:
 void slotConfigFileChange();
 

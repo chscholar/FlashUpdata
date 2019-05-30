@@ -169,8 +169,6 @@ FileConfigWidget::FileConfigWidget(QWidget *parent) :
 QWidget(parent)
 {
 	m_iItemId = 0;
-	  //sinXmlSingle::getInstance
-
 	connect(&sinXmlSingle::getInstance(), SIGNAL(signalsConfigChange()), this, SLOT(slotConfigFileChange()));
 	initUi();
 }

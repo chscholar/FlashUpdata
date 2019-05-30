@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include "FileUtil.h"
 #include "SinSerial.h"
+#include "SinSerialThreadManager.h"
 
 ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 	:QWidget(parent)
@@ -84,4 +85,6 @@ void ConfigDeployWidget::slotConfirmTrans()
 	FileUtil *futil = new FileUtil();
 	QList<QList<QByteArray>> fileListData =  futil->getDataFramFromFilePath(pathList);
 	sinserialSingle::getInstance().sendData(fileListData);
+
+	sinSerialThreadManagerSingle::getInstance().start();
 }

@@ -127,6 +127,7 @@
     <ClInclude Include="src\CSingleTon.h" />
     <ClInclude Include="src\SinByte.h" />
     <ClInclude Include="src\SinSerial.h" />
+    <QtMoc Include="src\SinTaskQueue.h" />
     <QtMoc Include="src\SinSerialThreadManager.h" />
     <QtMoc Include="src\SinSerialWriteWork.h" />
     <QtMoc Include="src\SinSerialReadWork.h" />
@@ -154,6 +155,7 @@
     <ClCompile Include="src\SinSerialThreadManager.cpp" />
     <ClCompile Include="src\SinSerialWriteWork.cpp" />
     <ClCompile Include="src\SinTabWindow.cpp" />
+    <ClCompile Include="src\SinTaskQueue.cpp" />
     <ClCompile Include="src\SinXml.cpp" />
     <ClCompile Include="src\SinXmlHighlighter.cpp" />
   </ItemGroup>

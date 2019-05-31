@@ -15,12 +15,15 @@
 #include "SinTabWindow.h"
 #include "ConfigDeployWidget.h"
 #include "ConfigEditWidget.h"
+#include "SinTaskQueue.h"
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	initUi();
+
+	connect(&sinTaskQueueSingle::getInstance(), SIGNAL(signalReadData()), this, SLOT(slotUpDataLogEdit()));
 }
 
 void FlashUpdata::initUi()
@@ -39,9 +42,9 @@ void FlashUpdata::initUi()
 	ConfigEditWidget *configEdit = new ConfigEditWidget();
 	m_pTabWindow->addView(configEdit, "ÊôÐÔ±à¼­");
 
-	QTextEdit *logEdit = new QTextEdit();
-	logEdit->append("this is log info");
-	workLayout->addWidget(logEdit);
+	m_pLogEdit = new QTextEdit();
+	m_pLogEdit->append("this is log info");
+	workLayout->addWidget(m_pLogEdit);
 
 
 	QHBoxLayout *progrressLayout = new QHBoxLayout();
@@ -95,4 +98,15 @@ void FlashUpdata::slotSwitchRadio(int radioID, bool bCheck)
 	{
 		m_pFileConfigWidget->switchWidget(false);
 	}
+}
+
+void FlashUpdata::slotUpDataLogEdit()
+{
+	QByteArray data = sinTaskQueueSingle::getInstance().popBackReadData();
+
+	QString qstrText = m_pLogEdit->toPlainText();
+
+	QString newText = qstrText + data;
+
+	m_pLogEdit->setText(newText);
 }

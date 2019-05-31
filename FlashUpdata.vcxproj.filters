@@ -79,6 +79,9 @@
     <QtMoc Include="src\SinSerialWriteWork.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="src\SinTaskQueue.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSingleTon.h">
@@ -138,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SinSerialWriteWork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SinTaskQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

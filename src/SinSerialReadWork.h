@@ -15,6 +15,7 @@ public:
 	
 protected:
 	bool m_bIsRun;
+	SinSerial *m_pSinSerial;
 public slots:
 	void getReadData();
 

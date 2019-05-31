@@ -66,7 +66,7 @@ void SinSerialWriteWork::setWriteData(QList<QList<QByteArray>> fileListData)
 
 void SinSerialWriteWork::sendData()
 {
-	while (m_bIsRun)
+	if (m_bIsRun)
 	{
 		ReqInterrFace req;
 		

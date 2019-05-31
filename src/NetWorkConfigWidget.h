@@ -1,6 +1,8 @@
 #ifndef NETWORKCONFIGWIDGET_H
 #define NETWORKCONFIGWIDGET_H
 #include <QWidget>
+#include <QStringList>
+
 #pragma execution_character_set("utf-8")
 class NetWorkConfigWidget : public QWidget
 {
@@ -10,6 +12,7 @@ public:
 	~NetWorkConfigWidget();
 protected:
 	void initUi();
+	QStringList getNetInfo();
 private:
 };
 

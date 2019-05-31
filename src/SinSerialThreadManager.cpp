@@ -15,7 +15,7 @@ SinSerialThreadManager::SinSerialThreadManager(QObject *parent)
 	connect(m_pWriteThread, SIGNAL(finished()), m_pWriteWork, SLOT(deleteLater()));
 	m_pWriteWork->moveToThread(m_pWriteThread);
 
-	connect(m_pReadThread, SIGNAL(started()), m_pReadWork, SLOT(doWork()));
+	connect(m_pReadThread, SIGNAL(started()), m_pReadWork, SLOT(getReadData()));
 	connect(m_pReadThread, SIGNAL(finished()), m_pReadWork, SLOT(deleteLater()));
 	m_pReadWork->moveToThread(m_pReadThread);
 }
@@ -59,7 +59,7 @@ void SinSerialThreadManager::sendData()
 //握手协议，PC读取串口指定信息，并发送回应
 void SinSerialThreadManager::handShake()
 {
-	QByteArray readData =  m_pReadWork->getReadData();
+	m_pReadWork->getReadData();
 
 	m_pWriteWork->sendData();
 }

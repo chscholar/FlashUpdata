@@ -3,6 +3,8 @@
 #include <QSettings>
 #include <QSerialPortInfo>
 #include <QDataStream>
+#include <QDebug>
+#include <QThread>
 
 SinSerial::SinSerial(QObject *parent):
 QObject(parent)
@@ -215,12 +217,14 @@ void SinSerial::sendData(ReqInterrFace req)
 	out.device()->seek(0);
 
 	getSerialPort()->write(writeByte);
+	qDebug() << "sinSerial::sendData" << writeByte << "currentThreadId:" << QThread::currentThread();
 }
 
 
 QByteArray SinSerial::getReadData()
 {
 	QByteArray readData =  getSerialPort()->readAll();
+	qDebug() << " sinSerial::getReadData" << readData << "currentThreadId:" << QThread::currentThread();
 	return readData;
 
 }

@@ -12,9 +12,11 @@ public:
 	~SinSerialReadWork();
 	void start();
 	void stop();
-	QByteArray getReadData();
+	
 protected:
 	bool m_bIsRun;
+public slots:
+	void getReadData();
 
 private:
 };

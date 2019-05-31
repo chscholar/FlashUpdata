@@ -128,8 +128,8 @@
     <ClInclude Include="src\SinByte.h" />
     <ClInclude Include="src\SinSerial.h" />
     <QtMoc Include="src\SinSerialThreadManager.h" />
-    <QtMoc Include="src\SinSerialWriteThread.h" />
-    <QtMoc Include="src\SinSerialReadThread.h" />
+    <QtMoc Include="src\SinSerialWriteWork.h" />
+    <QtMoc Include="src\SinSerialReadWork.h" />
     <QtMoc Include="src\SinXml.h" />
     <QtMoc Include="src\SinXmlHighlighter.h" />
     <QtMoc Include="src\SinTabWindow.h" />
@@ -150,9 +150,9 @@
     <ClCompile Include="src\SerialConfigWidget.cpp" />
     <ClCompile Include="src\SinByte.cpp" />
     <ClCompile Include="src\SinSerial.cpp" />
-    <ClCompile Include="src\SinSerialReadThread.cpp" />
+    <ClCompile Include="src\SinSerialReadWork.cpp" />
     <ClCompile Include="src\SinSerialThreadManager.cpp" />
-    <ClCompile Include="src\SinSerialWriteThread.cpp" />
+    <ClCompile Include="src\SinSerialWriteWork.cpp" />
     <ClCompile Include="src\SinTabWindow.cpp" />
     <ClCompile Include="src\SinXml.cpp" />
     <ClCompile Include="src\SinXmlHighlighter.cpp" />

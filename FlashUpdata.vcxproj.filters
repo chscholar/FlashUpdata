@@ -70,13 +70,13 @@
     <QtMoc Include="src\SinXml.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="src\SinSerialReadThread.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="src\SinSerialWriteThread.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="src\SinSerialThreadManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\SinSerialReadWork.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\SinSerialWriteWork.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -131,13 +131,13 @@
     <ClCompile Include="src\SinXmlHighlighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SinSerialReadThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SinSerialWriteThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SinSerialThreadManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SinSerialReadWork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SinSerialWriteWork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

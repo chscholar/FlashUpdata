@@ -1,28 +1,28 @@
-#include "SinSerialWriteThread.h"
+#include "SinSerialWriteWork.h"
 #include "SinSerial.h"
-#include <QThread>
-SinSerialWriteThread::SinSerialWriteThread(QObject *parent)
+SinSerialWriteWork::SinSerialWriteWork(QObject *parent)
 	:QObject(parent)
 {
+	m_bIsRun = false;
 	m_nCurrentWriteIndex = 0;
 }
 
-SinSerialWriteThread::~SinSerialWriteThread()
+SinSerialWriteWork::~SinSerialWriteWork()
 {
 
 }
 
-void SinSerialWriteThread::start()
+void SinSerialWriteWork::start()
 {
-
+	m_bIsRun = true;
 }
 
-void SinSerialWriteThread::stop()
+void SinSerialWriteWork::stop()
 {
-
+	m_bIsRun = false;
 }
 
-void SinSerialWriteThread::setWriteData(QList<QList<QByteArray>> fileListData)
+void SinSerialWriteWork::setWriteData(QList<QList<QByteArray>> fileListData)
 {
 	m_pWriteData.clear();
 	for (int i = 0; i < fileListData.size(); i++)
@@ -64,8 +64,13 @@ void SinSerialWriteThread::setWriteData(QList<QList<QByteArray>> fileListData)
 	}
 }
 
-void SinSerialWriteThread::sendData()
+void SinSerialWriteWork::sendData()
 {
-	ReqInterrFace req = m_pWriteData.at(m_nCurrentWriteIndex++);
-	sinserialSingle::getInstance().sendData(req);
+	while (m_bIsRun)
+	{
+		ReqInterrFace req;
+		
+		req = m_pWriteData.at(m_nCurrentWriteIndex);
+		sinserialSingle::getInstance().sendData(req);
+	}
 }

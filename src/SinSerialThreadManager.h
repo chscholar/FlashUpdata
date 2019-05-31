@@ -2,9 +2,10 @@
 #define SINSERIALTHREADMANAGER_H
 
 #include <QObject>
-#include "SinSerialReadThread.h"
-#include "SinSerialWriteThread.h"
+#include "SinSerialReadWork.h"
+#include "SinSerialWriteWork.h"
 #include "CSingleTon.h"
+#include <QThread>
 
 class SinSerialThreadManager : public QObject
 {
@@ -17,9 +18,13 @@ public:
 	void setWriteData(QList<QList<QByteArray>> fileListData);
 	void getReadData();
 	void handShake();
+	void sendData();
 protected:
-	SinSerialReadThread *m_pReadThread;
-	SinSerialWriteThread *m_pWriteThread;
+	SinSerialReadWork *m_pReadWork;
+	SinSerialWriteWork *m_pWriteWork;
+
+	QThread *m_pReadThread;
+	QThread *m_pWriteThread;;
 private:
 };
 typedef CSingleton<SinSerialThreadManager> sinSerialThreadManagerSingle;

@@ -1,23 +1,25 @@
-#ifndef SINSERIALWRITETHREAD_H
-#define SINSERIALWRITETHREAD_H
+#ifndef SINSERIALWRITEWORK_H
+#define SINSERIALWRITEWORK_H
 #include <QObject>
 #include "SinSerial.h"
 
-
-class SinSerialWriteThread:public QObject
+class SinSerialWriteWork:public QObject
 {
 	Q_OBJECT
 public:
-	SinSerialWriteThread(QObject *parent = 0);
-	~SinSerialWriteThread();
+	SinSerialWriteWork(QObject *parent = 0);
+	~SinSerialWriteWork();
 	void start();
 	void stop();
 	void setWriteData(QList<QList<QByteArray>> fileListData);
-	void sendData();
 protected:
 	//QList<QList<QByteArray>> m_pWriteData;
 	QList<ReqInterrFace> m_pWriteData;
 	int m_nCurrentWriteIndex;
+	bool m_bIsRun;
+public slots:
+	void sendData();
+
 private:
 };
 

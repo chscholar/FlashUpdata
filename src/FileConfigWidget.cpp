@@ -163,6 +163,7 @@ void FileConfigItemWidget::setDownLoadStatus()
 {
 	delButton->hide();
 	addButton->hide();
+	m_pFileCheckbox->hide();
 	m_pAddressLabel->setText("保存文件路径:");
 }
 

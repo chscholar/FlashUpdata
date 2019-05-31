@@ -62,10 +62,6 @@ void ConfigDeployWidget::initUi()
 	QPushButton *confirmButton = new QPushButton("确认");
 	buttonLayout->addWidget(confirmButton);
 	connect(confirmButton, SIGNAL(clicked()), this, SLOT(slotConfirmTrans()));
-
-	buttonLayout->addStretch(3);
-	QPushButton *cancleButton = new QPushButton("取消");
-	buttonLayout->addWidget(cancleButton);
 	buttonLayout->addStretch(1);
 	buttonLayout->addSpacing(10);
 	mainLayout->addLayout(buttonLayout);
@@ -102,4 +98,5 @@ void ConfigDeployWidget::slotConfirmTrans()
 
 	sinSerialThreadManagerSingle::getInstance().setWriteData(fileListData);
 	sinSerialThreadManagerSingle::getInstance().start();
+
 }

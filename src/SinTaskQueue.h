@@ -20,6 +20,7 @@ private:
 	public slots:
 signals :
 	void signalReadData();
+	void signalWriteNextData();
 };
 
 typedef CSingleton<SinTaskQueue> sinTaskQueueSingle;

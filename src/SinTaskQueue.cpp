@@ -12,14 +12,17 @@ SinTaskQueue::~SinTaskQueue()
 
 }
 
+//有数据可以读
 void SinTaskQueue::pushBackReadData(QByteArray data)
 {
 	m_pReadData.enqueue(data);
 	emit signalReadData();
 }
 
+//可以继续 写下一个数据
 QByteArray SinTaskQueue::popBackReadData()
 {
 	QByteArray data = m_pReadData.dequeue();
+	emit signalWriteNextData();
 	return data;
 }

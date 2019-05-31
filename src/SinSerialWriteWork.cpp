@@ -1,10 +1,14 @@
 #include "SinSerialWriteWork.h"
 #include "SinSerial.h"
+#include "SinTaskQueue.h"
+
 SinSerialWriteWork::SinSerialWriteWork(QObject *parent)
 	:QObject(parent)
 {
 	m_bIsRun = false;
 	m_nCurrentWriteIndex = 0;
+
+	connect(&sinTaskQueueSingle::getInstance(), SIGNAL(signalWriteNextData()), this, SLOT(sendData()));
 }
 
 SinSerialWriteWork::~SinSerialWriteWork()
@@ -66,11 +70,9 @@ void SinSerialWriteWork::setWriteData(QList<QList<QByteArray>> fileListData)
 
 void SinSerialWriteWork::sendData()
 {
-	if (m_bIsRun)
-	{
+	
 		ReqInterrFace req;
 		
 		req = m_pWriteData.at(m_nCurrentWriteIndex);
 		sinserialSingle::getInstance().sendData(req);
-	}
 }

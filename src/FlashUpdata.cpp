@@ -16,6 +16,8 @@
 #include "ConfigDeployWidget.h"
 #include "ConfigEditWidget.h"
 #include "SinTaskQueue.h"
+#include "pcap.h"
+
 
 FlashUpdata::FlashUpdata(QWidget *parent)
 	: QMainWindow(parent)

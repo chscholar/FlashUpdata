@@ -2,6 +2,9 @@
 #define NETWORKCONFIGWIDGET_H
 #include <QWidget>
 #include <QStringList>
+#include <QTableView>
+#include <QLineEdit>
+#include <QStandardItemModel>
 
 #pragma execution_character_set("utf-8")
 class NetWorkConfigWidget : public QWidget
@@ -12,7 +15,11 @@ public:
 	~NetWorkConfigWidget();
 protected:
 	void initUi();
-	QStringList getNetInfo();
+	bool getNetInfo();
+	QTableView *m_pTableView;
+	QLineEdit *m_pLineEdit;
+	QStandardItemModel *m_pModel;
+
 private:
 };
 

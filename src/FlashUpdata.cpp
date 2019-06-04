@@ -81,8 +81,8 @@ void FlashUpdata::initUi()
 
 	mainLayout->addLayout(connectLayout);
 
-	mainLayout->setStretch(0, 7);
-	mainLayout->setStretch(1, 3);
+	mainLayout->setStretch(0, 6);
+	mainLayout->setStretch(1, 4);
 
 	this->centralWidget()->setLayout(mainLayout);
 	//setLayout(mainLayout);

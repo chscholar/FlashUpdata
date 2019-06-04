@@ -34,8 +34,8 @@ bool NetWorkConfigWidget::getNetInfo()
 	int i = 0;
 	for (d = alldevs; d; d = d->next)
 	{
-		m_pModel->setItem(i, 0, new QStandardItem((QString)d->name));
-		m_pModel->setItem(i, 1, new QStandardItem((QString)d->description));
+		m_pNetDeviceModel->setItem(i, 0, new QStandardItem((QString)d->name));
+		m_pNetDeviceModel->setItem(i, 1, new QStandardItem((QString)d->description));
 		i++;
 	
 	}
@@ -52,8 +52,8 @@ void NetWorkConfigWidget::initUi()
 	mainLayout->setMargin(10);
 
 	mainLayout->addSpacing(10);
-	m_pTableView = new QTableView();
-	mainLayout->addWidget(m_pTableView);
+	m_pNetDeviceTableView = new QTableView();
+	mainLayout->addWidget(m_pNetDeviceTableView);
 
 	mainLayout->addSpacing(10);
 	m_pLineEdit = new QLineEdit();
@@ -74,6 +74,9 @@ void NetWorkConfigWidget::initUi()
 	buttonLayout->addStretch();
 	mainLayout->addLayout(buttonLayout);
 
+	m_pCapTableView = new QTableView();
+	mainLayout->addWidget(m_pCapTableView);
+
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
@@ -85,32 +88,55 @@ void NetWorkConfigWidget::initUi()
 
 void NetWorkConfigWidget::initTableViewConfig()
 {
-	m_pModel = new QStandardItemModel();
-	m_pTableView->setModel(m_pModel);
+	m_pNetDeviceModel = new QStandardItemModel();
+	m_pNetDeviceTableView->setModel(m_pNetDeviceModel);
 
-	m_pModel->setColumnCount(2);
-	m_pModel->setHeaderData(0, Qt::Horizontal, "设备名");
-	m_pModel->setHeaderData(1, Qt::Horizontal, "设备描述");
+	m_pNetDeviceModel->setColumnCount(2);
+	m_pNetDeviceModel->setHeaderData(0, Qt::Horizontal, "设备名");
+	m_pNetDeviceModel->setHeaderData(1, Qt::Horizontal, "设备描述");
 
-	m_pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	m_pNetDeviceTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	//m_pTableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	m_pTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	m_pTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	m_pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	m_pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_pTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+	m_pNetDeviceTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	m_pNetDeviceTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	m_pNetDeviceTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	m_pNetDeviceTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_pNetDeviceTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-	connect(m_pTableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
+	connect(m_pNetDeviceTableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
+
+
+	m_pCapModel = new TableCapModel();
+	m_pCapTableView->setModel(m_pCapModel);
+
+	//m_pCapModel->setColumnCount(2);
+	m_pCapModel->setHeaderData(0, Qt::Horizontal, "设备名");
+	m_pCapModel->setHeaderData(1, Qt::Horizontal, "设备描述");
+
+	m_pCapTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	//m_pTableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	m_pCapTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	m_pCapTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	m_pCapTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	m_pCapTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_pCapTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+	m_pCapModel->addItem("1","1","1");
+	m_pCapModel->addItem("2", "2", "2");
+	m_pCapModel->addItem("3", "3", "3");
+	m_pCapModel->addItem("4", "4", "4");
+
+	//connect(m_pNetDeviceTableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
 }
 
 void NetWorkConfigWidget::onTableClicked(const QModelIndex &index)
 {
 	int row = index.row();
 	int colou = index.column();
-	QModelIndex rowIndex = m_pModel->index(row, 0);
-	QModelIndex colouIndex = m_pModel->index(row, 1);
+	QModelIndex rowIndex = m_pNetDeviceModel->index(row, 0);
+	QModelIndex colouIndex = m_pNetDeviceModel->index(row, 1);
 
-	QString cellText = m_pModel->data(rowIndex).toString();// +m_pModel->data(colouIndex).toString();
+	QString cellText = m_pNetDeviceModel->data(rowIndex).toString();// +m_pModel->data(colouIndex).toString();
 	if (!m_bIsBindStatus)
 	{
 		m_pLineEdit->setText(cellText);
@@ -153,7 +179,7 @@ void NetWorkConfigWidget::slotStartCap()
 {
 	pcap_if_t * currentDevice = getSelectDevice();
 
-	if (currentDevice == NULL)
+	if (currentDevice == NULL || !m_bIsBindStatus)
 	{
 		QMessageBox::information(this, "请选择绑定网卡", "请选择绑定网卡", QMessageBox::Ok);
 		return;

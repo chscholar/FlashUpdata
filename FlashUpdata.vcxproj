@@ -134,6 +134,7 @@
     <ClInclude Include="src\CSingleTon.h" />
     <ClInclude Include="src\SinByte.h" />
     <ClInclude Include="src\SinSerial.h" />
+    <ClInclude Include="src\TableCapModel.h" />
     <QtMoc Include="src\SinTaskQueue.h" />
     <QtMoc Include="src\SinSerialThreadManager.h" />
     <QtMoc Include="src\SinSerialWriteWork.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="src\SinTaskQueue.cpp" />
     <ClCompile Include="src\SinXml.cpp" />
     <ClCompile Include="src\SinXmlHighlighter.cpp" />
+    <ClCompile Include="src\TableCapModel.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

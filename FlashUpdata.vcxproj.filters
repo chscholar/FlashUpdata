@@ -93,6 +93,9 @@
     <ClInclude Include="src\SinSerial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TableCapModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ConfigDeployWidget.cpp">
@@ -144,6 +147,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SinTaskQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TableCapModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

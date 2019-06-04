@@ -8,8 +8,13 @@
 #include "pcap.h"
 #include "remote-ext.h"
 #include <QStandardItem>
+#include <QHeaderView>
+#include <QPushButton>
 
-NetWorkConfigWidget::NetWorkConfigWidget(QWidget *parent){
+NetWorkConfigWidget::NetWorkConfigWidget(QWidget *parent)
+	:QWidget(parent)
+	, m_bIsBindStatus(false)
+{
 	initUi();
 	getNetInfo();
 }
@@ -29,9 +34,6 @@ bool NetWorkConfigWidget::getNetInfo()
 	int i = 0;
 	for (d = alldevs; d; d = d->next)
 	{
-		//m_list1.InsertItem(0, (CString)d->name);		//d->name的类型是char *,需要强制转换为CString才能在InsertItem中显示
-		//m_list1.SetItemText(0, 1, (CString)d->description);
-
 		m_pModel->setItem(i, 0, new QStandardItem((QString)d->name));
 		m_pModel->setItem(i, 1, new QStandardItem((QString)d->description));
 		i++;
@@ -57,13 +59,78 @@ void NetWorkConfigWidget::initUi()
 	m_pLineEdit = new QLineEdit();
 	mainLayout->addWidget(m_pLineEdit);
 	
+	mainLayout->addSpacing(10);
+	QHBoxLayout *buttonLayout = new QHBoxLayout();
+	buttonLayout->addStretch();
+
+	m_pBindButton = new QPushButton();
+	m_pBindButton->setText("绑定");
+	buttonLayout->addWidget(m_pBindButton);
+	buttonLayout->addStretch();
+
+	QPushButton *startCap = new QPushButton();
+	startCap->setText("开始捕获");
+	buttonLayout->addWidget(startCap);
+	buttonLayout->addStretch();
+	mainLayout->addLayout(buttonLayout);
+
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
+	connect(m_pBindButton, SIGNAL(clicked()), this, SLOT(slotBindNetWork()));
+
+	initTableViewConfig();
+}
+
+void NetWorkConfigWidget::initTableViewConfig()
+{
 	m_pModel = new QStandardItemModel();
 	m_pTableView->setModel(m_pModel);
 
 	m_pModel->setColumnCount(2);
 	m_pModel->setHeaderData(0, Qt::Horizontal, "设备名");
-	m_pModel->setHeaderData(1, Qt::Horizontal,"设备描述");
+	m_pModel->setHeaderData(1, Qt::Horizontal, "设备描述");
+
+	m_pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	//m_pTableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	m_pTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	m_pTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	m_pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	m_pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_pTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+	connect(m_pTableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
+}
+
+void NetWorkConfigWidget::onTableClicked(const QModelIndex &index)
+{
+	int row = index.row();
+	int colou = index.column();
+	QModelIndex rowIndex = m_pModel->index(row, 0);
+	QModelIndex colouIndex = m_pModel->index(row, 1);
+
+	QString cellText = m_pModel->data(rowIndex).toString() + m_pModel->data(colouIndex).toString();
+	if (!m_bIsBindStatus)
+	{
+		m_pLineEdit->setText(cellText);
+	}
+	
+}
+
+void NetWorkConfigWidget::slotBindNetWork()
+{
+	QString strNetName = m_pLineEdit->text();
+	if (strNetName.isEmpty()) return;
+	
+
+	if (m_bIsBindStatus)
+	{
+		m_pBindButton->setText("绑定");
+	}
+	else {
+		m_pBindButton->setText("解绑");
+	}
+	bool editEnable = m_pLineEdit->isEnabled();
+	m_pLineEdit->setEnabled(!m_pLineEdit->isEnabled());
+	m_bIsBindStatus = !m_bIsBindStatus;
 }

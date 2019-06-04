@@ -1,7 +1,17 @@
 #ifndef TABLECAPMODEL_H
 #define TABLECAPMODEL_H
 #include <QAbstractTableModel>
-#include <QVector>
+#include <QList>
+
+struct CapData 
+{
+	QString strIndex;
+	QString strSrcIP;
+	QString strDestIp;
+	QString strProtocal;
+	QString strDate;
+	QString strLength;
+};
 
 #pragma execution_character_set("utf-8")
 class TableCapModel : public QAbstractTableModel
@@ -14,9 +24,9 @@ public:
 	int columnCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
 	QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const Q_DECL_OVERRIDE;
-	void addItem(QString one, QString two, QString three);
+	void addItem(CapData itemData);
 protected:
-	QVector<QVector<QString>> m_aryData;
+	QList<CapData> m_aryData;
 private:
 };
 

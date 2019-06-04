@@ -20,15 +20,42 @@ int TableCapModel::rowCount(const QModelIndex &parent) const
 int TableCapModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent)
-		return 3;
+		return 6;
 }
 
 QVariant TableCapModel::data(const QModelIndex &index, int role) const
 {
+	int row = index.row();
+	int col = index.column();
 	if (role == 0)
-		return m_aryData[index.row()][index.column()];
-	else
+	{
+		switch (col)
+		{
+		case 0:
+			return m_aryData.at(row).strIndex;
+			break;
+		case 1:
+			return m_aryData.at(row).strSrcIP;
+			break;
+		case 2:
+			return m_aryData.at(row).strDestIp;
+			break;
+		case 3:
+			return m_aryData.at(row).strProtocal;
+			break;
+		case 4:
+			return m_aryData.at(row).strDate;
+			break;
+		case 5:
+			return m_aryData.at(row).strLength;
+			break;
+		default:return QVariant();
+		}
+	}
+	else {
 		return QVariant();
+	}
+	
 }
 
 QVariant TableCapModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -52,12 +79,10 @@ QVariant TableCapModel::headerData(int section, Qt::Orientation orientation, int
 	return QVariant();
 }
 
-void TableCapModel::addItem(QString one, QString two, QString three)
+void TableCapModel::addItem(CapData itemData)
 {
 	beginInsertRows(QModelIndex(), m_aryData.size(), m_aryData.size());
-	QVector<QString> list;
-	list << one << two << three;
-	m_aryData << list;
+	m_aryData << itemData;
 	endInsertRows();
 
 }

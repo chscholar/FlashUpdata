@@ -4,3 +4,5 @@ x64/
 GeneratedFiles/
 *.sdf
 *.opensdf
+middle/
+out/

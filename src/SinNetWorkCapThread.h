@@ -20,6 +20,7 @@ private:
 	QThread *m_pThread;
 	pcap_if_t *m_pDevice;
 	bool m_bIsStartCap;
+	int m_nTotalIndex;
 	void addDataToTableCap(const pcap_pkthdr *pkt_header, const u_char *pkt_data);
 
 private slots :

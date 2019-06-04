@@ -6,6 +6,7 @@ SinNetWorkCapThread:: SinNetWorkCapThread(QObject *parent)
 	:QObject(parent)
 	, m_pDevice(NULL)
 	, m_bIsStartCap(false)
+	, m_nTotalIndex(0)
 {
 	m_pThread = new QThread();
 	connect(m_pThread, SIGNAL(started()), this, SLOT(startCap()));
@@ -105,7 +106,7 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 
 	//显示序列号
 	nIndex = sinTaskQueueSingle::getInstance().getCapDataSize() - 1;
-	itemData.strIndex = QString::number(nIndex);
+	itemData.strIndex = QString::number(m_nTotalIndex++);
 
 	/*显示时间*/
 	struct tm *ltime;
@@ -130,8 +131,8 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 	QString strSrc4 = QString::number(eh->saddr.byte4);
 	QString strSrc5 = QString::number(eh->saddr.byte5);
 	QString strSrc6 = QString::number(eh->saddr.byte6);
-	QString strSrcIp = strSrc1 + ":" + strSrc2 + ":" + strSrc3 + ":" + strSrc4 + ":" + strSrc5 + ":" + strSrc6;
-	itemData.strSrcIP = strSrcIp;
+	QString strSrcMac = strSrc1 + ":" + strSrc2 + ":" + strSrc3 + ":" + strSrc4 + ":" + strSrc5 + ":" + strSrc6;
+	itemData.strSrcMac = strSrcMac;
 
 	QString strDest1 = QString::number(eh->daddr.byte1);
 	QString strDest2 = QString::number(eh->daddr.byte2);
@@ -139,13 +140,15 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 	QString strDest4 = QString::number(eh->daddr.byte4);
 	QString strDest5 = QString::number(eh->daddr.byte5);
 	QString strDest6 = QString::number(eh->daddr.byte6);
-	QString strDestIp = strDest1 + ":" + strDest2 + ":" + strDest3 + ":" + strDest4 + ":" + strDest5 + ":" + strDest6;
-	itemData.strDestIp = strDestIp;
+	QString strDestMac = strDest1 + ":" + strDest2 + ":" + strDest3 + ":" + strDest4 + ":" + strDest5 + ":" + strDest6;
+	itemData.strDestMac = strDestMac;
 
 	QString strLength = QString::number(pHeader->len);
 	itemData.strLength = strLength;
 
 	QString qstrProtocal;
+	QString qstrSrcIp;
+	QString qstrDestIp;
 	switch (ntohs(eh->type))
 	{
 	case IP:
@@ -156,6 +159,21 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 		ih = (ip_header *)ip_data;
 		u_int ip_len;//IP首部长度
 		ip_len = (ih->ver_ihl & 0xf) * 4;
+
+		QString strSrc1 = QString::number(ih->saddr.byte1);
+		QString strSrc2 = QString::number(ih->saddr.byte2);
+		QString strSrc3 = QString::number(ih->saddr.byte3);
+		QString strSrc4 = QString::number(ih->saddr.byte4);
+		qstrSrcIp = strSrc1 + "." + strSrc2 + "." + strSrc3 + "." + strSrc4;
+
+		QString strDest1 = QString::number(ih->saddr.byte1);
+		QString strDest2 = QString::number(ih->saddr.byte2);
+		QString strDest3 = QString::number(ih->saddr.byte3);
+		QString strDest4 = QString::number(ih->saddr.byte4);
+	
+		qstrDestIp = strDest1 + "." + strDest2 + "." + strDest3 + "." + strDest4;
+		
+
 		/*处理传输层*/
 		switch (ih->type)
 		{
@@ -206,6 +224,23 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 	}
 	case ARP:
 	{
+		arp_header *ah;
+		const u_char *arp_data;
+		arp_data = pkt_data + 14;
+		ah = (arp_header *)arp_data;
+
+		QString strSrc1 = QString::number(ah->arp_sip.byte1);
+		QString strSrc2 = QString::number(ah->arp_sip.byte2);
+		QString strSrc3 = QString::number(ah->arp_sip.byte3);
+		QString strSrc4 = QString::number(ah->arp_sip.byte4);
+		qstrSrcIp = strSrc1 + "." + strSrc2 + "." + strSrc3 + "." + strSrc4;
+
+		QString strDest1 = QString::number(ah->arp_dip.byte1);
+		QString strDest2 = QString::number(ah->arp_dip.byte2);
+		QString strDest3 = QString::number(ah->arp_dip.byte3);
+		QString strDest4 = QString::number(ah->arp_dip.byte4);
+
+		qstrDestIp = strDest1 + "." + strDest2 + "." + strDest3 + "." + strDest4;
 		qstrProtocal = "ARP";
 		break;
 	}
@@ -215,6 +250,8 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 	default:
 		qstrProtocal = QString::number(eh->type);
 	}
+	itemData.strSrcIP = qstrSrcIp;
+	itemData.strDestIp = qstrDestIp;
 	itemData.strProtocal = qstrProtocal;
 
 	sinTaskQueueSingle::getInstance().pushBackCapData(itemData);

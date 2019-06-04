@@ -84,6 +84,9 @@ void NetWorkConfigWidget::initUi()
 	m_pCapTableView = new QTableView();
 	mainLayout->addWidget(m_pCapTableView);
 
+	m_plistView = new QTreeView();
+	mainLayout->addWidget(m_plistView);
+
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
@@ -119,26 +122,18 @@ void NetWorkConfigWidget::initTableViewConfig()
 	//m_pCapModel->setColumnCount(2);
 
 
-	m_pCapTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	//m_pCapTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	//m_pCapTableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	m_pCapTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	m_pCapTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	m_pCapTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	m_pCapTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_pCapTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-
-	/*CapData itemData;
-	itemData.strIndex = "1";
-	itemData.strSrcIP = "2";
-	itemData.strDestIp = "3";
-	itemData.strProtocal = "4";
-	itemData.strDate = "5";
-	itemData.strLength = "6";
-
-	m_pCapModel->addItem(itemData);*/
-	
-
 	//connect(m_pNetDeviceTableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
+
+	m_pTreeModel = new QStandardItemModel();
+	m_plistView->setModel(m_pTreeModel);
+
 }
 
 void NetWorkConfigWidget::onTableClicked(const QModelIndex &index)

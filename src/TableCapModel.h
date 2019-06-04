@@ -6,6 +6,8 @@
 struct CapData 
 {
 	QString strIndex;
+	QString strSrcMac;
+	QString strDestMac;
 	QString strSrcIP;
 	QString strDestIp;
 	QString strProtocal;

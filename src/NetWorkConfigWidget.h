@@ -9,6 +9,9 @@
 #include "pcap.h"
 #include "remote-ext.h"
 #include "TableCapModel.h"
+#include <QListView>
+#include <QStringListModel>
+#include <QTreeView>
 
 #pragma execution_character_set("utf-8")
 class NetWorkConfigWidget : public QWidget
@@ -35,6 +38,9 @@ protected:
 
 	QTableView *m_pCapTableView;
 	TableCapModel *m_pCapModel;
+
+	QTreeView *m_plistView;
+	QStandardItemModel *m_pTreeModel;
 
 	QList<pcap_pkthdr *> m_pktHeaders;
 	QList<u_char *> m_pktDatas;

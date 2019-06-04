@@ -31,7 +31,7 @@ protected:
 	bool m_bIsBindStatus;
 	bool m_bIsStartCap;
 	QPushButton *m_pBindButton;
-	QPushButton *m_pStartCap;
+	QPushButton *m_pStartCapButton;
 	pcap_if_t *d;
 	pcap_if_t *alldevs; //所有设备指针
 

@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include "head.h"
 #include <WinSock2.h>
+#include "SinNetWorkCapThread.h"
 
 NetWorkConfigWidget::NetWorkConfigWidget(QWidget *parent)
 	:QWidget(parent)
@@ -71,9 +72,9 @@ void NetWorkConfigWidget::initUi()
 	buttonLayout->addWidget(m_pBindButton);
 	buttonLayout->addStretch();
 
-	m_pStartCap = new QPushButton();
-	m_pStartCap->setText("开始捕获");
-	buttonLayout->addWidget(m_pStartCap);
+	m_pStartCapButton = new QPushButton();
+	m_pStartCapButton->setText("开始捕获");
+	buttonLayout->addWidget(m_pStartCapButton);
 	buttonLayout->addStretch();
 	mainLayout->addLayout(buttonLayout);
 
@@ -84,7 +85,7 @@ void NetWorkConfigWidget::initUi()
 	setLayout(mainLayout);
 
 	connect(m_pBindButton, SIGNAL(clicked()), this, SLOT(slotBindNetWork()));
-	connect(m_pStartCap, SIGNAL(clicked()), this, SLOT(slotStartCap()));
+	connect(m_pStartCapButton, SIGNAL(clicked()), this, SLOT(slotStartCap()));
 
 	initTableViewConfig();
 }
@@ -195,13 +196,16 @@ void NetWorkConfigWidget::slotStartCap()
 
 	if (!m_bIsStartCap)
 	{
-		startCap(currentDevice);
-		m_pStartCap->setText("停止捕获");
+		
+		m_pStartCapButton->setText("停止捕获");
+		//startCap(currentDevice);
+		SinNetWorkCapSingle::getInstance().startThread();
 
 	}
 	else {
+		
+		m_pStartCapButton->setText("开始捕获");
 		stopCap();
-		m_pStartCap->setText("开始捕获");
 	}
 
 	m_bIsStartCap = !m_bIsStartCap;
@@ -252,7 +256,6 @@ int NetWorkConfigWidget::startCap(pcap_if_t *device)
 	}
 
 	pcap_close(pCap);
-	//pDlg = NULL;
 }
 
 void NetWorkConfigWidget::stopCap()
@@ -396,5 +399,6 @@ void NetWorkConfigWidget::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 	}
 	itemData.strProtocal = qstrProtocal;
 	m_pCapModel->addItem(itemData);
+	m_pCapTableView->update();
 }
 

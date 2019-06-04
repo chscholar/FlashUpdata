@@ -134,6 +134,10 @@
     <ClInclude Include="src\CSingleTon.h" />
     <ClInclude Include="src\head.h" />
     <ClInclude Include="src\SinByte.h" />
+    <QtMoc Include="src\SinNetWorkCapThread.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)WinPcap_dev\Include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork</IncludePath>
+    </QtMoc>
     <ClInclude Include="src\SinSerial.h" />
     <ClInclude Include="src\TableCapModel.h" />
     <QtMoc Include="src\SinTaskQueue.h" />
@@ -159,6 +163,7 @@
     <ClCompile Include="src\NetWorkConfigWidget.cpp" />
     <ClCompile Include="src\SerialConfigWidget.cpp" />
     <ClCompile Include="src\SinByte.cpp" />
+    <ClCompile Include="src\SinNetWorkCapThread.cpp" />
     <ClCompile Include="src\SinSerial.cpp" />
     <ClCompile Include="src\SinSerialReadWork.cpp" />
     <ClCompile Include="src\SinSerialThreadManager.cpp" />

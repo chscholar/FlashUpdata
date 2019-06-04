@@ -48,7 +48,8 @@ protected:
 
 private:
 	public slots :
-		void onTableClicked(const QModelIndex &);
+		void onTableNetDeviceClicked(const QModelIndex &);
+	void onTableNetCapClicked(const QModelIndex &);
 	void slotBindNetWork();
 	void slotStartCap();
 	void slotUpDataCapTable();

@@ -42,3 +42,23 @@ int SinTaskQueue::getCapDataSize()
 {
 	return m_pCapData.size();
 }
+
+
+void SinTaskQueue::pushBackPktHeaderData(const pcap_pkthdr* data){
+	m_pPktHeader.push_back(const_cast<pcap_pkthdr*> (data));
+}
+
+pcap_pkthdr* SinTaskQueue::popIndexPktHeaderData(int index)
+{
+	return m_pPktHeader.at(index);
+}
+
+
+void SinTaskQueue::pushBackPktDataData(const u_char *data){
+	m_pPktData.push_back(const_cast<u_char *> (data));
+}
+
+
+u_char * SinTaskQueue::popIndexPktDataData(int index){
+	return m_pPktData.at(index);
+}

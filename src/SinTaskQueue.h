@@ -5,6 +5,8 @@
 #include <QQueue>
 #include "CSingleTon.h"
 #include "SinNetWorkCapThread.h"
+#include "pcap.h"
+#include "remote-ext.h"
 
 class SinTaskQueue : public QObject
 {
@@ -18,10 +20,19 @@ public:
 	void pushBackCapData(CapData data);
 	CapData popBackCapData();
 	int getCapDataSize();
+
+	void pushBackPktHeaderData(const pcap_pkthdr* data);
+	pcap_pkthdr* popIndexPktHeaderData(int index);
+
+	void pushBackPktDataData(const u_char *data);
+	u_char *popIndexPktDataData(int index);
 private:
 
 	QQueue<QByteArray> m_pReadData;
 	QQueue<CapData> m_pCapData;
+
+	QList<pcap_pkthdr *> m_pPktHeader;
+	QList<u_char*> m_pPktData;
 	public slots:
 signals :
 	void signalReadData();

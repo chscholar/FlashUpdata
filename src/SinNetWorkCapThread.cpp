@@ -97,6 +97,9 @@ void SinNetWorkCapThread::addDataToTableCap(const pcap_pkthdr *pkt_header, const
 	long nIndex = 0;//标识当前的数据包位置
 	long nCount = 0;//标识后来
 
+	sinTaskQueueSingle::getInstance().pushBackPktHeaderData(pkt_header);
+	sinTaskQueueSingle::getInstance().pushBackPktDataData(pkt_data);
+
 	pHeader->caplen = pkt_header->caplen;
 	pHeader->len = pkt_header->len;
 

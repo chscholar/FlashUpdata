@@ -22,8 +22,6 @@ protected:
 	bool getNetInfo();
 	void initTableViewConfig();
 	pcap_if_t* getSelectDevice();
-	int startCap(pcap_if_t *device);
-	void stopCap();
 	void addDataToTableCap(const pcap_pkthdr *pkt_header, const u_char *pkt_data);
 	QTableView *m_pNetDeviceTableView;
 	QLineEdit *m_pLineEdit;
@@ -47,6 +45,7 @@ private:
 		void onTableClicked(const QModelIndex &);
 	void slotBindNetWork();
 	void slotStartCap();
+	void slotUpDataCapTable();
 };
 
 #endif

@@ -26,3 +26,19 @@ QByteArray SinTaskQueue::popBackReadData()
 	emit signalWriteNextData();
 	return data;
 }
+
+void SinTaskQueue::pushBackCapData(CapData data)
+{
+	m_pCapData.enqueue(data);
+	emit signalCapData();
+}
+
+CapData SinTaskQueue::popBackCapData()
+{
+	CapData data = m_pCapData.dequeue();
+	return data;
+}
+int SinTaskQueue::getCapDataSize()
+{
+	return m_pCapData.size();
+}

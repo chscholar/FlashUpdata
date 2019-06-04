@@ -27,7 +27,7 @@ QVariant TableCapModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
 	int col = index.column();
-	if (role == 0)
+	if (role == Qt::DisplayRole)
 	{
 		switch (col)
 		{

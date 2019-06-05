@@ -65,8 +65,8 @@ void FlashUpdata::initUi()
 	progrressLayout->setStretch(2, 1);
 	workLayout->addLayout(progrressLayout);
 	
-	workLayout->setStretch(0, 4);
-	workLayout->setStretch(1, 6);
+	workLayout->setStretch(0, 5);
+	workLayout->setStretch(1, 5);
 	workLayout->setStretch(2, 1);
 
 	mainLayout->addLayout(workLayout);

@@ -221,233 +221,185 @@ void NetWorkConfigWidget::slotUpDataCapTable()
 }
 
 void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
-	
+
 	int row = index.row();
 	pcap_pkthdr *header = sinTaskQueueSingle::getInstance().popIndexPktHeaderData(row);
-	u_char *data = sinTaskQueueSingle::getInstance().popIndexPktDataData(row);
+	u_char *pkt_data = sinTaskQueueSingle::getInstance().popIndexPktDataData(row);
 
 	int a = 1;
-	/*
-	m_tree1.DeleteAllItems();
-	CString str;
-	str.Format(_T("数据包:%ld"),index);
-	HTREEITEM hRoot;
-	HTREEITEM hSubItem;
-	HTREEITEM hItem;
-	HTREEITEM hItem2;
 
-	hRoot = m_tree1.InsertItem(str);
-	hSubItem = m_tree1.InsertItem(_T("数据链路层"),hRoot);
+	QString qstrDataIndex = "数据包" + QString::number(row);
+	QString qstrEth = "数据链路层";
+
 	ethernet_header *eh;
 	eh = (ethernet_header *)pkt_data;
-	str.Format(_T("源MAC:%x:%x:%x:%x:%x:%x"),eh->saddr.byte1,eh->saddr.byte2,eh->saddr.byte3,eh->saddr.byte4,eh->saddr.byte5,eh->saddr.byte6);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("目的MAC:%x:%x:%x:%x:%x:%x"),eh->daddr.byte1,eh->daddr.byte2,eh->daddr.byte3,eh->daddr.byte4,eh->daddr.byte5,eh->daddr.byte6);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	switch(ntohs(eh->type))
+	//源Mac
+	QString qstrSrcMac = "源Mac:" + QString::number(eh->saddr.byte1) + ":" + QString::number(eh->saddr.byte2) + ":" + QString::number(eh->saddr.byte3) + ":" + QString::number(eh->saddr.byte4) + ":" + QString::number(eh->saddr.byte5) + ":" + QString::number(eh->saddr.byte6);
+	//目的Mac
+	QString qstrDestMac = "目的Mac:" + QString::number(eh->daddr.byte1) + ":" + QString::number(eh->daddr.byte2) + ":" + QString::number(eh->daddr.byte3) + ":" + QString::number(eh->daddr.byte4) + ":" + QString::number(eh->daddr.byte5) + ":" + QString::number(eh->daddr.byte6);
+	switch (ntohs(eh->type))
 	{
 	case IP:
 	{
-	hItem = m_tree1.InsertItem(_T("上层协议:IP"),hSubItem);
-	hSubItem = m_tree1.InsertItem(_T("网络层"),hRoot);
-	ip_header *ih;
-	const u_char *ip_data;
-	ip_data=pkt_data+14;
-	ih = (ip_header *)ip_data;
-	str.Format(_T("版本：%d"),(ih->ver_ihl & 0xf0) / 0x10);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	u_int ip_len;//IP首部长度
-	ip_len = (ih->ver_ihl & 0xf) * 4;
-	str.Format(_T("首部长度：%d"),ip_len);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("服务类型：0x%x"),ih->tos);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("总长度：%d"),ntohs( ih->tlen ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("标识：0x%x"),ntohs( ih->identification ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("标志：0x%x"),ntohs( ih->flags_fo ) & 0xe000 / 0x2000);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("片偏移：%d"),ntohs( ih->flags_fo ) & 0x1fff);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("生存时间：%d"),ih->ttl);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("首部校验和：0x%x"),ntohs( ih->crc ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("源IP地址：%d.%d.%d.%d"),ih->saddr.byte1,ih->saddr.byte2,ih->saddr.byte3,ih->saddr.byte4);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("目的IP地址：%d.%d.%d.%d"),ih->saddr.byte1,ih->saddr.byte2,ih->saddr.byte3,ih->saddr.byte4);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	switch(ih->type)
-	{
-	case TCP:
-	{
-	hItem = m_tree1.InsertItem(_T("上层协议:TCP"),hSubItem);
-	hSubItem = m_tree1.InsertItem(_T("传输层"),hRoot);
-	tcp_header *th;
-	const u_char *tcp_data;
-	tcp_data = ip_data+ip_len;
-	th = (tcp_header *)tcp_data;
-	str.Format(_T("源端口号：%d"),ntohs( th->sport ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("目的口号：%d"),ntohs( th->dport ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("顺序号：%d"),ntohs( th->seq ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("确认号：%d"),ntohs( th->ack ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("TCP头长：%d"),(th->len & 0xf0) / 0x10 * 4);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	hItem = m_tree1.InsertItem(_T("控制位"),hSubItem);
-	str.Format(_T("紧急URG:%d"),(th->flags & 0x20) / 0x20 );
-	hItem2 = m_tree1.InsertItem(str,hItem);
-	str.Format(_T("确认ACK:%d"),(th->flags & 0x10) / 0x10);
-	hItem2 = m_tree1.InsertItem(str,hItem);
-	str.Format(_T("推送PSH:%d"),(th->flags & 0x08) / 0x08);
-	hItem2 = m_tree1.InsertItem(str,hItem);
-	str.Format(_T("复位RSTG:%d"),(th->flags & 0x04) / 0x04);
-	hItem2 = m_tree1.InsertItem(str,hItem);
-	str.Format(_T("同步SYN:%d"),(th->flags & 0x02) / 0x02);
-	hItem2 = m_tree1.InsertItem(str,hItem);
-	str.Format(_T("结束FIN:%d"),(th->flags & 0x01) / 0x01);
-	hItem2 = m_tree1.InsertItem(str,hItem);
-	str.Format(_T("窗口：%d"),ntohs( th->win ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("校验和：0x%x"),ntohs( th->crc ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("紧急指针：0x%x"),ntohs( th->urp ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	break;
-	}
-	case UDP:
-	{
-	hItem = m_tree1.InsertItem(_T("上层协议:UDP"),hSubItem);
-	hSubItem = m_tree1.InsertItem(_T("传输层"),hRoot);
-	udp_header *uh;
-	const u_char *udp_data;
-	udp_data = ip_data+ip_len;
-	uh = (udp_header *)udp_data;
-	str.Format(_T("源端口号：%d"),ntohs( uh->sport ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("目的口号：%d"),ntohs( uh->dport ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("长度：%d"),ntohs( uh->len ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("校验和：0x%x"),ntohs( uh->crc ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	if(ntohs( uh->dport ) == DNS || ntohs( uh->sport ) == DNS)
-	{
-	hSubItem = m_tree1.InsertItem(_T("应用层"),hRoot);
-	dns_header *dh;
-	const u_char *dns_data;
-	dns_data = udp_data+8;
-	dh = (dns_header *)dns_data;
-	str.Format(_T("标识：0x%x"),ntohs( dh->identification ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("标志：0x%x"),ntohs( dh->flags ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("问题数：%d"),ntohs( dh->questions_num ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("资源记录数：%d"),ntohs( dh->answers_num ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("授权资源记录数：%d"),ntohs( dh->authority_num ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("额外资源记录数：%d"),ntohs( dh->addition_num ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	}
-	break;
-	}
-	case ICMP:
-	{
-	hItem = m_tree1.InsertItem(_T("上层协议:ICMP"),hSubItem);
-	hSubItem = m_tree1.InsertItem(_T("传输层"),hRoot);
-	icmp_header *icmph;
-	const u_char *icmp_data;
-	icmp_data = ip_data+ip_len;
-	icmph = (icmp_header *)icmp_data;
-	str.Format(_T("类型：%d"),icmph->type);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("代码：%d"),icmph->code);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("校验和：0x%x"),ntohs( icmph->checksum ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	break;
-	}
-	case IGMP:hItem = m_tree1.InsertItem(_T("上层协议:IGMP"),hSubItem);break;
-	case EGP:hItem = m_tree1.InsertItem(_T("上层协议:EGP"),hSubItem);break;
-	case IPv6:hItem = m_tree1.InsertItem(_T("上层协议:IPv6"),hSubItem);break;
-	case OSPF:hItem = m_tree1.InsertItem(_T("上层协议:OSPF"),hSubItem);break;
-	default:hItem = m_tree1.InsertItem(_T("上层协议:未知"),hSubItem);
-	}
-	break;
+		QString qstrUpProtocal = "上层协议:IP";
+		QString qstrNetWork = "网络层";
+
+		ip_header *ih;
+		const u_char *ip_data;
+		ip_data = pkt_data + 14;
+		ih = (ip_header *)ip_data;
+		QString qstrVersion = "版本号:" + QString::number((ih->ver_ihl & 0xf0) / 0x10);
+
+		u_int ip_len;//IP首部长度
+		ip_len = (ih->ver_ihl & 0xf) * 4;
+		QString qstrHeaderLength = "首部长度:" + QString::number(ip_len);
+		QString qstrServiceType = "服务类型:" + QString::number(ih->tos);
+		QString qstrTotalLength = "总长度:" + QString::number(ih->tlen);
+		QString qstrNetDef = "标识:" + QString::number(ntohs(ih->identification));
+		QString qstrMetFlag = "标记:" + QString::number(ntohs(ih->flags_fo) & 0xe000 / 0x2000);
+		QString qstrPieceOffset = "片偏移:" + QString::number(ntohs(ih->flags_fo) & 0x1fff);
+		QString qstrAlive = "生存时间:" + QString::number(ih->ttl);
+		QString qstrHeaderCheckSum = "首部校验和：0x" + QString::number(ntohs(ih->crc));
+
+		QString qstrSrcIp = "源IP：" + QString::number(ih->saddr.byte1) + "." + QString::number(ih->saddr.byte2) + "." + QString::number(ih->saddr.byte3) + "." + QString::number(ih->saddr.byte4);
+		QString qstrDestIp = "目的IP：" + QString::number(ih->daddr.byte1) + "." + QString::number(ih->daddr.byte2) + "." + QString::number(ih->daddr.byte3) + "." + QString::number(ih->daddr.byte4);
+
+		switch (ih->type)
+		{
+		case TCP:
+		{
+			QString qstrUpProtocal = "上层协议:TCP";
+			QString qstrTransWork = "传输层";
+
+			tcp_header *th;
+			const u_char *tcp_data;
+			tcp_data = ip_data + ip_len;
+			th = (tcp_header *)tcp_data;
+
+			QString qstrSrcPort = "源端口号：" + QString::number(ntohs(th->sport));
+			QString qstrDestPort = "目的IP" + QString::number(ntohs(th->dport));
+			QString qstrSequNum = "顺序号:" + QString::number(ntohs(th->seq));
+			QString qstrAckNum = "确认号:" + QString::number(ntohs(th->ack));
+			QString qstrTcpHeaderLength = "TCP头长:" + QString::number((th->len & 0xf0) / 0x10 * 4);
+
+
+			QString qstrCtrlBit = "控制位";
+			QString qstrUrgenURG = "紧急位:" + QString::number((th->flags & 0x20) / 0x20);
+
+			QString qstrAckConfirm = "确认ACK：" + QString::number((th->flags & 0x10) / 0x10);
+			QString qstrPushPSH = "推送PSH:" + QString::number((th->flags & 0x08) / 0x08);
+			QString qstrRestRst = "复位RSTG:" + QString::number((th->flags & 0x04) / 0x04);
+			QString qstrSyncSyn = "同步:" + QString::number((th->flags & 0x02) / 0x02);
+			QString qstrOverFin = "结束FIN：" + QString::number((th->flags & 0x01) / 0x01);
+			QString qstrWindows = "窗口:" + QString::number(ntohs(th->win));
+			QString qstrCheckSum = "校验和:" + QString::number(ntohs(th->crc));
+			QString qstrUrgenPoint = "紧急指针:" + QString::number(ntohs(th->urp));
+
+			break;
+		}
+		case UDP:
+		{
+			QString qstrUpProtocal = "上层协议:UDP";
+			QString qstrTransWork = "传输层";
+
+			udp_header *uh;
+			const u_char *udp_data;
+			udp_data = ip_data + ip_len;
+			uh = (udp_header *)udp_data;
+
+			QString qstrSrcPort = "源端口:" + QString::number(ntohs(uh->sport));
+			QString qstrDestPort = "目的端口" + QString::number(ntohs(uh->dport));
+			QString qstrUdpHeaderLength = "长度：" + QString::number(ntohs(uh->len));
+			QString qstrCheckSum = "校验和:" + QString::number(ntohs(uh->crc));
+
+			if (ntohs(uh->dport) == DNS || ntohs(uh->sport) == DNS)
+			{
+				QString qstrAppWork = "应用层";
+
+				dns_header *dh;
+				const u_char *dns_data;
+				dns_data = udp_data + 8;
+				dh = (dns_header *)dns_data;
+				QString qstrNetDef = "标识:" + QString::number(ntohs(dh->identification));
+				QString qstrNetFlah = "标志:" + QString::number(ntohs(dh->flags));
+				QString qstrQuestionNum = "问题数:" + QString::number(ntohs(dh->questions_num));
+				QString qstrResourceNoteNum = "资源记录数:" + QString::number(ntohs(dh->answers_num));
+				QString qstrAuthResourceNoteNum = "授权资源记录数：" + QString::number(ntohs(dh->authority_num));
+				QString qstrExtraResourceNoteNum = "额外资源记录数" + QString::number(ntohs(dh->addition_num));
+			}
+			break;
+		}
+		case ICMP:
+		{
+			QString qstrUpProtocal = "上层协议:ICMP";
+			QString qstrTransWork = "传输层";
+
+			icmp_header *icmph;
+			const u_char *icmp_data;
+			icmp_data = ip_data + ip_len;
+			icmph = (icmp_header *)icmp_data;
+
+			QString qstrType = "类型:" + QString::number(icmph->type);
+			QString qstrCode = "代码:" + QString::number(icmph->code);
+			QString qstrCheckSum = "校验和:" + QString::number(ntohs(icmph->checksum));
+			break;
+		}
+		case IGMP:
+		{
+			QString qstrUpProtocal = "上层协议:IGMP";
+			break;
+		}
+
+		case EGP:
+		{
+			QString qstrUpProtocal = "上层协议:EGP";
+			break;
+		}
+		case IPv6:
+		{
+			QString qstrUpProtocal = "上层协议:IPv6";
+			break;
+		}
+		case OSPF:
+		{
+			QString qstrUpProtocal = "上层协议 ";
+			break;
+		}
+		default:
+		{
+			QString qstrUpProtocal = "上层协议:未知";
+		}
+		}
 	}
 	case ARP:
 	{
-	hItem = m_tree1.InsertItem(_T("上层协议:ARP"),hSubItem);
-	hSubItem = m_tree1.InsertItem(_T("网络层"),hRoot);
-	arp_header *ah;
-	const u_char *arp_data;
-	arp_data=pkt_data+14;
-	ah = (arp_header *)arp_data;
-	str.Format(_T("硬件类型：%d"),ntohs( ah->arp_hdr ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("协议类型：0x%x"),ntohs( ah->arp_pro ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("硬件长度：%d"),ah->arp_hln);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("协议长度：%d"),ah->apr_pln );
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("操作类型：%d"),ntohs( ah->arp_opt ));
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("发送端MAC地址：%x:%x:%x:%x:%x:%x"),ah->arp_smac.byte1,ah->arp_smac.byte2,ah->arp_smac.byte3,ah->arp_smac.byte4,ah->arp_smac.byte5,ah->arp_smac.byte6);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("发送端协议地址：%d.%d.%d.%d"),ah->arp_sip.byte1,ah->arp_sip.byte2,ah->arp_sip.byte3,ah->arp_sip.byte4);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("接收端MAC地址：%x:%x:%x:%x:%x:%x"),ah->arp_dmac.byte1,ah->arp_dmac.byte2,ah->arp_dmac.byte3,ah->arp_dmac.byte4,ah->arp_dmac.byte5,ah->arp_dmac.byte6);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	str.Format(_T("接收端协议地址：%d.%d.%d.%d"),ah->arp_dip.byte1,ah->arp_dip.byte2,ah->arp_dip.byte3,ah->arp_dip.byte4);
-	hItem = m_tree1.InsertItem(str,hSubItem);
-	break;
+		QString qstrUpProtocal = "上层协议:ARP";
+		QString qstrNetWork = "网络层";
+
+
+		arp_header *ah;
+		const u_char *arp_data;
+		arp_data = pkt_data + 14;
+		ah = (arp_header *)arp_data;
+
+		QString qstrHardType = "硬件类型:" + QString::number(ntohs(ah->arp_hdr));
+		QString qstrProtocalType = "协议类型:" + QString::number(ntohs(ah->arp_pro));
+		QString qstrHardLength = "硬件长度:" + QString::number(ah->arp_hln);
+		QString qstrProtocalLength = "协议长度:" + QString::number(ah->apr_pln);
+		QString qstrOpType = "操作类型" + QString::number(ntohs(ah->arp_opt));
+
+		QString qstrSendMacAddr = "发送端MAC地址:" + QString::number(ah->arp_smac.byte1) + ":" + QString::number(ah->arp_smac.byte2) + ":" + QString::number(ah->arp_smac.byte3) + ":" + QString::number(ah->arp_smac.byte4) + ":" + QString::number(ah->arp_smac.byte5) + ":" + QString::number(ah->arp_smac.byte6);
+		QString qstrSendProtocalAddr = "发送端协议地址:" + QString::number(ah->arp_sip.byte1) + ":" + QString::number(ah->arp_sip.byte2) + ":" + QString::number(ah->arp_sip.byte3) + ":" + QString::number(ah->arp_sip.byte4);
+
+		QString qstrReciveMacAddr = "接收端MAC地址:" + QString::number(ah->arp_dmac.byte1) + ":" + QString::number(ah->arp_dmac.byte2) + ":" + QString::number(ah->arp_dmac.byte3) + ":" + QString::number(ah->arp_dmac.byte4) + ":" + QString::number(ah->arp_dmac.byte5) + ":" + QString::number(ah->arp_dmac.byte6);
+		QString qstrReciveProtocalAddr = "接收端协议地址:" + QString::number(ah->arp_dip.byte1) + ":" + QString::number(ah->arp_dip.byte2) + ":" + QString::number(ah->arp_dip.byte3) + ":" + QString::number(ah->arp_dip.byte4);
+		break;
 	}
 	case RARP:
 	{
-	hItem = m_tree1.InsertItem(_T("上层协议:RARP"),hSubItem);
-	break;
+		QString qstrUpProtocal = "上层协议:RARP";
+		break;
 	}
-	default:
-	hItem = m_tree1.InsertItem(_T("上层协议:未知"),hSubItem);
-	}
-
-	m_tree1.Expand(hRoot,TVE_EXPAND);		//默认展开目录
-	m_tree1.Expand(hSubItem,TVE_EXPAND);
-
-	CString strHex;
-	int nCount = 0;
-	CString strText;
-	for (unsigned short i = 0; i < pkt_header->caplen ; i++)
-	{
-	CString hex;
-	if ( (i % 16) == 0)
-	{
-	hex.Format(_T("\x0d\x0a 0X%04x   "),nCount);
-	nCount++;
-	if( i != 0)
-	{
-	strHex +=_T("  ")+strText ;
-	strText = _T("");
-	}
-	strHex += hex;
-	}
-	hex.Format(_T("%2.2x "),pkt_data[i-1]);
-	strHex += hex;
-	if(pkt_data[i-1] <= 127 && pkt_data[i-1] >= 0)
-	hex.Format(_T("%c"),pkt_data[i-1]);
-	else
-	hex = _T(".");
-	strText += hex;
-	}
-	if( strText !=_T(""))
-	strHex += strText;
-	m_edit1.SetWindowText(strHex);
-	*/
+	default:QString qstrUpProtocal = "上层协议:未知";
+ }
 }

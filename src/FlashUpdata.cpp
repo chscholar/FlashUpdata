@@ -89,7 +89,7 @@ void FlashUpdata::initUi()
 
 }
 
-void FlashUpdata::slotSwitchRadio(int radioID, bool bCheck)
+void FlashUpdata::slotSwitchRadio(int radioID, bool bCheck) 
 {
 	if (bCheck && radioID == RADIO_DOWNLOAD)
 	{

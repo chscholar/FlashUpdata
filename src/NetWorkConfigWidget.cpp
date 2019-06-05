@@ -296,7 +296,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 			QString qstrUrgenPoint = "紧急指针:" + QString::number(ntohs(th->urp));
 
 			break;
-		}
+		}   
 		case UDP:
 		{
 			QString qstrUpProtocal = "上层协议:UDP";

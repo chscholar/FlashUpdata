@@ -16,6 +16,8 @@
 #include "SinNetWorkCapThread.h"
 #include "SinTaskQueue.h"
 static int TotalIndex = 0;
+static int TcpIndex = 0;
+static int UdpIndex = 0;
 
 NetWorkConfigWidget::NetWorkConfigWidget(QWidget *parent)
 	:QWidget(parent)
@@ -206,6 +208,8 @@ void NetWorkConfigWidget::slotStartCap()
 		m_pStartCapButton->setText("停止捕获");
 		//startCap(currentDevice);
 		TotalIndex = 0;
+		TcpIndex = 0;
+		UdpIndex = 0;
 		SinNetWorkCapSingle::getInstance().startThread(currentDevice);
 
 	}
@@ -224,9 +228,20 @@ void NetWorkConfigWidget::slotUpDataCapTable()
 {
 	CapData data = sinTaskQueueSingle::getInstance().popBackCapData();
 	//if (data == NULL) return;
-	QString qstrTotalText  = "总流量:" + QString::number(TotalIndex);
+	QString qstrTotalText = "总流量:" + QString::number(TotalIndex) + "              TCP:" + QString::number(TcpIndex) + "              UDP:" + QString::number(UdpIndex);
 	m_pTotalByte->setText(qstrTotalText);
+
+	if (data.strProtocal == "TCP")
+	{
+		TcpIndex++;
+	}
+	else if (data.strProtocal == "UDP")
+	{
+		UdpIndex++;
+	}
+	
 	TotalIndex++;
+	
 	m_pCapModel->addItem(data);
 }
 

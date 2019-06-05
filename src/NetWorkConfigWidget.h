@@ -16,44 +16,146 @@
 #pragma execution_character_set("utf-8")
 
 
-struct LineLayer 
+struct Header
 {
 	QString qstrSrcMac;
 	QString qstrDestMac;
-	QString qstrUpProtocal;
+
 };
 
-struct NetLayer
+/*******************************************IP Start*************************************************/
+
+struct  IPHeader
 {
-	QString qstrVersion;
+	QString qstrUpProtocal ;
+	QString qstrNetLayer;
 	QString qstrHeaderLength;
-	QString qstrServiceType;
-	QString qstrTotalLength;
-	QString qstrDefine;
-	QString qstrFlag;
+	QString qstrServiceType ;
+	QString qstrTotalLength ;
+	QString qstrNetDef ;
+	QString qstrMetFlag ;
 	QString qstrPieceOffset;
 	QString qstrAliveTime;
 	QString qstrHeaderCheckSum;
 	QString qstrSrcIp;
+	QString qstrDestIp;
+};
+
+struct TCP 
+{
+	Header header;
+	IPHeader ip;
 	QString qstrUpProtocal;
-};
-
-struct CtrlBit
-{
-	QString qstrWindows;
-	QString qstrCheckSum;
-	QString qstrUrgenPoint;
-
-};
-
-struct TransLayouer
-{
+	QString qstrTransWork;
 	QString qstrSrcPort;
 	QString qstrDestPort;
-	QString qstrSeqNum;
-	QString qstrConfirmNum;
+	QString qstrSequNum ;
+	QString qstrAckNum ;
 	QString qstrTcpHeaderLength;
-	CtrlBit ctlBit;
+	QString qstrCtrlBit;
+	QString qstrUrgenURG;
+	QString qstrAckConfirm;
+	QString qstrPushPSH;
+	QString qstrRestRst;
+	QString qstrSyncSyn ;
+	QString qstrOverFin;
+	QString qstrWindows ;
+	QString qstrCheckSum ;
+	QString qstrUrgenPoint;
+};
+
+struct UDP
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+	QString qstrTransWork;
+	QString qstrSrcPort;
+	QString qstrDestPort;
+	QString qstrUdpHeaderLength;
+	QString qstrCheckSum;
+
+};
+
+struct DNS
+{
+	UDP udp;
+	QString qstrAppWork;
+	QString qstrNetDef;
+	QString qstrNetFlah;
+	QString qstrQuestionNum;
+	QString qstrResourceNoteNum;
+	QString qstrAuthResourceNoteNum;
+	QString qstrExtraResourceNoteNum;
+};
+
+struct ICMP
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+	QString qstrTransWork ;
+
+	QString qstrType;
+	QString qstrCode ;
+	QString qstrCheckSum ;
+};
+
+struct IGMP
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+
+};
+
+struct EGP
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+
+};
+
+struct IPv6
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+
+};
+
+struct OSPF
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+
+};
+/*******************************************IP End*************************************************/
+
+
+struct ARP
+{
+	Header header;
+	QString qstrUpProtocal;
+	QString qstrNetWork;
+	QString qstrHardType;
+	QString qstrProtocalType;
+	QString qstrHardLength ;
+	QString qstrProtocalLength ;
+	QString qstrOpType ;
+	QString qstrSendMacAddr;
+	QString qstrSendProtocalAddr;
+	QString qstrReciveMacAddr ;
+	QString qstrReciveProtocalAddr;
+};
+
+struct RARP
+{
+	Header header;
+	QString qstrUpProtocal;
+
 };
 
 class NetWorkConfigWidget : public QWidget

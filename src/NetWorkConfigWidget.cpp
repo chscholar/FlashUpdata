@@ -15,6 +15,7 @@
 #include <WinSock2.h>
 #include "SinNetWorkCapThread.h"
 #include "SinTaskQueue.h"
+static int TotalIndex = 0;
 
 NetWorkConfigWidget::NetWorkConfigWidget(QWidget *parent)
 	:QWidget(parent)
@@ -58,15 +59,15 @@ void NetWorkConfigWidget::initUi()
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->setMargin(10);
 
-	mainLayout->addSpacing(10);
+	//mainLayout->addSpacing(10);
 	m_pNetDeviceTableView = new QTableView();
 	mainLayout->addWidget(m_pNetDeviceTableView);
 
-	mainLayout->addSpacing(10);
+	//mainLayout->addSpacing(10);
 	m_pLineEdit = new QLineEdit();
 	mainLayout->addWidget(m_pLineEdit);
 	
-	mainLayout->addSpacing(10);
+	//mainLayout->addSpacing(10);
 	QHBoxLayout *buttonLayout = new QHBoxLayout();
 	buttonLayout->addStretch();
 
@@ -86,6 +87,10 @@ void NetWorkConfigWidget::initUi()
 
 	m_plistView = new QTreeView();
 	mainLayout->addWidget(m_plistView);
+
+
+	m_pTotalByte = new QLabel("总量:0");
+	mainLayout->addWidget(m_pTotalByte);
 
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
@@ -135,6 +140,7 @@ void NetWorkConfigWidget::initTableViewConfig()
 
 	m_pTreeModel = new QStandardItemModel();
 	m_plistView->setModel(m_pTreeModel);
+	m_pTreeModel->setHorizontalHeaderLabels(QStringList() << QStringLiteral("包解析"));
 
 }
 
@@ -199,6 +205,7 @@ void NetWorkConfigWidget::slotStartCap()
 		
 		m_pStartCapButton->setText("停止捕获");
 		//startCap(currentDevice);
+		TotalIndex = 0;
 		SinNetWorkCapSingle::getInstance().startThread(currentDevice);
 
 	}
@@ -212,11 +219,14 @@ void NetWorkConfigWidget::slotStartCap()
 }
 
 
+
 void NetWorkConfigWidget::slotUpDataCapTable()
 {
 	CapData data = sinTaskQueueSingle::getInstance().popBackCapData();
 	//if (data == NULL) return;
-	
+	QString qstrTotalText  = "总流量:" + QString::number(TotalIndex);
+	m_pTotalByte->setText(qstrTotalText);
+	TotalIndex++;
 	m_pCapModel->addItem(data);
 }
 

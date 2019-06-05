@@ -12,8 +12,50 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QTreeView>
-
+#include <QLabel>
 #pragma execution_character_set("utf-8")
+
+
+struct LineLayer 
+{
+	QString qstrSrcMac;
+	QString qstrDestMac;
+	QString qstrUpProtocal;
+};
+
+struct NetLayer
+{
+	QString qstrVersion;
+	QString qstrHeaderLength;
+	QString qstrServiceType;
+	QString qstrTotalLength;
+	QString qstrDefine;
+	QString qstrFlag;
+	QString qstrPieceOffset;
+	QString qstrAliveTime;
+	QString qstrHeaderCheckSum;
+	QString qstrSrcIp;
+	QString qstrUpProtocal;
+};
+
+struct CtrlBit
+{
+	QString qstrWindows;
+	QString qstrCheckSum;
+	QString qstrUrgenPoint;
+
+};
+
+struct TransLayouer
+{
+	QString qstrSrcPort;
+	QString qstrDestPort;
+	QString qstrSeqNum;
+	QString qstrConfirmNum;
+	QString qstrTcpHeaderLength;
+	CtrlBit ctlBit;
+};
+
 class NetWorkConfigWidget : public QWidget
 {
 	Q_OBJECT
@@ -45,6 +87,8 @@ protected:
 	QList<pcap_pkthdr *> m_pktHeaders;
 	QList<u_char *> m_pktDatas;
 	int m_totalCount;
+
+	QLabel *m_pTotalByte;
 
 private:
 	public slots :

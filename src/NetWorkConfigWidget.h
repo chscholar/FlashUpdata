@@ -13,15 +13,24 @@
 #include <QStringListModel>
 #include <QTreeView>
 #include <QLabel>
+#include <QVariant>
+#include <QMap>
+
 #pragma execution_character_set("utf-8")
 
 
-struct Header
+struct LinkHeader
 {
+	QString qstrLinkLayer;
 	QString qstrSrcMac;
 	QString qstrDestMac;
+	bool isEmpty()
+	{
+		return this->qstrLinkLayer.isEmpty();
+	}
 
 };
+Q_DECLARE_METATYPE(LinkHeader)
 
 /*******************************************IP Start*************************************************/
 
@@ -40,12 +49,16 @@ struct  IPHeader
 	QString qstrHeaderCheckSum;
 	QString qstrSrcIp;
 	QString qstrDestIp;
+
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(IPHeader)
 
 struct TCPHeader 
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
 	QString qstrTransLayer;
 	QString qstrSrcPort;
@@ -63,12 +76,16 @@ struct TCPHeader
 	QString qstrWindows ;
 	QString qstrCheckSum ;
 	QString qstrUrgenPoint;
+
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(TCPHeader)
 
 struct UDPHeader
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
 	QString qstrTransLayer;
 	QString qstrSrcPort;
@@ -76,11 +93,15 @@ struct UDPHeader
 	QString qstrUdpHeaderLength;
 	QString qstrCheckSum;
 
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(UDPHeader)
 
 struct DNSHeader
 {
-	UDPHeader udp;
 	QString qstrAppWork;
 	QString qstrNetDef;
 	QString qstrNetFlag;
@@ -88,65 +109,85 @@ struct DNSHeader
 	QString qstrResourceNoteNum;
 	QString qstrAuthResourceNoteNum;
 	QString qstrExtraResourceNoteNum;
+	bool isEmpty()
+	{
+		return this->qstrAppWork.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(DNSHeader)
 
 struct ICMPHeader
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
 	QString qstrTransLayer ;
 
 	QString qstrType;
 	QString qstrCode ;
 	QString qstrCheckSum ;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(ICMPHeader)
 
 struct IGMPHeader
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 
 };
+Q_DECLARE_METATYPE(IGMPHeader)
 
 struct EGPHeader
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
-
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(EGPHeader)
 
 struct IPv6Header
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
-
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(IPv6Header)
 
 struct OSPFHeader
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 
 };
+Q_DECLARE_METATYPE(OSPFHeader)
 
 struct UnKnowIPHeader
 {
-	Header header;
-	IPHeader ip;
 	QString qstrUpProtocal;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 
 };
+Q_DECLARE_METATYPE(UnKnowIPHeader)
 /*******************************************IP End*************************************************/
 
 
 struct ARPHeader
 {
-	Header header;
 	QString qstrUpProtocal;
 	QString qstrNetLayer;
 	QString qstrHardType;
@@ -158,20 +199,51 @@ struct ARPHeader
 	QString qstrSendProtocalAddr;
 	QString qstrReciveMacAddr ;
 	QString qstrReciveProtocalAddr;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 };
+Q_DECLARE_METATYPE(ARPHeader)
 
 struct RARPHeader
 {
-	Header header;
 	QString qstrUpProtocal;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 
 };
+Q_DECLARE_METATYPE(RARPHeader)
 
 struct UnKnowHeader
 {
-	Header header;
 	QString qstrUpProtocal;
+	bool isEmpty()
+	{
+		return this->qstrUpProtocal.isEmpty();
+	}
 
+};
+Q_DECLARE_METATYPE(UnKnowHeader)
+
+enum protocalType
+{
+	PROTOCAL_LINK,
+	PROTOCAL_IP,
+	PROTOCAL_TCP,
+	PROTOCAL_UDP,
+	PROTOCAL_DNS,
+	PROTOCAL_ICMP,
+	PROTOCAL_IGMP,
+	PROTOCAL_OSPF,
+	PROTOCAL_RARP,
+	PROTOCAL_ARP,
+	PROTOCAL_UNKNOW,
+	PROTOCAL_UNKNOWIP,
+	PROTOCAL_IPV6,
+	PROTOCAL_EGP,
 };
 
 class NetWorkConfigWidget : public QWidget

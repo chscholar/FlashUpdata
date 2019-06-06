@@ -254,7 +254,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 	int a = 1;
 
 	QString qstrDataIndex = "数据包" + QString::number(row);
-	QString qstrEth = "数据链路层";
+	QString qstrLinkLayer = "数据链路层";
 
 	
 
@@ -265,9 +265,24 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 	//目的Mac
 	QString qstrDestMac = "目的Mac:" + QString::number(eh->daddr.byte1) + ":" + QString::number(eh->daddr.byte2) + ":" + QString::number(eh->daddr.byte3) + ":" + QString::number(eh->daddr.byte4) + ":" + QString::number(eh->daddr.byte5) + ":" + QString::number(eh->daddr.byte6);
 	
-	Header Ethheader;
-	Ethheader.qstrSrcMac = qstrSrcMac;
-	Ethheader.qstrDestMac = qstrDestMac;
+	LinkHeader linkHeader;
+	linkHeader.qstrLinkLayer = qstrLinkLayer;
+	linkHeader.qstrSrcMac = qstrSrcMac;
+	linkHeader.qstrDestMac = qstrDestMac;
+
+	IPHeader ipherader;
+	TCPHeader tcpHeader;
+	UDPHeader udpHeader;
+	DNSHeader dnsHeader;
+	ICMPHeader icmpHeader;
+	IGMPHeader igmpHeader;
+	EGPHeader egpHeader;
+	IPv6Header ipv6Header;
+	OSPFHeader ospfHeader;
+	UnKnowIPHeader unknowIPHeader;
+	ARPHeader arpHeader;
+	RARPHeader rarpHeader;
+	UnKnowHeader unknowHeader;
 
 	switch (ntohs(eh->type))
 	{
@@ -296,7 +311,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		QString qstrSrcIp = "源IP：" + QString::number(ih->saddr.byte1) + "." + QString::number(ih->saddr.byte2) + "." + QString::number(ih->saddr.byte3) + "." + QString::number(ih->saddr.byte4);
 		QString qstrDestIp = "目的IP：" + QString::number(ih->daddr.byte1) + "." + QString::number(ih->daddr.byte2) + "." + QString::number(ih->daddr.byte3) + "." + QString::number(ih->daddr.byte4);
 
-		IPHeader ipherader;
+		
 		ipherader.qstrUpProtocal = qstrUpProtocal;
 		ipherader.qstrNetLayer = qstrNetLayer;
 		ipherader.qstrVersion = qstrVersion;
@@ -343,9 +358,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 			QString qstrCheckSum = "校验和:" + QString::number(ntohs(th->crc));
 			QString qstrUrgenPoint = "紧急指针:" + QString::number(ntohs(th->urp));
 
-			TCPHeader tcpHeader;
-			tcpHeader.header = Ethheader;
-			tcpHeader.ip = ipherader;
+			
 			tcpHeader.qstrUpProtocal = qstrUpProtocal;
 			tcpHeader.qstrTransLayer = qstrTransLayer;
 			tcpHeader.qstrSrcPort = qstrSrcPort;
@@ -364,6 +377,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 			tcpHeader.qstrCheckSum = qstrCheckSum;
 			tcpHeader.qstrUrgenPoint = qstrUrgenPoint;
 
+
 			break;
 		}
 		case UDP:
@@ -381,9 +395,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 			QString qstrUdpHeaderLength = "长度：" + QString::number(ntohs(uh->len));
 			QString qstrCheckSum = "校验和:" + QString::number(ntohs(uh->crc));
 
-			UDPHeader udpHeader;
-			udpHeader.header = Ethheader;
-			udpHeader.ip = ipherader;
+			
 			udpHeader.qstrUpProtocal = qstrUpProtocal;
 			udpHeader.qstrTransLayer = qstrTransLayer;
 			udpHeader.qstrSrcPort = qstrSrcPort;
@@ -406,8 +418,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 				QString qstrAuthResourceNoteNum = "授权资源记录数：" + QString::number(ntohs(dh->authority_num));
 				QString qstrExtraResourceNoteNum = "额外资源记录数" + QString::number(ntohs(dh->addition_num));
 
-				DNSHeader dnsHeader;
-				dnsHeader.udp = udpHeader;
+				
 				dnsHeader.qstrNetDef = qstrNetDef;
 				dnsHeader.qstrNetFlag = qstrNetFlag;
 				dnsHeader.qstrQuestionNum = qstrQuestionNum;
@@ -431,9 +442,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 			QString qstrCode = "代码:" + QString::number(icmph->code);
 			QString qstrCheckSum = "校验和:" + QString::number(ntohs(icmph->checksum));
 
-			ICMPHeader icmpHeader;
-			icmpHeader.header = Ethheader;
-			icmpHeader.ip = ipherader;
+		
 			icmpHeader.qstrUpProtocal = qstrUpProtocal;
 			icmpHeader.qstrTransLayer = qstrTransLayer;
 			icmpHeader.qstrType = qstrType;
@@ -444,47 +453,36 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		case IGMP:
 		{
 			QString qstrUpProtocal = "上层协议:IGMP";
-			IGMPHeader igmpHeader;
-			igmpHeader.header = Ethheader;
-			igmpHeader.ip = ipherader;
+			
 			igmpHeader.qstrUpProtocal = qstrUpProtocal;
-
 			break;
 		}
 
 		case EGP:
 		{
 			QString qstrUpProtocal = "上层协议:EGP";
-			EGPHeader egpHeader;
-			egpHeader.header = Ethheader;
-			egpHeader.ip = ipherader;
+			
 			egpHeader.qstrUpProtocal = qstrUpProtocal;
 			break;
 		}
 		case IPv6:
 		{
 			QString qstrUpProtocal = "上层协议:IPv6";
-			IPv6Header ipv6Header;
-			ipv6Header.header = Ethheader;
-			ipv6Header.ip = ipherader;
+			
 			ipv6Header.qstrUpProtocal = qstrUpProtocal;
 			break;
 		}
 		case OSPF:
 		{
 			QString qstrUpProtocal = "上层协议 ";
-			OSPFHeader ospfHeader;
-			ospfHeader.header = Ethheader;
-			ospfHeader.ip = ipherader;
+			
 			ospfHeader.qstrUpProtocal = qstrUpProtocal;
 			break;
 		}
 		default:
 		{
 			QString qstrUpProtocal = "上层协议:未知";
-			UnKnowIPHeader unknowIPHeader;
-			unknowIPHeader.header = Ethheader;
-			unknowIPHeader.ip = ipherader;
+			
 			unknowIPHeader.qstrUpProtocal = qstrUpProtocal;
 		}
 		}
@@ -512,8 +510,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		QString qstrReciveMacAddr = "接收端MAC地址:" + QString::number(ah->arp_dmac.byte1) + ":" + QString::number(ah->arp_dmac.byte2) + ":" + QString::number(ah->arp_dmac.byte3) + ":" + QString::number(ah->arp_dmac.byte4) + ":" + QString::number(ah->arp_dmac.byte5) + ":" + QString::number(ah->arp_dmac.byte6);
 		QString qstrReciveProtocalAddr = "接收端协议地址:" + QString::number(ah->arp_dip.byte1) + ":" + QString::number(ah->arp_dip.byte2) + ":" + QString::number(ah->arp_dip.byte3) + ":" + QString::number(ah->arp_dip.byte4);
 
-		ARPHeader arpHeader;
-		arpHeader.header = Ethheader;
+		
 		arpHeader.qstrUpProtocal = qstrUpProtocal;
 		arpHeader.qstrNetLayer = qstrNetLayer;
 		arpHeader.qstrHardType = qstrHardType;
@@ -530,17 +527,17 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 	case RARP:
 	{
 		QString qstrUpProtocal = "上层协议:RARP";
-		RARPHeader rarpHeader;
-		rarpHeader.header = Ethheader;
+		
 		rarpHeader.qstrUpProtocal = qstrUpProtocal;
 		break;
 	}
 	default:
 
 		QString qstrUpProtocal = "上层协议:未知";
-		UnKnowHeader unknowHeader;
-		unknowHeader.header = Ethheader;
+	
 		unknowHeader.qstrUpProtocal = qstrUpProtocal;
-
 	}
+
+	
+	int b = 1;
 }

@@ -604,26 +604,6 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		QStandardItem* tcpItem = new QStandardItem(tcpHeader.qstrTransLayer);
 		m_pTreeModel->appendRow(tcpItem);
 
-		/*
-		QString qstrUpProtocal;
-		QString qstrTransLayer;
-		QString qstrSrcPort;
-		QString qstrDestPort;
-		QString qstrSequNum ;
-		QString qstrAckNum ;
-		QString qstrTcpHeaderLength;
-		QString qstrCtrlBit;
-		QString qstrUrgenURG;
-		QString qstrAckConfirm;
-		QString qstrPushPSH;
-		QString qstrRestRst;
-		QString qstrSyncSyn ;
-		QString qstrOverFin;
-		QString qstrWindows ;
-		QString qstrCheckSum ;
-		QString qstrUrgenPoint;
-		*/
-
 		QStandardItem* upProtocalItem = new QStandardItem(tcpHeader.qstrUpProtocal);
 		tcpItem->appendRow(upProtocalItem);
 
@@ -671,5 +651,146 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 
 		QStandardItem* usgenPointItem = new QStandardItem(tcpHeader.qstrUrgenPoint);
 		tcpItem->appendRow(usgenPointItem);
+	}
+
+	if (!udpHeader.isEmpty() )
+	{
+		QStandardItem* udpItem = new QStandardItem(udpHeader.qstrTransLayer);
+		m_pTreeModel->appendRow(udpItem);
+
+		QStandardItem* upProtocalItem = new QStandardItem(udpHeader.qstrUpProtocal);
+		udpItem->appendRow(upProtocalItem);
+
+		QStandardItem* srcPortItem = new QStandardItem(udpHeader.qstrSrcPort);
+		udpItem->appendRow(srcPortItem);
+
+		QStandardItem* destPortItem = new QStandardItem(udpHeader.qstrDestPort);
+		udpItem->appendRow(destPortItem);
+
+		QStandardItem* udpHeaderLengthItem = new QStandardItem(udpHeader.qstrUdpHeaderLength);
+		udpItem->appendRow(udpHeaderLengthItem);
+
+		QStandardItem* checkSumItem = new QStandardItem(udpHeader.qstrCheckSum);
+		udpItem->appendRow(checkSumItem);
+	}
+
+	if (!dnsHeader.isEmpty() )
+	{
+		QStandardItem* dnsItem = new QStandardItem(dnsHeader.qstrAppWork);
+		m_pTreeModel->appendRow(dnsItem);
+
+		QStandardItem* netDefItem = new QStandardItem(dnsHeader.qstrNetDef);
+		dnsItem->appendRow(netDefItem);
+
+		QStandardItem* netFlagItem = new QStandardItem(dnsHeader.qstrNetFlag);
+		dnsItem->appendRow(netFlagItem);
+
+		QStandardItem* questionNumItem = new QStandardItem(dnsHeader.qstrQuestionNum);
+		dnsItem->appendRow(questionNumItem);
+
+		QStandardItem* resourceNoteNumItem = new QStandardItem(dnsHeader.qstrResourceNoteNum);
+		dnsItem->appendRow(resourceNoteNumItem);
+
+		QStandardItem* authResourceNoteNumItem = new QStandardItem(dnsHeader.qstrAuthResourceNoteNum);
+		dnsItem->appendRow(authResourceNoteNumItem);
+
+		QStandardItem* extraResourceNoteNumItem = new QStandardItem(dnsHeader.qstrExtraResourceNoteNum);
+		dnsItem->appendRow(extraResourceNoteNumItem);
+	}
+
+	if (!icmpHeader.isEmpty())
+	{
+		QStandardItem* icmpItem = new QStandardItem(icmpHeader.qstrTransLayer);
+		m_pTreeModel->appendRow(icmpItem);
+
+		QStandardItem* upProtocalItem = new QStandardItem(icmpHeader.qstrUpProtocal);
+		icmpItem->appendRow(upProtocalItem);
+
+		QStandardItem* typeItem = new QStandardItem(icmpHeader.qstrType);
+		icmpItem->appendRow(typeItem);
+
+		QStandardItem* codeItem = new QStandardItem(icmpHeader.qstrCode);
+		icmpItem->appendRow(codeItem);
+
+		QStandardItem* checkSumItem = new QStandardItem(icmpHeader.qstrCheckSum);
+		icmpItem->appendRow(checkSumItem);
+	}
+	
+	if (!igmpHeader.isEmpty())
+	{
+		QStandardItem* igmpItem = new QStandardItem(igmpHeader.qstrUpProtocal);
+		m_pTreeModel->appendRow(igmpItem);
+	}
+
+	if (!egpHeader.isEmpty())
+	{
+		QStandardItem* egpItem = new QStandardItem(egpHeader.qstrUpProtocal);
+		m_pTreeModel->appendRow(egpItem);
+	}
+
+	if (!ipv6Header.isEmpty())
+	{
+		QStandardItem* ipv6Item = new QStandardItem(ipv6Header.qstrUpProtocal);
+		m_pTreeModel->appendRow(ipv6Item);
+	}
+
+	if (!ospfHeader.isEmpty())
+	{
+		QStandardItem *ospf6Item = new QStandardItem(ospfHeader.qstrUpProtocal);
+		m_pTreeModel->appendRow(ospf6Item);
+	}
+
+
+	if (!unknowIPHeader.isEmpty())
+	{
+		QStandardItem *unknowIpItem = new QStandardItem(unknowIPHeader.qstrUpProtocal);
+		m_pTreeModel->appendRow(unknowIpItem);
+	}
+
+	if (!arpHeader.isEmpty())
+	{
+
+		QStandardItem *arpItem = new QStandardItem(arpHeader.qstrNetLayer);
+		m_pTreeModel->appendRow(arpItem);
+
+		QStandardItem *upProtcoalItem = new QStandardItem(arpHeader.qstrUpProtocal);
+		arpItem->appendRow(upProtcoalItem);
+
+		QStandardItem *protocalTypeItem = new QStandardItem(arpHeader.qstrProtocalType);
+		arpItem->appendRow(protocalTypeItem);
+
+		QStandardItem *hardLengthItem = new QStandardItem(arpHeader.qstrHardLength);
+		arpItem->appendRow(hardLengthItem);
+
+		QStandardItem *protocalLengthItem = new QStandardItem(arpHeader.qstrProtocalLength);
+		arpItem->appendRow(protocalLengthItem);
+
+		QStandardItem *opTypeItem = new QStandardItem(arpHeader.qstrOpType);
+		arpItem->appendRow(opTypeItem);
+
+		QStandardItem *sendMacAddressItem = new QStandardItem(arpHeader.qstrSendMacAddr);
+		arpItem->appendRow(sendMacAddressItem);
+
+		QStandardItem *sendProtocalAddressItem = new QStandardItem(arpHeader.qstrSendProtocalAddr);
+		arpItem->appendRow(sendProtocalAddressItem);
+
+		QStandardItem *reciveMacAddressItem = new QStandardItem(arpHeader.qstrReciveMacAddr);
+		arpItem->appendRow(reciveMacAddressItem);
+
+		QStandardItem *reciveProtocalAddressItem = new QStandardItem(arpHeader.qstrReciveProtocalAddr);
+		arpItem->appendRow(reciveProtocalAddressItem);
+	}
+	
+	if (!rarpHeader.isEmpty())
+	{
+		QStandardItem *rarpItem = new QStandardItem(rarpHeader.qstrUpProtocal);
+		m_pTreeModel->appendRow(rarpItem);
+	}
+
+
+	if (!unknowHeader.isEmpty())
+	{
+		QStandardItem *unknowItem = new QStandardItem(unknowHeader.qstrUpProtocal);
+		m_pTreeModel->appendRow(unknowItem);
 	}
 }

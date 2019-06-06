@@ -87,9 +87,13 @@ void NetWorkConfigWidget::initUi()
 	m_pCapTableView = new QTableView();
 	mainLayout->addWidget(m_pCapTableView);
 
+	QHBoxLayout *treeHexLayout = new QHBoxLayout();
 	m_plistView = new QTreeView();
-	mainLayout->addWidget(m_plistView);
+	treeHexLayout->addWidget(m_plistView);
 
+	m_pHexView = new QHexView();
+	treeHexLayout->addWidget(m_pHexView);
+	mainLayout->addLayout(treeHexLayout);
 
 	m_pTotalByte = new QLabel("×ÜÁ¿:0");
 	mainLayout->addWidget(m_pTotalByte);
@@ -793,4 +797,8 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		QStandardItem *unknowItem = new QStandardItem(unknowHeader.qstrUpProtocal);
 		m_pTreeModel->appendRow(unknowItem);
 	}
+
+	
+	QByteArray arr = (char*) pkt_data;
+	//m_pHexView->setData();
 }

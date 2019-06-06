@@ -1,9 +1,9 @@
 /*
 Copyright (C) 2006 - 2013 Evan Teran
-                          eteran@alum.rit.edu
+eteran@alum.rit.edu
 
 Copyright (C) 2010        Hugues Bruant
-                          hugues.bruant@gmail.com
+hugues.bruant@gmail.com
 
 This file can be used under one of two licenses.
 
@@ -38,33 +38,33 @@ The license chosen is at the discretion of the user of this software.
 
 namespace {
 
-//------------------------------------------------------------------------------
-// Name: is_printable
-// Desc: determines if a character has a printable ascii symbol
-//------------------------------------------------------------------------------
-//const expr bool is_printable(unsigned char ch) {
+	//------------------------------------------------------------------------------
+	// Name: is_printable
+	// Desc: determines if a character has a printable ascii symbol
+	//------------------------------------------------------------------------------
 	const  bool is_printable(unsigned char ch) {
 
-	// if it's standard ascii use isprint/isspace, otherwise go with our observations
-	if(ch < 0x80) {
-		return std::isprint(ch) || std::isspace(ch);
-	} else {
-		return (ch & 0xff) >= 0xa0;
+		// if it's standard ascii use isprint/isspace, otherwise go with our observations
+		if (ch < 0x80) {
+			return std::isprint(ch) || std::isspace(ch);
+		}
+		else {
+			return (ch & 0xff) >= 0xa0;
+		}
 	}
-}
 
-//------------------------------------------------------------------------------
-// Name: add_toggle_action_to_menu
-// Desc: convenience function used to add a checkable menu item to the context menu
-//------------------------------------------------------------------------------
-QAction *add_toggle_action_to_menu(QMenu *menu, const QString &caption, bool checked, QObject *receiver, const char *slot) {
-	auto action = new QAction(caption, menu);
-	action->setCheckable(true);
-	action->setChecked(checked);
-	menu->addAction(action);
-	QObject::connect(action, SIGNAL(toggled(bool)), receiver, slot);
-	return action;
-}
+	//------------------------------------------------------------------------------
+	// Name: add_toggle_action_to_menu
+	// Desc: convenience function used to add a checkable menu item to the context menu
+	//------------------------------------------------------------------------------
+	QAction *add_toggle_action_to_menu(QMenu *menu, const QString &caption, bool checked, QObject *receiver, const char *slot) {
+		auto action = new QAction(caption, menu);
+		action->setCheckable(true);
+		action->setChecked(checked);
+		menu->addAction(action);
+		QObject::connect(action, SIGNAL(toggled(bool)), receiver, slot);
+		return action;
+	}
 
 }
 
@@ -102,31 +102,33 @@ QString QHexView::formatAddress(address_t address) {
 
 	static char buffer[32];
 
-	switch(address_size_) {
+	switch (address_size_) {
 	case Address32:
-		{
-		    const uint16_t hi = (address >> 16) & 0xffff;
-			const uint16_t lo = (address & 0xffff);
+	{
+		const uint16_t hi = (address >> 16) & 0xffff;
+		const uint16_t lo = (address & 0xffff);
 
-			if(show_address_separator_) {
-				qsnprintf(buffer, sizeof(buffer), "%04x:%04x", hi, lo);
-			} else {
-				qsnprintf(buffer, sizeof(buffer), "%04x%04x", hi, lo);
-			}
+		if (show_address_separator_) {
+			qsnprintf(buffer, sizeof(buffer), "%04x:%04x", hi, lo);
 		}
+		else {
+			qsnprintf(buffer, sizeof(buffer), "%04x%04x", hi, lo);
+		}
+	}
 		return QString::fromLocal8Bit(buffer);
 	case Address64:
-		{
-		    const uint32_t hi = (address >> 32) & 0xffffffff;
-			const uint32_t lo = (address & 0xffffffff);
+	{
+		const uint32_t hi = (address >> 32) & 0xffffffff;
+		const uint32_t lo = (address & 0xffffffff);
 
-			if(show_address_separator_) {
-				qsnprintf(buffer, sizeof(buffer), "%08x:%08x", hi, lo);
-			} else {
-				qsnprintf(buffer, sizeof(buffer), "%08x%08x", hi, lo);
-
-			}
+		if (show_address_separator_) {
+			qsnprintf(buffer, sizeof(buffer), "%08x:%08x", hi, lo);
 		}
+		else {
+			qsnprintf(buffer, sizeof(buffer), "%08x%08x", hi, lo);
+
+		}
+	}
 		return QString::fromLocal8Bit(buffer);
 	}
 
@@ -160,7 +162,7 @@ void QHexView::setFont(const QFont &f) {
 
 	// recalculate all of our metrics/offsets
 	const QFontMetrics fm(font);
-	font_width_  = fm.width('X');
+	font_width_ = fm.width('X');
 	font_height_ = fm.height();
 
 	updateScrollbars();
@@ -179,20 +181,20 @@ QMenu *QHexView::createStandardContextMenu() {
 
 	menu->addAction(tr("Set &Font"), this, SLOT(mnuSetFont()));
 	menu->addSeparator();
-	add_toggle_action_to_menu(menu, tr("Show A&ddress"),  show_address_,  this, SLOT(setShowAddress(bool)));
-	add_toggle_action_to_menu(menu, tr("Show &Hex"),      show_hex_,      this, SLOT(setShowHexDump(bool)));
-	add_toggle_action_to_menu(menu, tr("Show &Ascii"),    show_ascii_,    this, SLOT(setShowAsciiDump(bool)));
+	add_toggle_action_to_menu(menu, tr("Show A&ddress"), show_address_, this, SLOT(setShowAddress(bool)));
+	add_toggle_action_to_menu(menu, tr("Show &Hex"), show_hex_, this, SLOT(setShowHexDump(bool)));
+	add_toggle_action_to_menu(menu, tr("Show &Ascii"), show_ascii_, this, SLOT(setShowAsciiDump(bool)));
 	add_toggle_action_to_menu(menu, tr("Show &Comments"), show_comments_, this, SLOT(setShowComments(bool)));
 
-	if(user_can_set_word_width_ || user_can_set_row_width_) {
+	if (user_can_set_word_width_ || user_can_set_row_width_) {
 		menu->addSeparator();
 	}
 
-	if(user_can_set_word_width_) {
+	if (user_can_set_word_width_) {
 		auto wordWidthMapper = new QSignalMapper(menu);
 
 		auto wordMenu = new QMenu(tr("Set Word Width"), menu);
-		QAction *const a1 = add_toggle_action_to_menu(wordMenu, tr("1 Byte"),  word_width_ == 1, wordWidthMapper, SLOT(map()));
+		QAction *const a1 = add_toggle_action_to_menu(wordMenu, tr("1 Byte"), word_width_ == 1, wordWidthMapper, SLOT(map()));
 		QAction *const a2 = add_toggle_action_to_menu(wordMenu, tr("2 Bytes"), word_width_ == 2, wordWidthMapper, SLOT(map()));
 		QAction *const a3 = add_toggle_action_to_menu(wordMenu, tr("4 Bytes"), word_width_ == 4, wordWidthMapper, SLOT(map()));
 		QAction *const a4 = add_toggle_action_to_menu(wordMenu, tr("8 Bytes"), word_width_ == 8, wordWidthMapper, SLOT(map()));
@@ -206,14 +208,14 @@ QMenu *QHexView::createStandardContextMenu() {
 		menu->addMenu(wordMenu);
 	}
 
-	if(user_can_set_row_width_) {
+	if (user_can_set_row_width_) {
 		auto rowWidthMapper = new QSignalMapper(menu);
 
 		auto rowMenu = new QMenu(tr("Set Row Width"), menu);
-		QAction *const a5 = add_toggle_action_to_menu(rowMenu, tr("1 Word"),   row_width_ == 1, rowWidthMapper, SLOT(map()));
-		QAction *const a6 = add_toggle_action_to_menu(rowMenu, tr("2 Words"),  row_width_ == 2, rowWidthMapper, SLOT(map()));
-		QAction *const a7 = add_toggle_action_to_menu(rowMenu, tr("4 Words"),  row_width_ == 4, rowWidthMapper, SLOT(map()));
-		QAction *const a8 = add_toggle_action_to_menu(rowMenu, tr("8 Words"),  row_width_ == 8, rowWidthMapper, SLOT(map()));
+		QAction *const a5 = add_toggle_action_to_menu(rowMenu, tr("1 Word"), row_width_ == 1, rowWidthMapper, SLOT(map()));
+		QAction *const a6 = add_toggle_action_to_menu(rowMenu, tr("2 Words"), row_width_ == 2, rowWidthMapper, SLOT(map()));
+		QAction *const a7 = add_toggle_action_to_menu(rowMenu, tr("4 Words"), row_width_ == 4, rowWidthMapper, SLOT(map()));
+		QAction *const a8 = add_toggle_action_to_menu(rowMenu, tr("8 Words"), row_width_ == 8, rowWidthMapper, SLOT(map()));
 		QAction *const a9 = add_toggle_action_to_menu(rowMenu, tr("16 Words"), row_width_ == 16, rowWidthMapper, SLOT(map()));
 
 		rowWidthMapper->setMapping(a5, 1);
@@ -250,8 +252,8 @@ int64_t QHexView::normalizedOffset() const {
 
 	int64_t offset = static_cast<int64_t>(verticalScrollBar()->value()) * bytesPerRow();
 
-	if(origin_ != 0) {
-		if(offset > 0) {
+	if (origin_ != 0) {
+		if (offset > 0) {
 			offset += origin_;
 			offset -= bytesPerRow();
 		}
@@ -265,7 +267,7 @@ int64_t QHexView::normalizedOffset() const {
 // Desc:
 //------------------------------------------------------------------------------
 void QHexView::mnuCopy() {
-	if(hasSelectedText()) {
+	if (hasSelectedText()) {
 
 		QString s;
 		QTextStream ss(&s);
@@ -274,36 +276,36 @@ void QHexView::mnuCopy() {
 		const int chars_per_row = bytesPerRow();
 		int64_t offset = normalizedOffset();
 
-		const int64_t end       = std::max(selection_start_, selection_end_);
-		const int64_t start     = std::min(selection_start_, selection_end_);
+		const int64_t end = std::max(selection_start_, selection_end_);
+		const int64_t start = std::min(selection_start_, selection_end_);
 		const int64_t data_size = dataSize();
 
 		// offset now refers to the first visible byte
-		while(offset < end) {
+		while (offset < end) {
 
-			if((offset + chars_per_row) > start) {
+			if ((offset + chars_per_row) > start) {
 
 				data_->seek(offset);
 				const QByteArray row_data = data_->read(chars_per_row);
 
-				if(!row_data.isEmpty()) {
-					if(show_address_) {
+				if (!row_data.isEmpty()) {
+					if (show_address_) {
 						const address_t address_rva = address_offset_ + offset;
 						const QString addressBuffer = formatAddress(address_rva);
 						ss << addressBuffer << '|';
 					}
 
-					if(show_hex_) {
+					if (show_hex_) {
 						drawHexDumpToBuffer(ss, offset, data_size, row_data);
 						ss << "|";
 					}
 
-					if(show_ascii_) {
+					if (show_ascii_) {
 						drawAsciiDumpToBuffer(ss, offset, data_size, row_data);
 						ss << "|";
 					}
 
-					if(show_comments_ && commentServer_) {
+					if (show_comments_ && commentServer_) {
 						drawCommentsToBuffer(ss, offset, data_size);
 					}
 				}
@@ -325,7 +327,7 @@ void QHexView::mnuCopy() {
 // Desc: Copy the starting address of the selected bytes
 //------------------------------------------------------------------------------
 void QHexView::mnuAddrCopy() {
-	if(hasSelectedText()) {
+	if (hasSelectedText()) {
 
 		auto s = QString("0x%1").arg(selectedBytesAddress(), 0, 16);
 		QApplication::clipboard()->setText(s);
@@ -367,9 +369,9 @@ bool QHexView::hasSelectedText() const {
 bool QHexView::isInViewableArea(int64_t index) const {
 
 	const int64_t firstViewableWord = static_cast<int64_t>(verticalScrollBar()->value()) * row_width_;
-	const int64_t viewableLines     = viewport()->height() / font_height_;
-	const int64_t viewableWords     = viewableLines * row_width_;
-	const int64_t lastViewableWord  = firstViewableWord + viewableWords;
+	const int64_t viewableLines = viewport()->height() / font_height_;
+	const int64_t viewableWords = viewableLines * row_width_;
+	const int64_t lastViewableWord = firstViewableWord + viewableWords;
 
 	return index >= firstViewableWord && index < lastViewableWord;
 }
@@ -380,35 +382,40 @@ bool QHexView::isInViewableArea(int64_t index) const {
 //------------------------------------------------------------------------------
 void QHexView::keyPressEvent(QKeyEvent *event) {
 
-	if(event == QKeySequence::SelectAll) {
+	if (event == QKeySequence::SelectAll) {
 		selectAll();
 		viewport()->update();
-	} else if(event == QKeySequence::MoveToStartOfDocument) {
+	}
+	else if (event == QKeySequence::MoveToStartOfDocument) {
 		scrollTo(0);
-	} else if(event == QKeySequence::MoveToEndOfDocument) {
+	}
+	else if (event == QKeySequence::MoveToEndOfDocument) {
 		scrollTo(dataSize() - bytesPerRow());
-	} else if(event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Down) {
+	}
+	else if (event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Down) {
 		int64_t offset = normalizedOffset();
-		if(offset + 1 < dataSize()) {
+		if (offset + 1 < dataSize()) {
 			scrollTo(offset + 1);
 		}
-	} else if(event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Up) {
+	}
+	else if (event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Up) {
 		int64_t offset = normalizedOffset();
-		if(offset > 0) {
+		if (offset > 0) {
 			scrollTo(offset - 1);
 		}
-	} else if(event->modifiers() & Qt::ShiftModifier && hasSelectedText()) {
+	}
+	else if (event->modifiers() & Qt::ShiftModifier && hasSelectedText()) {
 		// Attempting to match the highlighting behavior of common text
 		// editors where highlighting to the left or up will keep the
 		// first character (byte in our case) highlighted while also
 		// extending back or up.
 		auto dir = event->key();
-		switch(dir) {
+		switch (dir) {
 		case Qt::Key_Right:
 			if (selection_start_ == selection_end_) {
 				selection_start_ -= word_width_;
 			}
-			if(selection_end_ / word_width_ < dataSize()) {
+			if (selection_end_ / word_width_ < dataSize()) {
 				selection_end_ += word_width_;
 			}
 			break;
@@ -431,14 +438,15 @@ void QHexView::keyPressEvent(QKeyEvent *event) {
 			}
 			selection_end_ -= row_width_;
 			if (selection_end_ == 0) {
-				 selection_end_ = 0;
+				selection_end_ = 0;
 			}
 			break;
 		default:
 			break;
 		}
 		viewport()->update();
-	} else {
+	}
+	else {
 		QAbstractScrollArea::keyPressEvent(event);
 	}
 }
@@ -448,10 +456,11 @@ void QHexView::keyPressEvent(QKeyEvent *event) {
 // Desc: returns the x coordinate of the 3rd line
 //------------------------------------------------------------------------------
 int QHexView::vertline3() const {
-	if(show_ascii_) {
+	if (show_ascii_) {
 		const int elements = bytesPerRow();
 		return asciiDumpLeft() + (elements * font_width_) + (font_width_ / 2);
-	} else {
+	}
+	else {
 		return vertline2();
 	}
 }
@@ -461,10 +470,11 @@ int QHexView::vertline3() const {
 // Desc: returns the x coordinate of the 2nd line
 //------------------------------------------------------------------------------
 int QHexView::vertline2() const {
-	if(show_hex_) {
+	if (show_hex_) {
 		const int elements = row_width_ * (charsPerWord() + 1) - 1;
 		return hexDumpLeft() + (elements * font_width_) + (font_width_ / 2);
-	} else {
+	}
+	else {
 		return vertline1();
 	}
 }
@@ -474,10 +484,11 @@ int QHexView::vertline2() const {
 // Desc: returns the x coordinate of the 1st line
 //------------------------------------------------------------------------------
 int QHexView::vertline1() const {
-	if(show_address_) {
+	if (show_address_) {
 		const int elements = addressLen();
 		return (elements * font_width_) + (font_width_ / 2);
-	} else {
+	}
+	else {
 		return 0;
 	}
 }
@@ -549,7 +560,7 @@ void QHexView::scrollTo(address_t offset) {
 
 	updateScrollbars();
 
-	if(origin_ != 0) {
+	if (origin_ != 0) {
 		++address;
 	}
 
@@ -632,7 +643,7 @@ int QHexView::bytesPerRow() const {
 int64_t QHexView::pixelToWord(int x, int y) const {
 	int64_t word = -1;
 
-	switch(highlighting_) {
+	switch (highlighting_) {
 	case Highlighting_Data:
 #if 0
 		// Make pixels outside the word correspond to the nearest word, not to the right-hand one
@@ -676,7 +687,7 @@ int64_t QHexView::pixelToWord(int x, int y) const {
 	// convert byte offset to word offset, rounding up
 	start_offset /= static_cast<unsigned int>(word_width_);
 
-	if((origin_ % word_width_) != 0) {
+	if ((origin_ % word_width_) != 0) {
 		start_offset += 1;
 	}
 
@@ -689,7 +700,7 @@ int64_t QHexView::pixelToWord(int x, int y) const {
 // Name: updateToolTip
 //------------------------------------------------------------------------------
 void QHexView::updateToolTip() {
-	if(selectedBytesSize() <= 0) {
+	if (selectedBytesSize() <= 0) {
 		return;
 	}
 
@@ -713,17 +724,17 @@ void QHexView::updateToolTip() {
 // Name: mouseDoubleClickEvent
 //------------------------------------------------------------------------------
 void QHexView::mouseDoubleClickEvent(QMouseEvent *event) {
-	if(event->button() == Qt::LeftButton) {
+	if (event->button() == Qt::LeftButton) {
 		const int x = event->x() + horizontalScrollBar()->value() * font_width_;
 		const int y = event->y();
-		if(x >= vertline1() && x < vertline2()) {
+		if (x >= vertline1() && x < vertline2()) {
 
 			highlighting_ = Highlighting_Data;
 
 			const int64_t offset = pixelToWord(x, y);
 			int64_t byte_offset = offset * word_width_;
-			if(origin_) {
-				if(origin_ % word_width_) {
+			if (origin_) {
+				if (origin_ % word_width_) {
 					byte_offset -= word_width_ - (origin_ % word_width_);
 				}
 			}
@@ -731,13 +742,14 @@ void QHexView::mouseDoubleClickEvent(QMouseEvent *event) {
 			selection_start_ = byte_offset;
 			selection_end_ = selection_start_ + word_width_;
 			viewport()->update();
-		} else if(x < vertline1()) {
+		}
+		else if (x < vertline1()) {
 			highlighting_ = Highlighting_Data;
 
 			const int64_t offset = pixelToWord(vertline1(), y);
 			int64_t byte_offset = offset * word_width_;
-			if(origin_) {
-				if(origin_ % word_width_) {
+			if (origin_) {
+				if (origin_ % word_width_) {
 					byte_offset -= word_width_ - (origin_ % word_width_);
 				}
 			}
@@ -758,32 +770,35 @@ void QHexView::mouseDoubleClickEvent(QMouseEvent *event) {
 //------------------------------------------------------------------------------
 void QHexView::mousePressEvent(QMouseEvent *event) {
 
-	if(event->button() == Qt::LeftButton) {
+	if (event->button() == Qt::LeftButton) {
 		const int x = event->x() + horizontalScrollBar()->value() * font_width_;
 		const int y = event->y();
 
-		if(x < vertline2()) {
+		if (x < vertline2()) {
 			highlighting_ = Highlighting_Data;
-		} else if(x >= vertline2()) {
+		}
+		else if (x >= vertline2()) {
 			highlighting_ = Highlighting_Ascii;
 		}
 
 		const int64_t offset = pixelToWord(x, y);
 		int64_t byte_offset = offset * word_width_;
-		if(origin_) {
-			if(origin_ % word_width_) {
+		if (origin_) {
+			if (origin_ % word_width_) {
 				byte_offset -= word_width_ - (origin_ % word_width_);
 			}
 		}
 
-		if(offset < dataSize()) {
+		if (offset < dataSize()) {
 			if (hasSelectedText() && (event->modifiers() & Qt::ShiftModifier)) {
 				selection_end_ = byte_offset;
-			} else {
+			}
+			else {
 				selection_start_ = byte_offset;
 				selection_end_ = selection_start_ + word_width_;
 			}
-		} else {
+		}
+		else {
 			selection_start_ = selection_end_ = -1;
 		}
 		viewport()->update();
@@ -799,21 +814,22 @@ void QHexView::mousePressEvent(QMouseEvent *event) {
 // Name: mouseMoveEvent
 //------------------------------------------------------------------------------
 void QHexView::mouseMoveEvent(QMouseEvent *event) {
-	if(highlighting_ != Highlighting_None) {
+	if (highlighting_ != Highlighting_None) {
 		const int x = event->x() + horizontalScrollBar()->value() * font_width_;
 		const int y = event->y();
 
 		const int64_t offset = pixelToWord(x, y);
 
-		if(selection_start_ != -1) {
-			if(offset == -1) {
+		if (selection_start_ != -1) {
+			if (offset == -1) {
 				selection_end_ = row_width_;
-			} else {
+			}
+			else {
 
 				int64_t byte_offset = (offset * word_width_);
 
-				if(origin_) {
-					if(origin_ % word_width_) {
+				if (origin_) {
+					if (origin_ % word_width_) {
 						byte_offset -= word_width_ - (origin_ % word_width_);
 					}
 
@@ -824,11 +840,11 @@ void QHexView::mouseMoveEvent(QMouseEvent *event) {
 				}
 			}
 
-			if(selection_end_ < 0) {
+			if (selection_end_ < 0) {
 				selection_end_ = 0;
 			}
 
-			if(!isInViewableArea(selection_end_)) {
+			if (!isInViewableArea(selection_end_)) {
 				ensureVisible(selection_end_);
 			}
 
@@ -842,7 +858,7 @@ void QHexView::mouseMoveEvent(QMouseEvent *event) {
 // Name: mouseReleaseEvent
 //------------------------------------------------------------------------------
 void QHexView::mouseReleaseEvent(QMouseEvent *event) {
-	if(event->button() == Qt::LeftButton) {
+	if (event->button() == Qt::LeftButton) {
 		highlighting_ = Highlighting_None;
 	}
 }
@@ -853,17 +869,18 @@ void QHexView::mouseReleaseEvent(QMouseEvent *event) {
 void QHexView::ensureVisible(int64_t index) {
 	Q_UNUSED(index)
 #if 0
-	if(index < normalizedOffset()) {
-		while(index < normalizedOffset()) {
+		if (index < normalizedOffset()) {
+		while (index < normalizedOffset()) {
 			verticalScrollBar()->setValue(verticalScrollBar()->value() - 1);
 		}
 		viewport()->update();
-	} else {
-		while(index > normalizedOffset()) {
-			verticalScrollBar()->setValue(verticalScrollBar()->value() + 1);
 		}
-		viewport()->update();
-	}
+		else {
+			while (index > normalizedOffset()) {
+				verticalScrollBar()->setValue(verticalScrollBar()->value() + 1);
+			}
+			viewport()->update();
+		}
 #endif
 }
 
@@ -876,11 +893,12 @@ void QHexView::setData(QIODevice *d) {
 		internal_buffer_->setData(d->readAll());
 		internal_buffer_->open(QBuffer::ReadOnly);
 		data_ = internal_buffer_.get();
-	} else {
+	}
+	else {
 		data_ = d;
 	}
 
-	if(data_->size() > Q_INT64_C(0xffffffff)) {
+	if (data_->size() > Q_INT64_C(0xffffffff)) {
 		address_size_ = Address64;
 	}
 
@@ -909,11 +927,12 @@ void QHexView::setAddressOffset(address_t offset) {
 bool QHexView::isSelected(int64_t index) const {
 
 	bool ret = false;
-	if(index < dataSize()) {
-		if(selection_start_ != selection_end_) {
-			if(selection_start_ < selection_end_) {
+	if (index < dataSize()) {
+		if (selection_start_ != selection_end_) {
+			if (selection_start_ < selection_end_) {
 				ret = (index >= selection_start_ && index < selection_end_);
-			} else {
+			}
+			else {
 				ret = (index >= selection_end_ && index < selection_start_);
 			}
 		}
@@ -928,10 +947,10 @@ void QHexView::drawComments(QPainter &painter, uint64_t offset, int row, uint64_
 
 	Q_UNUSED(size)
 
-	painter.setPen(palette().color(QPalette::Text));
+		painter.setPen(palette().color(QPalette::Text));
 
 	const address_t address = address_offset_ + offset;
-	const QString comment   = commentServer_->comment(address, word_width_);
+	const QString comment = commentServer_->comment(address, word_width_);
 
 	painter.drawText(
 		commentLeft(),
@@ -949,18 +968,20 @@ void QHexView::drawComments(QPainter &painter, uint64_t offset, int row, uint64_
 void QHexView::drawAsciiDumpToBuffer(QTextStream &stream, uint64_t offset, uint64_t size, const QByteArray &row_data) const {
 	// i is the byte index
 	const int chars_per_row = bytesPerRow();
-	for(int i = 0; i < chars_per_row; ++i) {
+	for (int i = 0; i < chars_per_row; ++i) {
 		const uint64_t index = offset + i;
-		if(index < size) {
-			if(isSelected(index)) {
+		if (index < size) {
+			if (isSelected(index)) {
 				const unsigned char ch = row_data[i];
 				const bool printable = is_printable(ch) && ch != '\f' && ch != '\t' && ch != '\r' && ch != '\n' && ch < 0x80;
 				const char byteBuffer(printable ? ch : unprintable_char_);
 				stream << byteBuffer;
-			} else {
+			}
+			else {
 				stream << ' ';
 			}
-		} else {
+		}
+		else {
 			break;
 		}
 	}
@@ -971,8 +992,8 @@ void QHexView::drawAsciiDumpToBuffer(QTextStream &stream, uint64_t offset, uint6
 //------------------------------------------------------------------------------
 void QHexView::drawCommentsToBuffer(QTextStream &stream, uint64_t offset, uint64_t size) const {
 	Q_UNUSED(size)
-	const address_t address = address_offset_ + offset;
-	const QString comment   = commentServer_->comment(address, word_width_);
+		const address_t address = address_offset_ + offset;
+	const QString comment = commentServer_->comment(address, word_width_);
 	stream << comment;
 }
 
@@ -993,7 +1014,7 @@ QString QHexView::formatBytes(const QByteArray &row_data, int index) const {
 
 	char byte_buffer[32];
 
-	switch(word_width_) {
+	switch (word_width_) {
 	case 1:
 		value.b |= (row_data[index + 0] & 0xff);
 		qsnprintf(byte_buffer, sizeof(byte_buffer), "%02x", value.b);
@@ -1035,8 +1056,8 @@ void QHexView::drawHexDumpToBuffer(QTextStream &stream, uint64_t offset, uint64_
 
 	Q_UNUSED(size)
 
-	// i is the word we are currently rendering
-	for(int i = 0; i < row_width_; ++i) {
+		// i is the word we are currently rendering
+		for (int i = 0; i < row_width_; ++i) {
 
 		// index of first byte of current 'word'
 		const uint64_t index = offset + (i * word_width_);
@@ -1044,22 +1065,24 @@ void QHexView::drawHexDumpToBuffer(QTextStream &stream, uint64_t offset, uint64_
 		// equal <=, not < because we want to test the END of the word we
 		// about to render, not the start, it's allowed to end at the very last
 		// byte
-		if(index + word_width_ <= size) {
+		if (index + word_width_ <= size) {
 			const QString byteBuffer = formatBytes(row_data, i * word_width_);
 
-			if(isSelected(index)) {
+			if (isSelected(index)) {
 				stream << byteBuffer;
-			} else {
+			}
+			else {
 				stream << QString(byteBuffer.length(), ' ');
 			}
 
-			if(i != (row_width_ - 1)) {
+			if (i != (row_width_ - 1)) {
 				stream << ' ';
 			}
-		} else {
+		}
+		else {
 			break;
 		}
-	}
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -1069,7 +1092,7 @@ void QHexView::drawHexDump(QPainter &painter, uint64_t offset, int row, uint64_t
 	const int hex_dump_left = hexDumpLeft();
 
 	// i is the word we are currently rendering
-	for(int i = 0; i < row_width_; ++i) {
+	for (int i = 0; i < row_width_; ++i) {
 
 		// index of first byte of current 'word'
 		const uint64_t index = offset + (i * word_width_);
@@ -1077,35 +1100,35 @@ void QHexView::drawHexDump(QPainter &painter, uint64_t offset, int row, uint64_t
 		// equal <=, not < because we want to test the END of the word we
 		// about to render, not the start, it's allowed to end at the very last
 		// byte
-		if(index + word_width_ <= size) {
+		if (index + word_width_ <= size) {
 
 			const QString byteBuffer = formatBytes(row_data, i * word_width_);
 
-			const int drawLeft  = hex_dump_left + (i * (charsPerWord() + 1) * font_width_);
+			const int drawLeft = hex_dump_left + (i * (charsPerWord() + 1) * font_width_);
 			const int drawWidth = charsPerWord() * font_width_;
 
-			if(isSelected(index)) {
-			
+			if (isSelected(index)) {
+
 				const QPalette::ColorGroup group = hasFocus() ? QPalette::Active : QPalette::Inactive;
 
 				painter.fillRect(
 					QRectF(
-						drawLeft,
-						row,
-						drawWidth,
-						font_height_),
+					drawLeft,
+					row,
+					drawWidth,
+					font_height_),
 					palette().color(group, QPalette::Highlight)
 					);
 
 				// should be highlight the space between us and the next word?
-				if(i != (row_width_ - 1)) {
-					if(isSelected(index + 1)) {
+				if (i != (row_width_ - 1)) {
+					if (isSelected(index + 1)) {
 						painter.fillRect(
 							QRectF(
-								drawLeft + drawWidth,
-								row,
-								font_width_,
-								font_height_),
+							drawLeft + drawWidth,
+							row,
+							font_width_,
+							font_height_),
 							palette().color(group, QPalette::Highlight)
 							);
 
@@ -1113,11 +1136,12 @@ void QHexView::drawHexDump(QPainter &painter, uint64_t offset, int row, uint64_t
 				}
 
 				painter.setPen(palette().color(group, QPalette::HighlightedText));
-			} else {
+			}
+			else {
 				painter.setPen(QPen((*word_count & 1) ? even_word_ : palette().color(QPalette::Text)));
 
 				// implement cold zone stuff
-				if(cold_zone_end_ > address_offset_ && offset < cold_zone_end_ - address_offset_) {
+				if (cold_zone_end_ > address_offset_ && offset < cold_zone_end_ - address_offset_) {
 					painter.setPen(QPen(Qt::gray));
 				}
 			}
@@ -1132,7 +1156,8 @@ void QHexView::drawHexDump(QPainter &painter, uint64_t offset, int row, uint64_t
 				);
 
 			++(*word_count);
-		} else {
+		}
+		else {
 			break;
 		}
 	}
@@ -1146,36 +1171,37 @@ void QHexView::drawAsciiDump(QPainter &painter, uint64_t offset, int row, uint64
 
 	// i is the byte index
 	const int chars_per_row = bytesPerRow();
-	for(int i = 0; i < chars_per_row; ++i) {
+	for (int i = 0; i < chars_per_row; ++i) {
 
 		const uint64_t index = offset + i;
 
-		if(index < size) {
-			const char ch        = row_data[i];
-			const int drawLeft   = ascii_dump_left + i * font_width_;
+		if (index < size) {
+			const char ch = row_data[i];
+			const int drawLeft = ascii_dump_left + i * font_width_;
 			const bool printable = is_printable(ch);
 
 			// drawing a selected character
-			if(isSelected(index)) {
-			
+			if (isSelected(index)) {
+
 				const QPalette::ColorGroup group = hasFocus() ? QPalette::Active : QPalette::Inactive;
 
 				painter.fillRect(
 					QRectF(
-						drawLeft,
-						row,
-						font_width_,
-						font_height_),
+					drawLeft,
+					row,
+					font_width_,
+					font_height_),
 					palette().color(group, QPalette::Highlight)
-				);
-	
+					);
+
 				painter.setPen(palette().color(group, QPalette::HighlightedText));
 
-			} else {
+			}
+			else {
 				painter.setPen(QPen(printable ? palette().color(QPalette::Text) : non_printable_text_));
 
 				// implement cold zone stuff
-				if(cold_zone_end_ > address_offset_ && offset < cold_zone_end_ - address_offset_) {
+				if (cold_zone_end_ > address_offset_ && offset < cold_zone_end_ - address_offset_) {
 					painter.setPen(QPen(Qt::gray));
 				}
 			}
@@ -1189,8 +1215,9 @@ void QHexView::drawAsciiDump(QPainter &painter, uint64_t offset, int row, uint64
 				font_height_,
 				Qt::AlignTop,
 				byteBuffer
-			);
-		} else {
+				);
+		}
+		else {
 			break;
 		}
 	}
@@ -1202,7 +1229,7 @@ void QHexView::drawAsciiDump(QPainter &painter, uint64_t offset, int row, uint64
 void QHexView::paintEvent(QPaintEvent * event) {
 
 	Q_UNUSED(event)
-	QPainter painter(viewport());
+		QPainter painter(viewport());
 	painter.translate(-horizontalScrollBar()->value() * font_width_, 0);
 
 	int word_count = 0;
@@ -1216,11 +1243,12 @@ void QHexView::paintEvent(QPaintEvent * event) {
 	// case unlike the helper function
 	int64_t offset = verticalScrollBar()->value() * chars_per_row;
 
-	if(origin_ != 0) {
-		if(offset > 0) {
+	if (origin_ != 0) {
+		if (offset > 0) {
 			offset += origin_;
 			offset -= chars_per_row;
-		} else {
+		}
+		else {
 			origin_ = 0;
 			updateScrollbars();
 		}
@@ -1229,34 +1257,34 @@ void QHexView::paintEvent(QPaintEvent * event) {
 	const int64_t data_size = dataSize();
 	const int widget_height = height();
 
-	while(row + font_height_ < widget_height && offset < data_size) {
+	while (row + font_height_ < widget_height && offset < data_size) {
 
 		data_->seek(offset);
 		const QByteArray row_data = data_->read(chars_per_row);
 
-		if(!row_data.isEmpty()) {
-			if(show_address_) {
+		if (!row_data.isEmpty()) {
+			if (show_address_) {
 				const address_t address_rva = address_offset_ + offset;
 				const QString addressBuffer = formatAddress(address_rva);
 				painter.setPen(QPen(address_color_));
 
 				// implement cold zone stuff
-				if(cold_zone_end_ > address_offset_ && static_cast<address_t>(offset) < cold_zone_end_ - address_offset_) {
+				if (cold_zone_end_ > address_offset_ && static_cast<address_t>(offset) < cold_zone_end_ - address_offset_) {
 					painter.setPen(QPen(Qt::gray));
 				}
 
 				painter.drawText(0, row, addressBuffer.length() * font_width_, font_height_, Qt::AlignTop, addressBuffer);
 			}
 
-			if(show_hex_) {
+			if (show_hex_) {
 				drawHexDump(painter, offset, row, data_size, &word_count, row_data);
 			}
 
-			if(show_ascii_) {
+			if (show_ascii_) {
 				drawAsciiDump(painter, offset, row, data_size, row_data);
 			}
 
-			if(show_comments_ && commentServer_) {
+			if (show_comments_ && commentServer_) {
 				drawComments(painter, offset, row, data_size);
 			}
 		}
@@ -1267,17 +1295,17 @@ void QHexView::paintEvent(QPaintEvent * event) {
 
 	painter.setPen(palette().color(QPalette::Shadow));
 
-	if(show_address_ && show_vertline1_) {
+	if (show_address_ && show_vertline1_) {
 		const int vertline1_x = vertline1();
 		painter.drawLine(vertline1_x, 0, vertline1_x, widget_height);
 	}
 
-	if(show_hex_ && show_vertline2_) {
+	if (show_hex_ && show_vertline2_) {
 		const int vertline2_x = vertline2();
 		painter.drawLine(vertline2_x, 0, vertline2_x, widget_height);
 	}
 
-	if(show_ascii_ && show_vertline3_) {
+	if (show_ascii_ && show_vertline3_) {
 		const int vertline3_x = vertline3();
 		painter.drawLine(vertline3_x, 0, vertline3_x, widget_height);
 	}
@@ -1288,7 +1316,7 @@ void QHexView::paintEvent(QPaintEvent * event) {
 //------------------------------------------------------------------------------
 void QHexView::selectAll() {
 	selection_start_ = 0;
-	selection_end_   = dataSize();
+	selection_end_ = dataSize();
 }
 
 //------------------------------------------------------------------------------
@@ -1296,7 +1324,7 @@ void QHexView::selectAll() {
 //------------------------------------------------------------------------------
 void QHexView::deselect() {
 	selection_start_ = -1;
-	selection_end_   = -1;
+	selection_end_ = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1311,7 +1339,7 @@ QByteArray QHexView::allBytes() const {
 // Name: selectedBytes
 //------------------------------------------------------------------------------
 QByteArray QHexView::selectedBytes() const {
-	if(hasSelectedText()) {
+	if (hasSelectedText()) {
 		const int64_t s = std::min(selection_start_, selection_end_);
 		const int64_t e = std::max(selection_start_, selection_end_);
 
@@ -1336,9 +1364,10 @@ QHexView::address_t QHexView::selectedBytesAddress() const {
 uint64_t QHexView::selectedBytesSize() const {
 
 	uint64_t ret;
-	if(selection_end_ > selection_start_) {
+	if (selection_end_ > selection_start_) {
 		ret = selection_end_ - selection_start_;
-	} else {
+	}
+	else {
 		ret = selection_start_ - selection_end_;
 	}
 

@@ -1,16 +1,16 @@
 /*
 Copyright (C) 2006 - 2013 Evan Teran
-                          eteran@alum.rit.edu
+eteran@alum.rit.edu
 
 Copyright (C) 2010        Hugues Bruant
-                          hugues.bruant@gmail.com
+hugues.bruant@gmail.com
 
 This file can be used under one of two licenses.
 
 1. The GNU Public License, version 2.0, in COPYING-gpl2
 2. A BSD-Style License, in COPYING-bsd2.
 
-The license chosen is at the discretion of the user of this software. 
+The license chosen is at the discretion of the user of this software.
 */
 
 #ifndef QHEXVIEW_H_
@@ -35,7 +35,7 @@ public:
 		Address32 = 4,
 		Address64 = 8
 	};
-	
+
 public:
 	using address_t = uint64_t;
 
@@ -80,7 +80,7 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
 	void contextMenuEvent(QContextMenuEvent *event) override;
 
-public Q_SLOTS:
+	public Q_SLOTS:
 	void setUserConfigWordWidth(bool);
 	void setUserConfigRowWidth(bool);
 	void setShowAddress(bool);
@@ -125,7 +125,7 @@ public:
 
 	bool hasSelectedText() const;
 
-public Q_SLOTS:
+	public Q_SLOTS:
 	void clear();
 	void selectAll();
 	void deselect();
@@ -163,38 +163,38 @@ private:
 private:
 	std::unique_ptr<CommentServerBase> commentServer_;
 	std::unique_ptr<QBuffer>           internal_buffer_;
-	QColor                             address_color_           = Qt::red; // color of the address in display
-	QColor                             even_word_               = Qt::blue;
-	QColor                             non_printable_text_      = Qt::red;
-	QIODevice*                         data_                   = nullptr;
-	address_t                          address_offset_          = 0;       // this is the offset that our base address is relative to
-	address_t                          origin_                  = 0;
-	address_t                          cold_zone_end_           = 0;       // base_address - cold_zone_end_ will be displayed as gray
+	QColor                             address_color_ = Qt::red; // color of the address in display
+	QColor                             even_word_ = Qt::blue;
+	QColor                             non_printable_text_ = Qt::red;
+	QIODevice*                         data_ = nullptr;
+	address_t                          address_offset_ = 0;       // this is the offset that our base address is relative to
+	address_t                          origin_ = 0;
+	address_t                          cold_zone_end_ = 0;       // base_address - cold_zone_end_ will be displayed as gray
 	bool                               user_can_set_word_width_ = true;
-	bool                               user_can_set_row_width_  = true;
-	bool                               show_address_            = true;    // should we show the address display?
-	bool                               show_ascii_              = true;    // should we show the ascii display?
-	bool                               show_comments_           = true;
-	bool                               show_hex_                = true;    // should we show the hex display?
-	bool                               show_address_separator_  = true;    // should we show ':' character in address to separate high/low portions
-	bool                               show_vertline1_          = true;
-	bool                               show_vertline2_          = true;
-	bool                               show_vertline3_          = true;
-	char                               unprintable_char_        = '.';
-	int                                font_height_             = 0;       // height of a character in this font
-	int                                font_width_              = 0;       // width of a character in this font
-	int                                row_width_               = 16;      // amount of 'words' per row
-	int                                word_width_              = 1;       // size of a 'word' in bytes
-	int64_t                            selection_end_           = -1;      // index of last selected word (or -1)
-	int64_t                            selection_start_         = -1;      // index of first selected word (or -1)
+	bool                               user_can_set_row_width_ = true;
+	bool                               show_address_ = true;    // should we show the address display?
+	bool                               show_ascii_ = true;    // should we show the ascii display?
+	bool                               show_comments_ = true;
+	bool                               show_hex_ = true;    // should we show the hex display?
+	bool                               show_address_separator_ = true;    // should we show ':' character in address to separate high/low portions
+	bool                               show_vertline1_ = true;
+	bool                               show_vertline2_ = true;
+	bool                               show_vertline3_ = true;
+	char                               unprintable_char_ = '.';
+	int                                font_height_ = 0;       // height of a character in this font
+	int                                font_width_ = 0;       // width of a character in this font
+	int                                row_width_ = 16;      // amount of 'words' per row
+	int                                word_width_ = 1;       // size of a 'word' in bytes
+	int64_t                            selection_end_ = -1;      // index of last selected word (or -1)
+	int64_t                            selection_start_ = -1;      // index of first selected word (or -1)
 
-	
+
 	enum {
 		Highlighting_None,
 		Highlighting_Data,
 		Highlighting_Ascii
 	} highlighting_ = Highlighting_None;
-	
+
 	AddressSize address_size_;
 };
 

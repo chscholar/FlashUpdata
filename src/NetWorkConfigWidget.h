@@ -15,6 +15,7 @@
 #include <QLabel>
 #include <QVariant>
 #include <QMap>
+#include "qhexview.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -273,6 +274,7 @@ protected:
 
 	QTreeView *m_plistView;
 	QStandardItemModel *m_pTreeModel;
+	QHexView *m_pHexView;
 
 	QList<pcap_pkthdr *> m_pktHeaders;
 	QList<u_char *> m_pktDatas;

@@ -142,7 +142,8 @@ void NetWorkConfigWidget::initTableViewConfig()
 
 	m_pTreeModel = new QStandardItemModel();
 	m_plistView->setModel(m_pTreeModel);
-	m_pTreeModel->setHorizontalHeaderLabels(QStringList() << QStringLiteral("包解析"));
+	m_plistView->setHeaderHidden(true);
+	//m_pTreeModel->setHorizontalHeaderLabels(QStringList() << QStringLiteral("包解析"));
 
 }
 
@@ -247,6 +248,8 @@ void NetWorkConfigWidget::slotUpDataCapTable()
 
 void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 
+	m_pTreeModel->clear();
+
 	int row = index.row();
 	pcap_pkthdr *header = sinTaskQueueSingle::getInstance().popIndexPktHeaderData(row);
 	u_char *pkt_data = sinTaskQueueSingle::getInstance().popIndexPktDataData(row);
@@ -316,6 +319,7 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		ipherader.qstrNetLayer = qstrNetLayer;
 		ipherader.qstrVersion = qstrVersion;
 		ipherader.qstrHeaderLength = qstrHeaderLength;
+		ipherader.qstrServiceType = qstrServiceType;
 		ipherader.qstrTotalLength = qstrTotalLength;
 		ipherader.qstrNetDef = qstrNetDef;
 		ipherader.qstrMetFlag = qstrMetFlag;
@@ -538,6 +542,134 @@ void NetWorkConfigWidget::onTableNetCapClicked(const QModelIndex &index){
 		unknowHeader.qstrUpProtocal = qstrUpProtocal;
 	}
 
+	QStandardItem* itemProject = new QStandardItem(qstrDataIndex);
+	m_pTreeModel->appendRow(itemProject);
+
+	if (!linkHeader.isEmpty())
+	{
+		QStandardItem* linkItem = new QStandardItem(linkHeader.qstrLinkLayer);
+		m_pTreeModel->appendRow(linkItem);
+
+		QStandardItem* linkSrcMacItem = new QStandardItem(linkHeader.qstrSrcMac);
+		linkItem->appendRow(linkSrcMacItem);
+
+		QStandardItem* linkDestMacItem = new QStandardItem(linkHeader.qstrDestMac);
+		linkItem->appendRow(linkDestMacItem);
+	}
+
+	if (!ipherader.isEmpty())
+	{
+		QStandardItem* ipItem = new QStandardItem(ipherader.qstrNetLayer);
+		m_pTreeModel->appendRow(ipItem);
+
+		QStandardItem* upProtocalItem = new QStandardItem(ipherader.qstrUpProtocal);
+		ipItem->appendRow(upProtocalItem);
+
+		QStandardItem* versionItem = new QStandardItem(ipherader.qstrVersion);
+		ipItem->appendRow(versionItem);
+
+		QStandardItem* headerLengthItem = new QStandardItem(ipherader.qstrHeaderLength);
+		ipItem->appendRow(headerLengthItem);
+
+		QStandardItem* serviceTypeItem = new QStandardItem(ipherader.qstrServiceType);
+		ipItem->appendRow(serviceTypeItem);
+
+		QStandardItem* totalLengthItem = new QStandardItem(ipherader.qstrTotalLength);
+		ipItem->appendRow(totalLengthItem);
+
+		QStandardItem* netDefItem = new QStandardItem(ipherader.qstrNetDef);
+		ipItem->appendRow(netDefItem);
+
+		QStandardItem* netFlagItem = new QStandardItem(ipherader.qstrMetFlag);
+		ipItem->appendRow(netFlagItem);
+
+		QStandardItem* pieceOffsetItem = new QStandardItem(ipherader.qstrPieceOffset);
+		ipItem->appendRow(pieceOffsetItem);
+		
+		QStandardItem* aliveTimeItem = new QStandardItem(ipherader.qstrAliveTime);
+		ipItem->appendRow(aliveTimeItem);
+
+		QStandardItem* checkSumItem = new QStandardItem(ipherader.qstrHeaderCheckSum);
+		ipItem->appendRow(checkSumItem);
+
+		QStandardItem* srcIpItem = new QStandardItem(ipherader.qstrSrcIp);
+		ipItem->appendRow(srcIpItem);
+
+		QStandardItem* destIpItem = new QStandardItem(ipherader.qstrDestIp);
+		ipItem->appendRow(destIpItem);
+	}
 	
-	int b = 1;
+	if (!tcpHeader.isEmpty())
+	{
+		QStandardItem* tcpItem = new QStandardItem(tcpHeader.qstrTransLayer);
+		m_pTreeModel->appendRow(tcpItem);
+
+		/*
+		QString qstrUpProtocal;
+		QString qstrTransLayer;
+		QString qstrSrcPort;
+		QString qstrDestPort;
+		QString qstrSequNum ;
+		QString qstrAckNum ;
+		QString qstrTcpHeaderLength;
+		QString qstrCtrlBit;
+		QString qstrUrgenURG;
+		QString qstrAckConfirm;
+		QString qstrPushPSH;
+		QString qstrRestRst;
+		QString qstrSyncSyn ;
+		QString qstrOverFin;
+		QString qstrWindows ;
+		QString qstrCheckSum ;
+		QString qstrUrgenPoint;
+		*/
+
+		QStandardItem* upProtocalItem = new QStandardItem(tcpHeader.qstrUpProtocal);
+		tcpItem->appendRow(upProtocalItem);
+
+		QStandardItem* srcPortItem = new QStandardItem(tcpHeader.qstrSrcPort);
+		tcpItem->appendRow(srcPortItem);
+
+		QStandardItem* destPortItem = new QStandardItem(tcpHeader.qstrDestPort);
+		tcpItem->appendRow(destPortItem);
+
+		QStandardItem* seqNumItem = new QStandardItem(tcpHeader.qstrSequNum);
+		tcpItem->appendRow(seqNumItem);
+
+		QStandardItem* ackNumItem = new QStandardItem(tcpHeader.qstrAckNum);
+		tcpItem->appendRow(ackNumItem);
+
+		QStandardItem* tcpHeaderLengthItem = new QStandardItem(tcpHeader.qstrTcpHeaderLength);
+		tcpItem->appendRow(tcpHeaderLengthItem);
+
+		QStandardItem* CtrlBitItem = new QStandardItem(tcpHeader.qstrCtrlBit);
+		tcpItem->appendRow(CtrlBitItem);
+
+		QStandardItem* urgenURGItem = new QStandardItem(tcpHeader.qstrUrgenURG);
+		tcpItem->appendRow(urgenURGItem);
+
+		QStandardItem* ackConfrimItem = new QStandardItem(tcpHeader.qstrAckConfirm);
+		tcpItem->appendRow(ackConfrimItem);
+
+		QStandardItem* pushItem = new QStandardItem(tcpHeader.qstrPushPSH);
+		tcpItem->appendRow(pushItem);
+
+		QStandardItem* rstItem = new QStandardItem(tcpHeader.qstrRestRst);
+		tcpItem->appendRow(rstItem);
+
+		QStandardItem* synItem = new QStandardItem(tcpHeader.qstrSyncSyn);
+		tcpItem->appendRow(synItem);
+
+		QStandardItem* finItem = new QStandardItem(tcpHeader.qstrOverFin);
+		tcpItem->appendRow(finItem);
+
+		QStandardItem* windowsItem = new QStandardItem(tcpHeader.qstrWindows);
+		tcpItem->appendRow(windowsItem);
+
+		QStandardItem* checkSumItem = new QStandardItem(tcpHeader.qstrCheckSum);
+		tcpItem->appendRow(checkSumItem);
+
+		QStandardItem* usgenPointItem = new QStandardItem(tcpHeader.qstrUrgenPoint);
+		tcpItem->appendRow(usgenPointItem);
+	}
 }

@@ -29,6 +29,7 @@ struct  IPHeader
 {
 	QString qstrUpProtocal ;
 	QString qstrNetLayer;
+	QString qstrVersion;
 	QString qstrHeaderLength;
 	QString qstrServiceType ;
 	QString qstrTotalLength ;
@@ -41,12 +42,12 @@ struct  IPHeader
 	QString qstrDestIp;
 };
 
-struct TCP 
+struct TCPHeader 
 {
 	Header header;
 	IPHeader ip;
 	QString qstrUpProtocal;
-	QString qstrTransWork;
+	QString qstrTransLayer;
 	QString qstrSrcPort;
 	QString qstrDestPort;
 	QString qstrSequNum ;
@@ -64,12 +65,12 @@ struct TCP
 	QString qstrUrgenPoint;
 };
 
-struct UDP
+struct UDPHeader
 {
 	Header header;
 	IPHeader ip;
 	QString qstrUpProtocal;
-	QString qstrTransWork;
+	QString qstrTransLayer;
 	QString qstrSrcPort;
 	QString qstrDestPort;
 	QString qstrUdpHeaderLength;
@@ -77,31 +78,31 @@ struct UDP
 
 };
 
-struct DNS
+struct DNSHeader
 {
-	UDP udp;
+	UDPHeader udp;
 	QString qstrAppWork;
 	QString qstrNetDef;
-	QString qstrNetFlah;
+	QString qstrNetFlag;
 	QString qstrQuestionNum;
 	QString qstrResourceNoteNum;
 	QString qstrAuthResourceNoteNum;
 	QString qstrExtraResourceNoteNum;
 };
 
-struct ICMP
+struct ICMPHeader
 {
 	Header header;
 	IPHeader ip;
 	QString qstrUpProtocal;
-	QString qstrTransWork ;
+	QString qstrTransLayer ;
 
 	QString qstrType;
 	QString qstrCode ;
 	QString qstrCheckSum ;
 };
 
-struct IGMP
+struct IGMPHeader
 {
 	Header header;
 	IPHeader ip;
@@ -109,7 +110,7 @@ struct IGMP
 
 };
 
-struct EGP
+struct EGPHeader
 {
 	Header header;
 	IPHeader ip;
@@ -117,7 +118,7 @@ struct EGP
 
 };
 
-struct IPv6
+struct IPv6Header
 {
 	Header header;
 	IPHeader ip;
@@ -125,7 +126,15 @@ struct IPv6
 
 };
 
-struct OSPF
+struct OSPFHeader
+{
+	Header header;
+	IPHeader ip;
+	QString qstrUpProtocal;
+
+};
+
+struct UnKnowIPHeader
 {
 	Header header;
 	IPHeader ip;
@@ -135,11 +144,11 @@ struct OSPF
 /*******************************************IP End*************************************************/
 
 
-struct ARP
+struct ARPHeader
 {
 	Header header;
 	QString qstrUpProtocal;
-	QString qstrNetWork;
+	QString qstrNetLayer;
 	QString qstrHardType;
 	QString qstrProtocalType;
 	QString qstrHardLength ;
@@ -151,7 +160,14 @@ struct ARP
 	QString qstrReciveProtocalAddr;
 };
 
-struct RARP
+struct RARPHeader
+{
+	Header header;
+	QString qstrUpProtocal;
+
+};
+
+struct UnKnowHeader
 {
 	Header header;
 	QString qstrUpProtocal;

@@ -23,7 +23,7 @@ void SinTaskQueue::pushBackReadData(QByteArray data)
 QByteArray SinTaskQueue::popBackReadData()
 {
 	QByteArray data = m_pReadData.dequeue();
-	emit signalWriteNextData();
+	//emit signalWriteNextData();
 	return data;
 }
 

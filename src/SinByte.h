@@ -51,8 +51,8 @@ struct ReqInterrFace
 	QByteArray TransSeqNum; //传输包序列
 	QByteArray DataLength; //data 数据长度
 	QByteArray DataCRC; //校验算法
-	QByteArray Padding; //填充字段，保证每个字段4字节对齐
 	QByteArray data;
+	QByteArray Padding; //填充字段，保证每个字段4字节对齐
 
 
 };

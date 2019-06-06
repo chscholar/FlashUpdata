@@ -16,6 +16,8 @@ private:
 	QSerialPort *getSerialPort();
 	QString findKeyFromMap(QMap<int,QString> fmap,int key);
 
+	ReqInterrFace byteToReq(QByteArray data);
+
 	QMap<int, QString> portMap;
 	QMap<int, QString> rateMap;
 	QMap<int, QString> dataMap;
@@ -32,7 +34,6 @@ public:
 	QStringList getStopBits();
 	QStringList getFlowControl();
 	QStringList getParity();
-
 	void sendData(ReqInterrFace req);
 	QByteArray getReadData();
 	bool isOPen();

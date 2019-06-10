@@ -16,6 +16,7 @@ public:
 	void setValuItems(QStringList strList);
 	void setStatus(bool isOpen);
 	int getSelectIndex();
+	void setDefaultIndex(int defaultIndex);
 protected:
 	
 private:

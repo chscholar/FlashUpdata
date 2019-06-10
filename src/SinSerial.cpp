@@ -240,40 +240,45 @@ QByteArray SinSerial::getReadData()
 {
 	QByteArray header = "eba846b9";
 	QByteArray handle = "0001";
-	QByteArray readData = getSerialPort()->readLine();
-	if (!readData.isEmpty())
+	QByteArray readData;
+	if (getSerialPort()->canReadLine())
 	{
-		bool isValid =  readData.toHex().startsWith(header);
-		if (isValid)
+		readData = getSerialPort()->readLine();
+		if (!readData.isEmpty())
 		{
-			qDebug() << " sinSerial::getReadData" << readData.toHex() << "currentThreadId:" << QThread::currentThread();
-			ReqInterrFace req = byteToReq(readData.toHex());
-			if (req.Command == handle) //握手协议
+			readData = readData.trimmed();
+			bool isValid = readData.toHex().startsWith(header);
+			if (isValid)
 			{
-				qDebug() << " reciveUEHandle" << readData.toHex() << "currentThreadId:" << QThread::currentThread();
-				ReqInterrFace handleReq;
-				handleReq.Header = header;
-				handleReq.BinFileId = req.BinFileId;
-				handleReq.BinFileSize = req.BinFileSize;
-				handleReq.Command = "8001";
-				handleReq.data = req.data;
-				handleReq.DataCRC = req.DataCRC;
-				handleReq.DataLength = req.DataLength;
-				handleReq.Length = req.Length;
-				handleReq.TransId = req.TransId;
-				handleReq.Padding = "00000000";
-				sendData(handleReq);
-				emit signalHandSharkOver(); // 完成握手
-			}
-			if (req.Command == "0002") //下载请求
-			{
-				
-			}
-			
-		}
+				ReqInterrFace req = byteToReq(readData.toHex());
+				if (req.Command == handle) //握手协议
+				{
+					qDebug() << " reciveUEHandle" << readData.toHex() << "currentThreadId:" << QThread::currentThread();
+					ReqInterrFace handleReq;
+					handleReq.Header = header;
+					handleReq.BinFileId = req.BinFileId;
+					handleReq.BinFileSize = req.BinFileSize;
+					handleReq.Command = "8001";
+					handleReq.data = req.data;
+					handleReq.DataCRC = req.DataCRC;
+					handleReq.DataLength = req.DataLength;
+					handleReq.Length = req.Length;
+					handleReq.TransId = req.TransId;
+					handleReq.Padding = "00000000";
+					sendData(handleReq);
+					emit signalHandSharkOver(); // 完成握手
+				}
+				if (req.Command == "0002") //下载请求
+				{
 
-		
+				}
+
+			}
+
+
+		}
 	}
+	
 	
 	return readData;
 

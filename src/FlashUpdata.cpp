@@ -106,7 +106,7 @@ void FlashUpdata::slotUpDataLogEdit()
 {
 	QByteArray data = sinTaskQueueSingle::getInstance().popBackReadData();
 
-	QString qstrText = m_pLogEdit->toPlainText();
+	QString qstrText = m_pLogEdit->toHtml() +"\r ";
 
 	QString newText = qstrText + data;
 

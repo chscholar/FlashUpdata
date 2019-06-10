@@ -84,6 +84,11 @@ int SerialItem::getSelectIndex()
 	
 }
 
+void SerialItem::setDefaultIndex(int defaultIndex)
+{
+	m_pCombox->setCurrentIndex(defaultIndex);
+}
+
 SerialConfigWidget::SerialConfigWidget(QWidget*parent){
 	initUi();
 }
@@ -108,6 +113,7 @@ void SerialConfigWidget::initUi()
 	m_pRate->setTipText("速率：");
 	QStringList rateList = sinserialSingle::getInstance().getEnableRates();
 	m_pRate->setValuItems(rateList);
+	m_pRate->setDefaultIndex(10);
 	mainLayout->addWidget(m_pRate);
 
 
@@ -115,6 +121,7 @@ void SerialConfigWidget::initUi()
 	m_pFlow->setTipText("流控：");
 	QStringList flowList = sinserialSingle::getInstance().getFlowControl();
 	m_pFlow->setValuItems(flowList);
+	m_pFlow->setDefaultIndex(1);
 	mainLayout->addWidget(m_pFlow);
 
 
@@ -122,6 +129,7 @@ void SerialConfigWidget::initUi()
 	m_pParity->setTipText("校验：");
 	QStringList parityList = sinserialSingle::getInstance().getParity();
 	m_pParity->setValuItems(parityList);
+	m_pParity->setDefaultIndex(1);
 	mainLayout->addWidget(m_pParity);
 
 	
@@ -129,6 +137,7 @@ void SerialConfigWidget::initUi()
 	m_pDataBit->setTipText("数据位：");
 	QStringList dataList = sinserialSingle::getInstance().getDataBits();
 	m_pDataBit->setValuItems(dataList);
+	m_pDataBit->setDefaultIndex(4);
 	mainLayout->addWidget(m_pDataBit);
 
 
@@ -136,6 +145,7 @@ void SerialConfigWidget::initUi()
 	m_pStopDataBit->setTipText("停止位：");
 	QStringList stoopList = sinserialSingle::getInstance().getStopBits();
 	m_pStopDataBit->setValuItems(stoopList);
+	m_pStopDataBit->setDefaultIndex(1);
 	mainLayout->addWidget(m_pStopDataBit);
 
 	m_pStatus = new SerialItem(false);

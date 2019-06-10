@@ -30,7 +30,6 @@ void SinSerialReadWork::stop()
 void SinSerialReadWork::getReadData()
 {
 	QByteArray readData;
-	//QByteArray hand = MSG_CMD_HANDSHAKE_REQ_RSP;
 
 	while (m_bIsRun)
 	{
@@ -38,10 +37,8 @@ void SinSerialReadWork::getReadData()
 		
 		if (!readData.isEmpty())
 		{
-			//if (readData.toHex() == MSG_CMD_HANDSHAKE_REQ_RSP)
-			{
-
-			}
+			qDebug() << " sinSerial::getReadData to Log" << readData << "currentThreadId:" << QThread::currentThread();
+			
 			sinTaskQueueSingle::getInstance().pushBackReadData(readData);
 		}
 

@@ -27,6 +27,13 @@
 
 #define    MSG_PROTO_HEADER_TAG  0xEBA846B9
 
+
+/*
+{0x0000000A, 0x10000000,   3*SIZE_1M,   0x0},  /* Test with PC 
+
+*/
+
+
 enum {
 	FILE_OK = 0x0,
 	FILE_NOT_EXIST = 0x1,
@@ -53,8 +60,6 @@ struct ReqInterrFace
 	QByteArray DataCRC; //校验算法
 	QByteArray data;
 	QByteArray Padding; //填充字段，保证每个字段4字节对齐
-
-
 };
 
 class SinByte:public QObject

@@ -1,6 +1,7 @@
 #include "SinSerialWriteWork.h"
 #include "SinSerial.h"
 #include "SinTaskQueue.h"
+#include <QDebug>
 
 SinSerialWriteWork::SinSerialWriteWork(QObject *parent)
 	:QObject(parent)
@@ -36,31 +37,30 @@ void SinSerialWriteWork::setWriteData(QList<QList<QByteArray>> fileListData)
 		{
 			ReqInterrFace reqStruct;
 			//头标记
-			char header[] = { 0x11, 0x22, 0x33, 0x44 };
-			reqStruct.Header = header;
+			reqStruct.Header = "eba846b9";
 
 
 			//binFileId
 			int nBinFileId = 1;
-			reqStruct.BinFileId = QByteArray::number(nBinFileId, 10).toHex();
+			reqStruct.BinFileId = QByteArray::number(nBinFileId);
 
 			// 当前第i 个文件的大小
 			int nFileSize = fileListData[i].size();
-			reqStruct.BinFileSize = QByteArray::number(nFileSize, 10).toHex();
+			reqStruct.BinFileSize = QByteArray::number(nFileSize, 10);
 
 			//事务id，当前文件标记
 			int nTransId = i;
-			reqStruct.TransId = QByteArray::number(nTransId, 10).toHex();
+			reqStruct.TransId = QByteArray::number(nTransId, 10);
 
 			//当前文件传输序列号
 			int nTransSeqNum = j;
-			reqStruct.TransSeqNum = QByteArray::number(nTransSeqNum, 10).toHex();
+			reqStruct.TransSeqNum = QByteArray::number(nTransSeqNum, 10);
 
 			//当前第j 个包的大小
 			int nDataLength = fileData[j].size();
-			reqStruct.DataLength = QByteArray::number(nDataLength, 10).toHex();
+			reqStruct.DataLength = QByteArray::number(nDataLength, 10);
 			//传输的内容
-			reqStruct.data = fileData[j].toHex().data();
+			reqStruct.data = fileData[j];
 
 			m_pWriteData.push_back(reqStruct);
 
@@ -68,11 +68,42 @@ void SinSerialWriteWork::setWriteData(QList<QList<QByteArray>> fileListData)
 	}
 }
 
+ReqInterrFace SinSerialWriteWork::startUploadReq()
+{
+	ReqInterrFace req;
+	req.Header = "eba846b9";
+	req.BinFileId = "0000000A";
+	req.Command = "0005";
+	req.TransId = "0001";
+	req.Length = "0002";
+	req.DataLength = "0000";
+	req.BinFileSize = "0000";
+	req.data = "00000000";
+	req.DataCRC = "0000";
+	req.TransSeqNum = "00000000";
+	req.Padding = "00000000";
+
+	return req;
+}
+
 void SinSerialWriteWork::sendData()
 {
 	
-		ReqInterrFace req;
+	ReqInterrFace req = startUploadReq();
+	sinserialSingle::getInstance().sendData(req);
+	
+		//req.Header = "eba846b9";
+
 		
+		/*if (m_nCurrentWriteIndex <= m_pWriteData.size())
+		{
 		req = m_pWriteData.at(m_nCurrentWriteIndex);
 		sinserialSingle::getInstance().sendData(req);
+		m_nCurrentWriteIndex++;
+		qDebug() << "send insex :" << m_nCurrentWriteIndex;
+		}
+		else {
+		qDebug() << "send Over";
+		}*/
+		
 }

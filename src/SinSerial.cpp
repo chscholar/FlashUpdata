@@ -240,7 +240,7 @@ QByteArray SinSerial::getReadData()
 {
 	QByteArray header = "eba846b9";
 	QByteArray handle = "0001";
-	QByteArray readData = getSerialPort()->readAll();
+	QByteArray readData = getSerialPort()->readLine();
 	if (!readData.isEmpty())
 	{
 		bool isValid =  readData.toHex().startsWith(header);

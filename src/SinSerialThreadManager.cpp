@@ -1,5 +1,6 @@
 #include "SinSerialThreadManager.h"
 #include <QThread>
+#include "SinSerial.h"
 
 SinSerialThreadManager::SinSerialThreadManager(QObject *parent)
 	:QObject(parent)
@@ -18,20 +19,20 @@ SinSerialThreadManager::SinSerialThreadManager(QObject *parent)
 	connect(m_pReadThread, SIGNAL(started()), m_pReadWork, SLOT(getReadData()));
 	connect(m_pReadThread, SIGNAL(finished()), m_pReadWork, SLOT(deleteLater()));
 	m_pReadWork->moveToThread(m_pReadThread);
+
+	//读线程默认开启
+	m_pReadWork->start();
+	m_pReadThread->start();
+
+
+	connect(&sinserialSingle::getInstance(), SIGNAL(signalHandSharkOver()), this, SLOT(slotHandSharkOver()));
+
+
 }
 
 SinSerialThreadManager::~SinSerialThreadManager()
 {
 
-}
-
-void SinSerialThreadManager::start()
-{
-	m_pReadWork->start();
-	m_pWriteWork->start();
-
-	m_pWriteThread->start();
-	m_pReadThread->start();
 }
 
 void SinSerialThreadManager::stop()
@@ -56,10 +57,11 @@ void SinSerialThreadManager::sendData()
 	m_pWriteWork->sendData();
 }
 
-//握手协议，PC读取串口指定信息，并发送回应
-void SinSerialThreadManager::handShake()
+void SinSerialThreadManager::slotHandSharkOver()
 {
-	m_pReadWork->getReadData();
+	//握手完成 开始写操作
 
-	m_pWriteWork->sendData();
+	m_pWriteWork->start();
+	m_pWriteThread->start();
+	
 }

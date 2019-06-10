@@ -10,6 +10,7 @@
 #pragma execution_character_set("utf-8")
 class SinSerial :public QObject
 {
+	Q_OBJECT
 private:
 
 	QSerialPort *serialPort;
@@ -39,6 +40,9 @@ public:
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
+	public slots:
+signals :
+	void signalHandSharkOver();
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

@@ -13,11 +13,9 @@ class SinSerialThreadManager : public QObject
 public:
 	SinSerialThreadManager(QObject *parent = 0);
 	~SinSerialThreadManager();
-	void start();
 	void stop();
 	void setWriteData(QList<QList<QByteArray>> fileListData);
 	void getReadData();
-	void handShake();
 	void sendData();
 protected:
 	SinSerialReadWork *m_pReadWork;
@@ -26,6 +24,8 @@ protected:
 	QThread *m_pReadThread;
 	QThread *m_pWriteThread;;
 private:
+	public slots :
+		void slotHandSharkOver();
 };
 typedef CSingleton<SinSerialThreadManager> sinSerialThreadManagerSingle;
 #endif

@@ -88,15 +88,15 @@
     <QtMoc Include="src\qhexview.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="src\SinSerial.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSingleTon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SinByte.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SinSerial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TableCapModel.h">

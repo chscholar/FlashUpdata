@@ -26,7 +26,7 @@ SinSerialThreadManager::SinSerialThreadManager(QObject *parent)
 
 
 	connect(&sinserialSingle::getInstance(), SIGNAL(signalHandSharkOver()), this, SLOT(slotHandSharkOver()));
-	connect(&sinserialSingle::getInstance(), SIGNAL(signalSendHandleShark(QByteArray)), this, SLOT(slotSendHandleShark(QByteArray)));
+	connect(&sinserialSingle::getInstance(), SIGNAL(signalWriteData(QByteArray)), this, SLOT(slotWriteData(QByteArray)));
 
 
 }
@@ -68,7 +68,7 @@ void SinSerialThreadManager::slotHandSharkOver()
 	
 }
 
-void SinSerialThreadManager::slotSendHandleShark(QByteArray byteData)
+void SinSerialThreadManager::slotWriteData(QByteArray byteData)
 {
-	m_pWriteWork->sendHandSharkPack(byteData);
+	m_pWriteWork->sendWriteDataPack(byteData);
 }

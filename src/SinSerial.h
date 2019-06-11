@@ -52,7 +52,7 @@ public:
 	void slotTest();
 signals :
 	void signalHandSharkOver();
-	void signalSendHandleShark(QByteArray bytedata);
+	void signalWriteData(QByteArray bytedata);
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

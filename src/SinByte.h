@@ -50,6 +50,33 @@ enum {
 	FILE_INNER_ERROR = 0x9,
 };
 
+QByteArray  converIntToByte(int number)
+{
+	
+	int count;
+	int divData = 0;
+
+	QByteArray result;
+	QString strResult = QString::number(number);
+	result = strResult.toUtf8().data();
+	
+	int divLength = 4 - result.size();
+
+	for (int i = 0; i < divLength ;i++)
+	{
+		result.push_front('0');
+	}
+	
+
+	return result;
+	
+}
+
+int converBytesToInt(QByteArray bytes) {
+
+	return 1;
+}
+
 struct ReqInterrFace
 {
 	QByteArray Header; //头标记 固定值
@@ -63,6 +90,28 @@ struct ReqInterrFace
 	QByteArray DataCRC; //校验算法
 	QByteArray data;
 	QByteArray Padding; //填充字段，保证每个字段4字节对齐
+
+	void  setLength()
+	{
+		int nlength = (Command.size() + BinFileId.size() + BinFileSize.size() + TransId.size() + TransSeqNum.size() + DataLength.size() + DataCRC.size() + data.size() + Padding.size()) / 2;
+		if (nlength % 4 != 0){
+			int div = nlength % 4;
+			nlength = nlength + div;
+			for (int i = 0; i < div * 2;i++)
+			{
+				this->Padding.push_front('0');
+			}
+		}
+		this->Length = converIntToByte(nlength);
+	}
+
+	void setDataLength()
+	{
+		int nDataLength = data.size() / 2;
+		this->DataLength = converIntToByte(nDataLength);
+	}
+
+	
 };
 Q_DECLARE_METATYPE(ReqInterrFace)
 

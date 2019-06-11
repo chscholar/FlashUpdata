@@ -346,30 +346,75 @@ QByteArray SinSerial::getReadData()
 					{
 						qDebug() << " reciveUEHandle" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						ReqInterrFace handleReq;
-						handleReq.Header = header;
-						handleReq.BinFileId = req.BinFileId;
-						handleReq.BinFileSize = req.BinFileSize;
+						handleReq = req;
 						handleReq.Command = "0001";
-						handleReq.data = req.data;
-						handleReq.DataCRC = req.DataCRC;
-						handleReq.DataLength = req.DataLength;
-						handleReq.Length = req.Length;
-						handleReq.TransId = req.TransId;
-						handleReq.Padding = "00000000";
-						QByteArray writeByte = reqToByteArray(handleReq);
-						emit signalSendHandleShark(writeByte);
+						handleReq.setLength();
+
+						QByteArray handByteData = reqToByteArray(handleReq);
+						emit signalWriteData(handByteData);
 						
 					}
 					if (req.Command == "8001") //握手成功
 					{
 						int a = 1;
 						qDebug() << "reciveUEHandle Ok " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-						emit signalHandSharkOver(); // 完成握手
+						
+						ReqInterrFace handleReq;
+						handleReq = req;
+						handleReq.Command = "0005";
+						handleReq.BinFileId = "0000000B";
+						handleReq.setDataLength();
+						handleReq.setLength();
+
+						/*handleReq.Header = "eba846b9";
+						handleReq.Length = "0016";
+						handleReq.Command = "0005";
+						handleReq.BinFileId = "0000000B";
+						handleReq.BinFileSize = "10000001";
+						handleReq.TransId = "20000002";
+						handleReq.TransSeqNum = "30000003";
+						handleReq.DataLength = "0000";
+						handleReq.DataCRC = "0000";*/
+     
+					
+						QByteArray handByteData = reqToByteArray(handleReq);
+						emit signalWriteData(handByteData);
 					}
 
 					if (req.Command == "8005") //upload_Req
 					{
-						int a = 1;
+						if (req.data == "0000")
+						{
+							qDebug() << "upload req success" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+						}
+					}
+
+					if (req.Command == "8006") //upload data
+					{
+						QByteArray fileData = req.data;
+						QByteArray fromhexData = QByteArray::fromHex(fileData).data();
+						
+						ReqInterrFace handleReq;
+						handleReq = req;
+						handleReq.data = "0000";
+						handleReq.Command = "0006";
+						handleReq.BinFileId = "00000001";
+
+						handleReq.setDataLength();
+						handleReq.setLength();
+
+						/*handleReq = req;
+						handleReq.data = "0000";
+						handleReq.Command = "0006";
+						handleReq.BinFileId  = "00000001";*/
+
+						//handleReq.setDataLength();
+						//handleReq.setLength();
+						
+						QByteArray handByteData = reqToByteArray(handleReq);
+						emit signalWriteData(handByteData);
+						
+						
 					}
 
 				}

@@ -74,7 +74,7 @@ ReqInterrFace SinSerialWriteWork::startUploadReq()
 	req.Header = "eba846b9";
 	req.Length = "0016";
 	req.Command = "0005";
-	req.BinFileId = "0000000A";
+	req.BinFileId = "00000001";
 	req.BinFileSize = "00000000";
 	req.TransId = "00000000";
 	req.TransSeqNum = "00000000";
@@ -88,25 +88,10 @@ void SinSerialWriteWork::sendData()
 	
 	ReqInterrFace req = startUploadReq();
 	sinserialSingle::getInstance().sendData(req);
-	
-		//req.Header = "eba846b9";
-
-		
-		/*if (m_nCurrentWriteIndex <= m_pWriteData.size())
-		{
-		req = m_pWriteData.at(m_nCurrentWriteIndex);
-		sinserialSingle::getInstance().sendData(req);
-		m_nCurrentWriteIndex++;
-		qDebug() << "send insex :" << m_nCurrentWriteIndex;
-		}
-		else {
-		qDebug() << "send Over";
-		}*/
-		
 }
 
 
-void SinSerialWriteWork::sendHandSharkPack(QByteArray bytedata)
+void SinSerialWriteWork::sendWriteDataPack(QByteArray bytedata)
 {
 	sinserialSingle::getInstance().sendData(bytedata);
 }

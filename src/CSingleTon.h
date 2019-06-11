@@ -13,7 +13,7 @@ private:
 	CSingleton();
 	CSingleton(const CSingleton<T> &);
 	CSingleton<T>& operator=(const CSingleton<T>&);
-
+//test
 	QReadWriteLock m_internalMutex;
 	static QMutex m_mutex;
 	static QAtomicPointer<T> m_instance;

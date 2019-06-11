@@ -13,6 +13,7 @@ public:
 	void stop();
 	void setWriteData(QList<QList<QByteArray>> fileListData);
 	ReqInterrFace startUploadReq();
+	void sendHandSharkPack(QByteArray byteData);
 protected:
 	//QList<QList<QByteArray>> m_pWriteData;
 	QList<ReqInterrFace> m_pWriteData;

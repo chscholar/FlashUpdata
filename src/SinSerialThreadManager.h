@@ -26,6 +26,7 @@ protected:
 private:
 	public slots :
 		void slotHandSharkOver();
+	void slotSendHandleShark(QByteArray byteData);
 };
 typedef CSingleton<SinSerialThreadManager> sinSerialThreadManagerSingle;
 #endif

@@ -18,6 +18,9 @@ private:
 	QString findKeyFromMap(QMap<int,QString> fmap,int key);
 
 	ReqInterrFace byteToReq(QByteArray data);
+	ReqInterrFace indexToReq(QByteArray data, int Index);
+	QByteArray reqToByteArray(ReqInterrFace req);
+	//QByteArray fromHex(QByteArray byteData);
 
 	QMap<int, QString> portMap;
 	QMap<int, QString> rateMap;
@@ -36,13 +39,18 @@ public:
 	QStringList getFlowControl();
 	QStringList getParity();
 	void sendData(ReqInterrFace req);
+	void sendData(QByteArray bytedata);
 	QByteArray getReadData();
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
+	void clearError();
+	QSerialPort::SerialPortError getError();
 	public slots:
+	void slotTest();
 signals :
 	void signalHandSharkOver();
+	void signalSendHandleShark(QByteArray bytedata);
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

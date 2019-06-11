@@ -61,6 +61,7 @@ struct ReqInterrFace
 	QByteArray data;
 	QByteArray Padding; //填充字段，保证每个字段4字节对齐
 };
+Q_DECLARE_METATYPE(ReqInterrFace)
 
 class SinByte:public QObject
 {

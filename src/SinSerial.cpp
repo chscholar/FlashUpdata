@@ -10,7 +10,6 @@ SinSerial::SinSerial(QObject *parent):
 QObject(parent)
 , serialPort(nullptr)
 {
-
 }
 
 SinSerial::~SinSerial()
@@ -207,14 +206,39 @@ void SinSerial::closeCom()
 	getSerialPort()->close();
 }
 
+void SinSerial::clearError()
+{
+	getSerialPort()->clearError();
+}
+
+QSerialPort::SerialPortError SinSerial::getError()
+{
+	return getSerialPort()->error();
+}
+
 void SinSerial::sendData(ReqInterrFace req)
 {
 	QByteArray writeByte;
 	writeByte = req.Header + req.Length + req.Command + req.BinFileId + req.BinFileSize + req.TransId + req.TransSeqNum + req.DataLength + req.DataCRC + req.data + req.Padding;
 
-	getSerialPort()->write(writeByte);
+	qint64 writebyte =  getSerialPort()->write(writeByte);
 	qDebug() << "sinSerial::sendData" << writeByte << "currentThreadId:" << QThread::currentThread();
 }
+
+void SinSerial::sendData(QByteArray bytedata)
+{
+	QByteArray writeData = QByteArray::fromHex(bytedata);
+	int writeByte = getSerialPort()->write(writeData);
+	qDebug() << "sinSerial::sendData" << bytedata << "currentThreadId:" << QThread::currentThread();
+}
+
+QByteArray SinSerial::reqToByteArray(ReqInterrFace req)
+{
+	QByteArray writeByte;
+	writeByte = req.Header + req.Length + req.Command + req.BinFileId + req.BinFileSize + req.TransId + req.TransSeqNum + req.DataLength + req.DataCRC + req.data + req.Padding;
+	return writeByte;
+}
+
 
 ReqInterrFace SinSerial::byteToReq(QByteArray data){
 
@@ -233,7 +257,31 @@ ReqInterrFace SinSerial::byteToReq(QByteArray data){
 	req.data = data.mid(56, DataSize);
 
 	return req;
+}
 
+void SinSerial::slotTest()
+{
+
+}
+
+ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
+{
+	ReqInterrFace req;
+	req.Header = data.mid(Index, 8);
+	req.Length = data.mid(Index+8, 4);
+	req.Command = data.mid(Index + 12, 4);
+	req.BinFileId = data.mid(Index + 16, 8);
+	req.BinFileSize = data.mid(Index + 24, 8);
+
+	req.TransId = data.mid(Index + 32, 8);
+	req.TransSeqNum = data.mid(Index + 40, 8);
+	req.DataLength = data.mid(Index + 48, 4);
+	req.DataCRC = data.mid(Index + 52, 4);
+
+	int DataSize = QByteArray::fromHex(req.DataLength).toInt();
+	req.data = data.mid(Index + 56, DataSize);
+
+	return req;
 }
 
 QByteArray SinSerial::getReadData()
@@ -241,19 +289,27 @@ QByteArray SinSerial::getReadData()
 	QByteArray header = "eba846b9";
 	QByteArray handle = "0001";
 	QByteArray readData;
-	if (getSerialPort()->canReadLine())
+	//if (getSerialPort()->canReadLine())
+	if (getSerialPort()->bytesAvailable())
 	{
-		readData = getSerialPort()->readLine();
+		
+		readData = getSerialPort()->readAll();
+		
+		readData = readData.trimmed();
 		if (!readData.isEmpty())
 		{
-			readData = readData.trimmed();
-			bool isValid = readData.toHex().startsWith(header);
+			qDebug() << " sinSerial::getReadData to Log" << readData << "currentThreadId:" << QThread::currentThread();
+
+			QString qstrReadData = readData.toHex();
+			int indexof = qstrReadData.indexOf(header);
+			ReqInterrFace req = indexToReq(readData.toHex(), indexof);
+
+			bool isValid = req.Header == header ? true : false;
 			if (isValid)
 			{
-				ReqInterrFace req = byteToReq(readData.toHex());
 				if (req.Command == handle) //握手协议
 				{
-					qDebug() << " reciveUEHandle" << readData.toHex() << "currentThreadId:" << QThread::currentThread();
+					//qDebug() << " reciveUEHandle" << readData.toHex() << "currentThreadId:" << QThread::currentThread();
 					ReqInterrFace handleReq;
 					handleReq.Header = header;
 					handleReq.BinFileId = req.BinFileId;
@@ -265,13 +321,17 @@ QByteArray SinSerial::getReadData()
 					handleReq.Length = req.Length;
 					handleReq.TransId = req.TransId;
 					handleReq.Padding = "00000000";
-					sendData(handleReq);
-					emit signalHandSharkOver(); // 完成握手
+					QByteArray writeByte = reqToByteArray(handleReq);
+					emit signalSendHandleShark(writeByte);
+					//sendData(handleReq);
+					//emit signalHandSharkOver(); // 完成握手
 				}
 				if (req.Command == "0002") //下载请求
 				{
 
 				}
+
+				return readData.toHex();
 
 			}
 

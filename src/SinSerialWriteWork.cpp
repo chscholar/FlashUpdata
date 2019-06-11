@@ -107,3 +107,9 @@ void SinSerialWriteWork::sendData()
 		}*/
 		
 }
+
+
+void SinSerialWriteWork::sendHandSharkPack(QByteArray bytedata)
+{
+	sinserialSingle::getInstance().sendData(bytedata);
+}

@@ -46,10 +46,7 @@ public:
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
 	void clearError();
-<<<<<<< Updated upstream
-=======
 	QList<int> indexOfHeader(QString strSrc,QByteArray header);
->>>>>>> Stashed changes
 	QSerialPort::SerialPortError getError();
 	public slots:
 	void slotTest();

@@ -284,8 +284,6 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 	return req;
 }
 
-<<<<<<< Updated upstream
-=======
 QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 {
 	QList<int> result;
@@ -306,7 +304,6 @@ QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 }
 
 
->>>>>>> Stashed changes
 QByteArray SinSerial::getReadData()
 {
 	QByteArray header = "eba846b9";
@@ -324,34 +321,7 @@ QByteArray SinSerial::getReadData()
 			qDebug() << " sinSerial::getReadData to Log" << readData << "currentThreadId:" << QThread::currentThread();
 
 			QString qstrReadData = readData.toHex();
-<<<<<<< Updated upstream
-			int indexof = qstrReadData.indexOf(header);
-			ReqInterrFace req = indexToReq(readData.toHex(), indexof);
 
-			bool isValid = req.Header == header ? true : false;
-			if (isValid)
-			{
-				if (req.Command == handle) //握手协议
-				{
-					//qDebug() << " reciveUEHandle" << readData.toHex() << "currentThreadId:" << QThread::currentThread();
-					ReqInterrFace handleReq;
-					handleReq.Header = header;
-					handleReq.BinFileId = req.BinFileId;
-					handleReq.BinFileSize = req.BinFileSize;
-					handleReq.Command = "8001";
-					handleReq.data = req.data;
-					handleReq.DataCRC = req.DataCRC;
-					handleReq.DataLength = req.DataLength;
-					handleReq.Length = req.Length;
-					handleReq.TransId = req.TransId;
-					handleReq.Padding = "00000000";
-					QByteArray writeByte = reqToByteArray(handleReq);
-					emit signalSendHandleShark(writeByte);
-					//sendData(handleReq);
-					//emit signalHandSharkOver(); // 完成握手
-				}
-				if (req.Command == "0002") //下载请求
-=======
 			//int indexof = qstrReadData.indexOf(header);
 			QList<int> indexofList = indexOfHeader(qstrReadData, header);
 			
@@ -363,7 +333,6 @@ QByteArray SinSerial::getReadData()
 
 				bool isValid = req.Header == header ? true : false;
 				if (isValid)
->>>>>>> Stashed changes
 				{
 					if (req.Command == handle) //握手协议
 					{
@@ -391,18 +360,7 @@ QByteArray SinSerial::getReadData()
 					}
 
 				}
-<<<<<<< Updated upstream
-
-				return readData.toHex();
-
-=======
->>>>>>> Stashed changes
 			}
-
-			
-
-			
-
 
 		}
 	}

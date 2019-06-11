@@ -219,7 +219,7 @@ QSerialPort::SerialPortError SinSerial::getError()
 void SinSerial::sendData(ReqInterrFace req)
 {
 	QByteArray writeByte;
-	writeByte = req.Header + req.Length + req.Command + req.BinFileId + req.BinFileSize + req.TransId + req.TransSeqNum + req.DataLength + req.DataCRC + req.data + req.Padding;
+	writeByte = QByteArray::fromHex(req.Header + req.Length + req.Command + req.BinFileId + req.BinFileSize + req.TransId + req.TransSeqNum + req.DataLength + req.DataCRC + req.data + req.Padding);
 
 	qint64 writebyte =  getSerialPort()->write(writeByte);
 	qDebug() << "sinSerial::sendData" << writeByte << "currentThreadId:" << QThread::currentThread();
@@ -284,10 +284,33 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 	return req;
 }
 
+<<<<<<< Updated upstream
+=======
+QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
+{
+	QList<int> result;
+	QString qstrMid;
+	int indexOf = 0;
+	
+	for (int i = 0; i < strSrc.length();i++)
+	{
+		strSrc = strSrc.mid(i + indexOf);
+		indexOf = strSrc.indexOf(header);
+		if (indexOf != -1)
+		{
+			result.push_back( i + indexOf);
+		}
+	}
+	
+	return result;
+}
+
+
+>>>>>>> Stashed changes
 QByteArray SinSerial::getReadData()
 {
 	QByteArray header = "eba846b9";
-	QByteArray handle = "0001";
+	QByteArray handle = "8000";
 	QByteArray readData;
 	//if (getSerialPort()->canReadLine())
 	if (getSerialPort()->bytesAvailable())
@@ -301,6 +324,7 @@ QByteArray SinSerial::getReadData()
 			qDebug() << " sinSerial::getReadData to Log" << readData << "currentThreadId:" << QThread::currentThread();
 
 			QString qstrReadData = readData.toHex();
+<<<<<<< Updated upstream
 			int indexof = qstrReadData.indexOf(header);
 			ReqInterrFace req = indexToReq(readData.toHex(), indexof);
 
@@ -327,13 +351,57 @@ QByteArray SinSerial::getReadData()
 					//emit signalHandSharkOver(); // 完成握手
 				}
 				if (req.Command == "0002") //下载请求
+=======
+			//int indexof = qstrReadData.indexOf(header);
+			QList<int> indexofList = indexOfHeader(qstrReadData, header);
+			
+		if (indexofList.size() <= 0) return readData;
+			
+			for (int i = 0; i < indexofList.size();i++)
+			{
+				ReqInterrFace req = indexToReq(readData.toHex(), indexofList.at(i));
+
+				bool isValid = req.Header == header ? true : false;
+				if (isValid)
+>>>>>>> Stashed changes
 				{
+					if (req.Command == handle) //握手协议
+					{
+						qDebug() << " reciveUEHandle" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+						ReqInterrFace handleReq;
+						handleReq.Header = header;
+						handleReq.BinFileId = req.BinFileId;
+						handleReq.BinFileSize = req.BinFileSize;
+						handleReq.Command = "0001";
+						handleReq.data = req.data;
+						handleReq.DataCRC = req.DataCRC;
+						handleReq.DataLength = req.DataLength;
+						handleReq.Length = req.Length;
+						handleReq.TransId = req.TransId;
+						handleReq.Padding = "00000000";
+						QByteArray writeByte = reqToByteArray(handleReq);
+						emit signalSendHandleShark(writeByte);
+						
+					}
+					if (req.Command == "8001") //握手成功
+					{
+						int a = 1;
+						qDebug() << "reciveUEHandle Ok " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+						emit signalHandSharkOver(); // 完成握手
+					}
 
 				}
+<<<<<<< Updated upstream
 
 				return readData.toHex();
 
+=======
+>>>>>>> Stashed changes
 			}
+
+			
+
+			
 
 
 		}

@@ -6,6 +6,7 @@
 #include "CSingleTon.h"
 #include "QObject"
 #include "SinByte.h"
+#include <QList>
 
 #pragma execution_character_set("utf-8")
 class SinSerial :public QObject
@@ -45,6 +46,10 @@ public:
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
 	void clearError();
+<<<<<<< Updated upstream
+=======
+	QList<int> indexOfHeader(QString strSrc,QByteArray header);
+>>>>>>> Stashed changes
 	QSerialPort::SerialPortError getError();
 	public slots:
 	void slotTest();

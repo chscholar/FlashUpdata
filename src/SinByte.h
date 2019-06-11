@@ -6,23 +6,26 @@
 
 #pragma pack(1) 
 
+/* define command values. */
+#define    MSG_CMD_HANDSHAKE_SYN     	 0x8000
+#define    MSG_CMD_HANDSHAKE_SYNARK   	 0x0001
+#define    MSG_CMD_HANDSHAKE_ARK     	 0x8001
+
 /* PC-->UE */
-#define    MSG_CMD_HANDSHAKE_REQ     	 0x0001    
-#define    MSG_CMD_DOWNLOADFILE_REQ      0x0002    
-#define    MSG_CMD_DOWNLOADFILE_DATA     0x0003    
-#define    MSG_CMD_DOWNLOADFILE_END      0x0004    
-#define    MSG_CMD_UPLOADFILE_REQ        0x0005    
-#define    MSG_CMD_UPLOADFILE_DATA_RSP   0x0006
-#define    MSG_CMD_UPLOADFILE_END_RSP    0x0007    
+#define    MSG_CMD_DOWNLOADFILE_REQ       0x0002
+#define    MSG_CMD_DOWNLOADFILE_DATA     0x0003
+#define    MSG_CMD_DOWNLOADFILE_END       0x0004
+#define    MSG_CMD_UPLOADFILE_REQ             0x0005
+#define    MSG_CMD_UPLOADFILE_DATA_RSP  0x0006
+#define    MSG_CMD_UPLOADFILE_END_RSP    0x0007
 
 /* UE-->PC */
-#define    MSG_CMD_HANDSHAKE_REQ_RSP     0x8001
 #define    MSG_CMD_DOWNLOADFILE_REQ_RSP  0x8002
 #define    MSG_CMD_DOWNLOADFILE_DATA_RSP 0x8003
 #define    MSG_CMD_DOWNLOADFILE_END_RSP  0x8004
 #define    MSG_CMD_UPLOADFILE_REQ_RSP    0x8005
 #define    MSG_CMD_UPLOADFILE_DATA       0x8006
-#define    MSG_CMD_UPLOADFILE_END        0x8007  
+#define    MSG_CMD_UPLOADFILE_END        0x8007
 
 
 #define    MSG_PROTO_HEADER_TAG  0xEBA846B9

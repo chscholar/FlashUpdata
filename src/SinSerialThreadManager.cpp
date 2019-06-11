@@ -62,8 +62,9 @@ void SinSerialThreadManager::slotHandSharkOver()
 {
 	//握手完成 开始写操作
 
-	m_pWriteWork->start();
-	m_pWriteThread->start();
+	//m_pWriteWork->start();
+	//m_pWriteThread->start();
+	m_pWriteWork->sendData();
 	
 }
 

@@ -278,8 +278,16 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 	req.DataLength = data.mid(Index + 48, 4);
 	req.DataCRC = data.mid(Index + 52, 4);
 
-	int DataSize = QByteArray::fromHex(req.DataLength).toInt();
-	req.data = data.mid(Index + 56, DataSize);
+	if (req.Command == "8005")
+	{
+		int a = 1;
+	}
+	
+	bool ok;
+	QString qstrDataLength = req.DataLength;
+	int dataSize =  qstrDataLength.toInt(&ok, 10);
+	
+	req.data = data.mid(Index + 56, dataSize * 2);
 
 	return req;
 }
@@ -357,6 +365,11 @@ QByteArray SinSerial::getReadData()
 						int a = 1;
 						qDebug() << "reciveUEHandle Ok " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						emit signalHandSharkOver(); // Íê³ÉÎÕÊÖ
+					}
+
+					if (req.Command == "8005") //upload_Req
+					{
+						int a = 1;
 					}
 
 				}

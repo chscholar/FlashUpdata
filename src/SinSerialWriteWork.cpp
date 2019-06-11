@@ -72,17 +72,14 @@ ReqInterrFace SinSerialWriteWork::startUploadReq()
 {
 	ReqInterrFace req;
 	req.Header = "eba846b9";
-	req.BinFileId = "0000000A";
+	req.Length = "0016";
 	req.Command = "0005";
-	req.TransId = "0001";
-	req.Length = "0002";
-	req.DataLength = "0000";
-	req.BinFileSize = "0000";
-	req.data = "00000000";
-	req.DataCRC = "0000";
+	req.BinFileId = "0000000A";
+	req.BinFileSize = "00000000";
+	req.TransId = "00000000";
 	req.TransSeqNum = "00000000";
+	req.DataLength = "0000";
 	req.Padding = "00000000";
-
 	return req;
 }
 

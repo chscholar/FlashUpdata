@@ -95,7 +95,6 @@ void ConfigDeployWidget::slotConfirmTrans()
 
 	FileUtil *futil = new FileUtil();
 	QList<QList<QByteArray>> fileListData =  futil->getDataFramFromFilePath(pathList);
-
 	sinSerialThreadManagerSingle::getInstance().setWriteData(fileListData);
 
 }

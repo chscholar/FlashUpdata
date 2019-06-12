@@ -9,6 +9,7 @@
 SinSerial::SinSerial(QObject *parent):
 QObject(parent)
 , serialPort(nullptr)
+, m_bIsUpLoadTrans(true)
 {
 }
 
@@ -284,6 +285,11 @@ bool SinSerial::isCompare(QByteArray byteData, int nError)
 	
 }
 
+void SinSerial::setTransType(bool isUplodType)
+{
+	m_bIsUpLoadTrans = isUplodType;
+}
+
 ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 {
 	bool ok;
@@ -334,6 +340,24 @@ QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 	return result;
 }
 
+void SinSerial::fillWriteStruct(ReqInterrFace req, QByteArray command, QByteArray BinFileId, QByteArray BinFileSize, QByteArray TransId, QByteArray TransSeqNum, QByteArray dataCRC, QByteArray data)
+{
+	ReqInterrFace handleReq;
+	handleReq = req;
+	handleReq.Command = command;
+	handleReq.BinFileId = BinFileId;
+	handleReq.BinFileSize = BinFileSize;
+	handleReq.TransId = TransId;
+	handleReq.TransSeqNum = TransSeqNum;
+	handleReq.DataCRC = dataCRC;
+	handleReq.data = data;
+	handleReq.setDataLength();
+	handleReq.setLength();
+
+	QByteArray handByteData = reqToByteArray(handleReq);
+	emit signalWriteData("pc send respon Handle", handByteData);
+}
+
 
 QByteArray SinSerial::getReadData()
 {;
@@ -367,77 +391,56 @@ QByteArray SinSerial::getReadData()
 
 				bool isValid = isCompare(req.Header, MSG_PROTO_HEADER_TAG);
 				if (isValid)
-				{
+				{	
+
 					if (isCompare(req.Command,MSG_CMD_HANDSHAKE_SYN)) //握手协议
 					{
 						qDebug() << " reciveUE Handle :" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-						ReqInterrFace handleReq;
-						handleReq = req;
-						handleReq.Command = MSG_CMD_HANDSHAKE_SYNARK;
-						handleReq.setLength();
-
-						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData("pc send respon Handle",handByteData);
 						
+						fillWriteStruct(req, MSG_CMD_HANDSHAKE_SYNARK,req.BinFileId,req.BinFileId,req.TransId,req.TransSeqNum,req.DataCRC,req.data);
 					}
-					if (isCompare(req.Command,MSG_CMD_HANDSHAKE_ARK)) //握手成功
+					else if (isCompare(req.Command, MSG_CMD_HANDSHAKE_ARK)) //握手成功
 					{
 						qDebug() << "reciveUE Handle Ok :" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-						
-						ReqInterrFace handleReq;
-						handleReq = req;
-						handleReq.Command = MSG_CMD_UPLOADFILE_REQ;
-						handleReq.BinFileId = "0000000B";
-						handleReq.setDataLength();
-						handleReq.setLength();
-					
-						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData("pc send upload  req",handByteData);
-					}
 
-					if (isCompare(req.Command,MSG_CMD_UPLOADFILE_REQ_RSP)) //upload_Req
+						QByteArray command;
+						if (m_bIsUpLoadTrans)
+						{
+							command = MSG_CMD_UPLOADFILE_REQ;
+						}
+						else {
+							command = MSG_CMD_DOWNLOADFILE_REQ;
+						}
+
+						fillWriteStruct(req, command, "0000000B", req.BinFileSize, req.TransId, req.TransSeqNum, req.DataCRC, req.data);
+					}
+					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_REQ_RSP)) // //upload_Req
 					{
 						qDebug() << "reciveUE upload Req: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-						if (isCompare(req.data,FILE_OK))
+						if (isCompare(req.data, FILE_OK))
 						{
 							int a = 1;
-							
+
 						}
 					}
-
-					if (isCompare(req.Command,MSG_CMD_UPLOADFILE_DATA)) //upload data
+					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_DATA)) //upload data
 					{
 						qDebug() << "reciveUE upload Data: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
 						QByteArray fileData = req.data;
 						QByteArray fromhexData = QByteArray::fromHex(fileData).data();
-						
-						ReqInterrFace handleReq;
-						handleReq = req;
-						handleReq.data = "0000";
-						handleReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;
 
-						handleReq.setDataLength();
-						handleReq.setLength();
-
-						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData("pc send upload data",handByteData);
+						fillWriteStruct(req, MSG_CMD_UPLOADFILE_DATA_RSP, req.BinFileId, req.BinFileSize, req.TransId, req.TransSeqNum, req.DataCRC, "0000");
 					}
-
-					if (isCompare(req.Command, MSG_CMD_UPLOADFILE_END)) // upload end
+					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_END)) // upload end
 					{
 						qDebug() << "reciveUE upload End: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-						ReqInterrFace handleReq;
-						handleReq = req;
-						handleReq.Command = MSG_CMD_UPLOADFILE_END_RSP;
-						handleReq.data = "0000";
-						handleReq.setDataLength();
-						handleReq.setLength();
 
-						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData("pc send upload end", handByteData);
-
+						fillWriteStruct(req, MSG_CMD_UPLOADFILE_END_RSP, req.BinFileId, req.BinFileSize, req.TransId, req.TransSeqNum, req.DataCRC, "0000");
+					}
+					else { //unknow
+						qDebug() << "reciveUE upload UnKnow: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 					}
 
 				}

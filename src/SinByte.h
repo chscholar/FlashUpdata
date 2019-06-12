@@ -7,28 +7,28 @@
 #pragma pack(1) 
 
 /* define command values. */
-#define    MSG_CMD_HANDSHAKE_SYN     	 0x8000
-#define    MSG_CMD_HANDSHAKE_SYNARK   	 0x0001
-#define    MSG_CMD_HANDSHAKE_ARK     	 0x8001
+const QByteArray    MSG_CMD_HANDSHAKE_SYN = "8000";
+const QByteArray     MSG_CMD_HANDSHAKE_SYNARK = "0001";
+const QByteArray     MSG_CMD_HANDSHAKE_ARK = "8001";
 
 /* PC-->UE */
-#define    MSG_CMD_DOWNLOADFILE_REQ       0x0002
-#define    MSG_CMD_DOWNLOADFILE_DATA     0x0003
-#define    MSG_CMD_DOWNLOADFILE_END       0x0004
-#define    MSG_CMD_UPLOADFILE_REQ             0x0005
-#define    MSG_CMD_UPLOADFILE_DATA_RSP  0x0006
-#define    MSG_CMD_UPLOADFILE_END_RSP    0x0007
+const QByteArray    MSG_CMD_DOWNLOADFILE_REQ = "0002";
+const QByteArray    MSG_CMD_DOWNLOADFILE_DATA = "0003";
+const QByteArray     MSG_CMD_DOWNLOADFILE_END = "0004";
+const QByteArray     MSG_CMD_UPLOADFILE_REQ = "0005";
+const QByteArray     MSG_CMD_UPLOADFILE_DATA_RSP = "0006";
+const QByteArray     MSG_CMD_UPLOADFILE_END_RSP = "0007";
 
 /* UE-->PC */
-#define    MSG_CMD_DOWNLOADFILE_REQ_RSP  0x8002
-#define    MSG_CMD_DOWNLOADFILE_DATA_RSP 0x8003
-#define    MSG_CMD_DOWNLOADFILE_END_RSP  0x8004
-#define    MSG_CMD_UPLOADFILE_REQ_RSP    0x8005
-#define    MSG_CMD_UPLOADFILE_DATA       0x8006
-#define    MSG_CMD_UPLOADFILE_END        0x8007
+const QByteArray     MSG_CMD_DOWNLOADFILE_REQ_RSP = "8002";
+const QByteArray     MSG_CMD_DOWNLOADFILE_DATA_RSP = "8003";
+const QByteArray     MSG_CMD_DOWNLOADFILE_END_RSP = "8004";
+const QByteArray     MSG_CMD_UPLOADFILE_REQ_RSP = "8005";
+const QByteArray     MSG_CMD_UPLOADFILE_DATA = "8006";
+const QByteArray    MSG_CMD_UPLOADFILE_END = "8007";
 
 
-#define    MSG_PROTO_HEADER_TAG  0xEBA846B9
+QByteArray     MSG_PROTO_HEADER_TAG = "EBA846B9";
 
 
 /*
@@ -50,33 +50,6 @@ enum {
 	FILE_INNER_ERROR = 0x9,
 };
 
-QByteArray  converIntToByte(int number)
-{
-	
-	int count;
-	int divData = 0;
-
-	QByteArray result;
-	QString strResult = QString::number(number);
-	result = strResult.toUtf8().data();
-	
-	int divLength = 4 - result.size();
-
-	for (int i = 0; i < divLength ;i++)
-	{
-		result.push_front('0');
-	}
-	
-
-	return result;
-	
-}
-
-int converBytesToInt(QByteArray bytes) {
-
-	return 1;
-}
-
 struct ReqInterrFace
 {
 	QByteArray Header; //头标记 固定值
@@ -93,22 +66,26 @@ struct ReqInterrFace
 
 	void  setLength()
 	{
-		int nlength = (Command.size() + BinFileId.size() + BinFileSize.size() + TransId.size() + TransSeqNum.size() + DataLength.size() + DataCRC.size() + data.size() + Padding.size()) / 2;
+		int nlength = (Command.size() + BinFileId.size() + BinFileSize.size() + TransId.size() + TransSeqNum.size() + DataLength.size() + DataCRC.size() + data.size() + Padding.size());
 		if (nlength % 4 != 0){
 			int div = nlength % 4;
 			nlength = nlength + div;
-			for (int i = 0; i < div * 2;i++)
+			for (int i = 0; i < div ;i++)
 			{
 				this->Padding.push_front('0');
 			}
 		}
-		this->Length = converIntToByte(nlength);
+
+		nlength = nlength / 2;
+		QString str = QString("%1").arg(nlength, 4, 16, QLatin1Char('0'));
+		this->Length = str.toUtf8().data();
 	}
 
 	void setDataLength()
 	{
 		int nDataLength = data.size() / 2;
-		this->DataLength = converIntToByte(nDataLength);
+		QString str = QString("%1").arg(nDataLength, 4, 16, QLatin1Char('0'));
+		this->DataLength = str.toUtf8().data();
 	}
 
 	

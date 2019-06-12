@@ -25,8 +25,7 @@ protected:
 	QThread *m_pWriteThread;;
 private:
 	public slots :
-		void slotHandSharkOver();
-	void slotWriteData(QByteArray byteData);
+	void slotWriteData(QString strLog,QByteArray byteData);
 };
 typedef CSingleton<SinSerialThreadManager> sinSerialThreadManagerSingle;
 #endif

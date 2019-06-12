@@ -225,11 +225,11 @@ void SinSerial::sendData(ReqInterrFace req)
 	qDebug() << "sinSerial::sendData" << writeByte << "currentThreadId:" << QThread::currentThread();
 }
 
-void SinSerial::sendData(QByteArray bytedata)
+void SinSerial::sendData(QString strLog,QByteArray bytedata)
 {
 	QByteArray writeData = QByteArray::fromHex(bytedata);
 	int writeByte = getSerialPort()->write(writeData);
-	qDebug() << "sinSerial::sendData" << bytedata << "currentThreadId:" << QThread::currentThread();
+	qDebug() << strLog << bytedata << "currentThreadId:" << QThread::currentThread();
 }
 
 QByteArray SinSerial::reqToByteArray(ReqInterrFace req)
@@ -264,6 +264,16 @@ void SinSerial::slotTest()
 
 }
 
+bool SinSerial::isCompare(QByteArray src, QByteArray dest)
+{
+	QString strSrc = src;
+	QString strDest = dest;
+
+	int result = strSrc.compare(strDest, Qt::CaseInsensitive);
+	return result == 0;
+
+}
+
 ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 {
 	ReqInterrFace req;
@@ -278,14 +288,9 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 	req.DataLength = data.mid(Index + 48, 4);
 	req.DataCRC = data.mid(Index + 52, 4);
 
-	if (req.Command == "8005")
-	{
-		int a = 1;
-	}
-	
 	bool ok;
 	QString qstrDataLength = req.DataLength;
-	int dataSize =  qstrDataLength.toInt(&ok, 10);
+	int dataSize =  qstrDataLength.toInt(&ok, 16);
 	
 	req.data = data.mid(Index + 56, dataSize * 2);
 
@@ -301,7 +306,7 @@ QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 	for (int i = 0; i < strSrc.length();i++)
 	{
 		strSrc = strSrc.mid(i + indexOf);
-		indexOf = strSrc.indexOf(header);
+		indexOf = strSrc.indexOf(header, 0, Qt::CaseInsensitive);
 		if (indexOf != -1)
 		{
 			result.push_back( i + indexOf);
@@ -314,8 +319,8 @@ QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 
 QByteArray SinSerial::getReadData()
 {
-	QByteArray header = "eba846b9";
-	QByteArray handle = "8000";
+	//QByteArray header = "eba846b9";
+	//QByteArray handle = "8000";
 	QByteArray readData;
 	//if (getSerialPort()->canReadLine())
 	if (getSerialPort()->bytesAvailable())
@@ -328,93 +333,74 @@ QByteArray SinSerial::getReadData()
 		{
 			qDebug() << " sinSerial::getReadData to Log" << readData << "currentThreadId:" << QThread::currentThread();
 
-			QString qstrReadData = readData.toHex();
+			QString qstrReadData = readData.toHex().data();
 
-			//int indexof = qstrReadData.indexOf(header);
-			QList<int> indexofList = indexOfHeader(qstrReadData, header);
+			QList<int> indexofList = indexOfHeader(qstrReadData, MSG_PROTO_HEADER_TAG);
 			
 		if (indexofList.size() <= 0) return readData;
 			
 			for (int i = 0; i < indexofList.size();i++)
 			{
-				ReqInterrFace req = indexToReq(readData.toHex(), indexofList.at(i));
+				ReqInterrFace req = indexToReq(readData.toHex().data(), indexofList.at(i));
 
-				bool isValid = req.Header == header ? true : false;
+				bool isValid = isCompare(req.Header, MSG_PROTO_HEADER_TAG);
 				if (isValid)
 				{
-					if (req.Command == handle) //握手协议
+					if (isCompare(req.Command,MSG_CMD_HANDSHAKE_SYN)) //握手协议
 					{
-						qDebug() << " reciveUEHandle" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+						qDebug() << " reciveUE Handle :" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						ReqInterrFace handleReq;
 						handleReq = req;
-						handleReq.Command = "0001";
+						handleReq.Command = MSG_CMD_HANDSHAKE_SYNARK;
 						handleReq.setLength();
 
 						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData(handByteData);
+						emit signalWriteData("pc send respon Handle",handByteData);
 						
 					}
-					if (req.Command == "8001") //握手成功
+					if (isCompare(req.Command,MSG_CMD_HANDSHAKE_ARK)) //握手成功
 					{
 						int a = 1;
-						qDebug() << "reciveUEHandle Ok " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+						qDebug() << "reciveUE Handle Ok :" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						
 						ReqInterrFace handleReq;
 						handleReq = req;
-						handleReq.Command = "0005";
+						handleReq.Command = MSG_CMD_UPLOADFILE_REQ;
 						handleReq.BinFileId = "0000000B";
 						handleReq.setDataLength();
 						handleReq.setLength();
-
-						/*handleReq.Header = "eba846b9";
-						handleReq.Length = "0016";
-						handleReq.Command = "0005";
-						handleReq.BinFileId = "0000000B";
-						handleReq.BinFileSize = "10000001";
-						handleReq.TransId = "20000002";
-						handleReq.TransSeqNum = "30000003";
-						handleReq.DataLength = "0000";
-						handleReq.DataCRC = "0000";*/
-     
 					
 						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData(handByteData);
+						emit signalWriteData("pc send upload  req",handByteData);
 					}
 
-					if (req.Command == "8005") //upload_Req
+					if (isCompare(req.Command,MSG_CMD_UPLOADFILE_REQ_RSP)) //upload_Req
 					{
+						qDebug() << "reciveUE upload Req: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						if (req.data == "0000")
 						{
-							qDebug() << "upload req success" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+							
 						}
 					}
 
-					if (req.Command == "8006") //upload data
+					if (isCompare(req.Command,MSG_CMD_UPLOADFILE_DATA)) //upload data
 					{
+						qDebug() << "reciveUE upload Data: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+
 						QByteArray fileData = req.data;
 						QByteArray fromhexData = QByteArray::fromHex(fileData).data();
 						
 						ReqInterrFace handleReq;
 						handleReq = req;
 						handleReq.data = "0000";
-						handleReq.Command = "0006";
+						handleReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;
 						handleReq.BinFileId = "00000001";
 
 						handleReq.setDataLength();
 						handleReq.setLength();
 
-						/*handleReq = req;
-						handleReq.data = "0000";
-						handleReq.Command = "0006";
-						handleReq.BinFileId  = "00000001";*/
-
-						//handleReq.setDataLength();
-						//handleReq.setLength();
-						
 						QByteArray handByteData = reqToByteArray(handleReq);
-						emit signalWriteData(handByteData);
-						
-						
+						emit signalWriteData("pc send upload data",handByteData);
 					}
 
 				}

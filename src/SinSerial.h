@@ -40,19 +40,19 @@ public:
 	QStringList getFlowControl();
 	QStringList getParity();
 	void sendData(ReqInterrFace req);
-	void sendData(QByteArray bytedata);
+	void sendData(QString strLog,QByteArray bytedata);
 	QByteArray getReadData();
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
 	void clearError();
 	QList<int> indexOfHeader(QString strSrc,QByteArray header);
+	bool isCompare(QByteArray src, QByteArray dest);
 	QSerialPort::SerialPortError getError();
 	public slots:
 	void slotTest();
 signals :
-	void signalHandSharkOver();
-	void signalWriteData(QByteArray bytedata);
+	void signalWriteData(QString  strLog,QByteArray bytedata);
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

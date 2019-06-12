@@ -91,7 +91,7 @@ void SinSerialWriteWork::sendData()
 }
 
 
-void SinSerialWriteWork::sendWriteDataPack(QByteArray bytedata)
+void SinSerialWriteWork::sendWriteDataPack(QString strLog,QByteArray bytedata)
 {
-	sinserialSingle::getInstance().sendData(bytedata);
+	sinserialSingle::getInstance().sendData(strLog,bytedata);
 }

@@ -38,16 +38,16 @@ QByteArray     MSG_PROTO_HEADER_TAG = "EBA846B9";
 
 
 enum {
-	FILE_OK = 0x0,
-	FILE_NOT_EXIST = 0x1,
-	FILE_SIZE_TOO_BIG = 0x2,
-	FILE_CRC_ERROR = 0x3,
-	FILE_HDR_INFO_NOT_MATCH = 0x4,
-	FILE_SIGNATURE_ERROR = 0x5,
-	FILE_WRITE_FLASH_ERROR = 0x6,
-	FILE_READ_FLASH_ERROR = 0x7,
-	FILE_MISSING_PACKET_ERROR = 0x8,
-	FILE_INNER_ERROR = 0x9,
+	FILE_OK = 0,
+	FILE_NOT_EXIST,
+	FILE_SIZE_TOO_BIG,
+	FILE_CRC_ERROR,
+	FILE_HDR_INFO_NOT_MATCH,
+	FILE_SIGNATURE_ERROR,
+	FILE_WRITE_FLASH_ERROR,
+	FILE_READ_FLASH_ERROR,
+	FILE_MISSING_PACKET_ERROR,
+	FILE_INNER_ERROR,
 };
 
 struct ReqInterrFace
@@ -67,18 +67,21 @@ struct ReqInterrFace
 	void  setLength()
 	{
 		int nlength = (Command.size() + BinFileId.size() + BinFileSize.size() + TransId.size() + TransSeqNum.size() + DataLength.size() + DataCRC.size() + data.size() + Padding.size());
-		if (nlength % 4 != 0){
-			int div = nlength % 4;
-			nlength = nlength + div;
-			for (int i = 0; i < div ;i++)
+		
+		nlength = nlength / 2;
+		QString str = QString("%1").arg(nlength, 4, 16, QLatin1Char('0'));
+		this->Length = str.toUtf8().data();
+
+		int totalLength = (nlength * 2 + Header.size() + Length.size())/2;
+		int tDiv = totalLength % 4;
+		if (tDiv != 0)
+		{
+			for (int i = 0; i < tDiv * 2;i++)
 			{
 				this->Padding.push_front('0');
 			}
 		}
-
-		nlength = nlength / 2;
-		QString str = QString("%1").arg(nlength, 4, 16, QLatin1Char('0'));
-		this->Length = str.toUtf8().data();
+		
 	}
 
 	void setDataLength()

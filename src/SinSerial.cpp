@@ -22,6 +22,7 @@ QSerialPort* SinSerial::getSerialPort()
 	if (serialPort == nullptr)
 	{
 		serialPort = new QSerialPort();
+		serialPort->setReadBufferSize(0);
 	}
 	return serialPort;
 }
@@ -271,14 +272,27 @@ bool SinSerial::isCompare(QByteArray src, QByteArray dest)
 
 	int result = strSrc.compare(strDest, Qt::CaseInsensitive);
 	return result == 0;
+}
 
+bool SinSerial::isCompare(QByteArray byteData, int nError)
+{
+	bool ok;
+	QString strData = byteData.data();
+	int data = strData.toInt(&ok, 16);
+
+	return data == nError;
+	
 }
 
 ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 {
+	bool ok;
 	ReqInterrFace req;
 	req.Header = data.mid(Index, 8);
 	req.Length = data.mid(Index+8, 4);
+	QString qstrLength = req.Length;
+	int Length = qstrLength.toInt(&ok, 16);
+
 	req.Command = data.mid(Index + 12, 4);
 	req.BinFileId = data.mid(Index + 16, 8);
 	req.BinFileSize = data.mid(Index + 24, 8);
@@ -288,11 +302,15 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 	req.DataLength = data.mid(Index + 48, 4);
 	req.DataCRC = data.mid(Index + 52, 4);
 
-	bool ok;
-	QString qstrDataLength = req.DataLength;
-	int dataSize =  qstrDataLength.toInt(&ok, 16);
 	
-	req.data = data.mid(Index + 56, dataSize * 2);
+	QString qstrDataLength = req.DataLength;
+	int dataLength =  qstrDataLength.toInt(&ok, 16);
+	
+	if (isCompare(req.Command, MSG_CMD_UPLOADFILE_DATA))
+	{
+		int a = 1;
+	}
+	req.data = data.mid(Index + 56, dataLength * 2);
 
 	return req;
 }
@@ -318,17 +336,21 @@ QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 
 
 QByteArray SinSerial::getReadData()
-{
-	//QByteArray header = "eba846b9";
-	//QByteArray handle = "8000";
+{;
 	QByteArray readData;
 	//if (getSerialPort()->canReadLine())
+	
 	if (getSerialPort()->bytesAvailable())
 	{
-		
+		//QThread::msleep(500);
 		readData = getSerialPort()->readAll();
-		
+		QString qstrTest = readData.toHex().data();
+		if (qstrTest.contains("0216"))
+		{
+			int a = 1;
+		}
 		readData = readData.trimmed();
+		QString qstrtest1 = readData.toHex().data();
 		if (!readData.isEmpty())
 		{
 			qDebug() << " sinSerial::getReadData to Log" << readData << "currentThreadId:" << QThread::currentThread();
@@ -337,11 +359,11 @@ QByteArray SinSerial::getReadData()
 
 			QList<int> indexofList = indexOfHeader(qstrReadData, MSG_PROTO_HEADER_TAG);
 			
-		if (indexofList.size() <= 0) return readData;
+			if (indexofList.size() <= 0) return readData;
 			
 			for (int i = 0; i < indexofList.size();i++)
 			{
-				ReqInterrFace req = indexToReq(readData.toHex().data(), indexofList.at(i));
+				ReqInterrFace req = indexToReq(readData.toHex(), indexofList.at(i));
 
 				bool isValid = isCompare(req.Header, MSG_PROTO_HEADER_TAG);
 				if (isValid)
@@ -360,7 +382,6 @@ QByteArray SinSerial::getReadData()
 					}
 					if (isCompare(req.Command,MSG_CMD_HANDSHAKE_ARK)) //ÎÕÊÖ³É¹¦
 					{
-						int a = 1;
 						qDebug() << "reciveUE Handle Ok :" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						
 						ReqInterrFace handleReq;
@@ -377,8 +398,10 @@ QByteArray SinSerial::getReadData()
 					if (isCompare(req.Command,MSG_CMD_UPLOADFILE_REQ_RSP)) //upload_Req
 					{
 						qDebug() << "reciveUE upload Req: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-						if (req.data == "0000")
+
+						if (isCompare(req.data,FILE_OK))
 						{
+							int a = 1;
 							
 						}
 					}
@@ -394,13 +417,27 @@ QByteArray SinSerial::getReadData()
 						handleReq = req;
 						handleReq.data = "0000";
 						handleReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;
-						handleReq.BinFileId = "00000001";
 
 						handleReq.setDataLength();
 						handleReq.setLength();
 
 						QByteArray handByteData = reqToByteArray(handleReq);
 						emit signalWriteData("pc send upload data",handByteData);
+					}
+
+					if (isCompare(req.Command, MSG_CMD_UPLOADFILE_END)) // upload end
+					{
+						qDebug() << "reciveUE upload End: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+						ReqInterrFace handleReq;
+						handleReq = req;
+						handleReq.Command = MSG_CMD_UPLOADFILE_END_RSP;
+						handleReq.data = "0000";
+						handleReq.setDataLength();
+						handleReq.setLength();
+
+						QByteArray handByteData = reqToByteArray(handleReq);
+						emit signalWriteData("pc send upload end", handByteData);
+
 					}
 
 				}

@@ -48,6 +48,7 @@ public:
 	void clearError();
 	QList<int> indexOfHeader(QString strSrc,QByteArray header);
 	bool isCompare(QByteArray src, QByteArray dest);
+	bool isCompare(QByteArray src, int nError);
 	QSerialPort::SerialPortError getError();
 	public slots:
 	void slotTest();

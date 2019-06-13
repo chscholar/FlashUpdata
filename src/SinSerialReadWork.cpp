@@ -32,6 +32,7 @@ void SinSerialReadWork::getReadData()
 
 	while (m_bIsRun)
 	{
+		QThread::msleep(100);
 		readData = sinserialSingle::getInstance().getReadData();
 		QSerialPort::SerialPortError sError = sinserialSingle::getInstance().getError();
 
@@ -40,11 +41,11 @@ void SinSerialReadWork::getReadData()
 			qDebug() << "readError :" << sError;
 		}
 
-		if (!readData.isEmpty())
+		/*if (!readData.isEmpty())
 		{
-			
-			sinTaskQueueSingle::getInstance().pushBackReadData(readData.data() );
-		}
+		QString readStr = readData;
+		sinTaskQueueSingle::getInstance().pushBackReadData(readStr.toLocal8Bit());
+		}*/
 
 	}
 	//return readData;

@@ -52,7 +52,7 @@ public:
 	bool isCompare(QByteArray src, int nError);
 	QSerialPort::SerialPortError getError();
 	void setTransType(bool isUplodType);
-	void fillWriteStruct(ReqInterrFace req, QByteArray command, QByteArray BinFileId, QByteArray BinFileSize, QByteArray TransId, QByteArray TransSeqNum,QByteArray dataCRC,QByteArray data);
+	void fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteArray command, QByteArray BinFileId, QByteArray BinFileSize, QByteArray TransId, QByteArray TransSeqNum,QByteArray dataCRC,QByteArray data);
 	public slots:
 	void slotTest();
 signals :

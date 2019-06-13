@@ -16,6 +16,7 @@ protected:
 	void initUi();
 private:
 	FileConfigWidget *m_pFileConfigWidget;
+	bool m_bUpLoadTrans;
 };
 
 #endif

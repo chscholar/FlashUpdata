@@ -75,9 +75,11 @@ void ConfigDeployWidget::slotSwitchRadio(int index, bool isChecked)
 		if (index == 0) //upload
 		{
 			m_pFileConfigWidget->switchWidget(true);
+			m_bUpLoadTrans = true;
 		}
 		else {
 			m_pFileConfigWidget->switchWidget(false);
+			m_bUpLoadTrans = false;
 		}
 	}
 
@@ -95,6 +97,7 @@ void ConfigDeployWidget::slotConfirmTrans()
 
 	FileUtil *futil = new FileUtil();
 	QList<QList<QByteArray>> fileListData =  futil->getDataFramFromFilePath(pathList);
+	sinserialSingle::getInstance().setTransType(m_bUpLoadTrans);
 	sinSerialThreadManagerSingle::getInstance().setWriteData(fileListData);
 
 }

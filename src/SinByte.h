@@ -35,21 +35,19 @@ QByteArray     MSG_PROTO_HEADER_TAG = "EBA846B9";
 {0x0000000A, 0x10000000,   3*SIZE_1M,   0x0},  /* Test with PC 
 
 */
-
-
-enum {
-	FILE_OK = 0,
-	FILE_NOT_EXIST,
-	FILE_SIZE_TOO_BIG,
-	FILE_CRC_ERROR,
-	FILE_HDR_INFO_NOT_MATCH,
-	FILE_SIGNATURE_ERROR,
-	FILE_WRITE_FLASH_ERROR,
-	FILE_READ_FLASH_ERROR,
-	FILE_MISSING_PACKET_ERROR,
-	FILE_INNER_ERROR,
+enum
+{
+	FILE_OK = 0x0,
+	FILE_NOT_EXIST = 0x1,
+	FILE_SIZE_TOO_BIG = 0x2,
+	FILE_CRC_ERROR = 0x3,
+	FILE_HDR_INFO_NOT_MATCH = 0x4,
+	FILE_SIGNATURE_ERROR = 0x5,
+	FILE_WRITE_FLASH_ERROR = 0x6,
+	FILE_READ_FLASH_ERROR = 0x7,
+	FILE_MISSING_PACKET_ERROR = 0x8,
+	FILE_INNER_ERROR = 0x9,
 };
-
 struct ReqInterrFace
 {
 	QByteArray Header; //头标记 固定值
@@ -66,22 +64,23 @@ struct ReqInterrFace
 
 	void  setLength()
 	{
-		int nlength = (Command.size() + BinFileId.size() + BinFileSize.size() + TransId.size() + TransSeqNum.size() + DataLength.size() + DataCRC.size() + data.size() + Padding.size());
-		
-		nlength = nlength / 2;
-		QString str = QString("%1").arg(nlength, 4, 16, QLatin1Char('0'));
-		this->Length = str.toUtf8().data();
-
-		int totalLength = (nlength * 2 + Header.size() + Length.size())/2;
-		int tDiv = totalLength % 4;
-		if (tDiv != 0)
+		this->Padding.clear();
+		bool ok;
+		QString qstrDataLength = this->DataLength;
+		int dataByteLength = qstrDataLength.toInt(&ok, 16);
+	
+		int divLength = dataByteLength % 4;
+		if (divLength != 0)
 		{
-			for (int i = 0; i < tDiv * 2;i++)
+			for (int i = 0; i < divLength * 2; i++ )
 			{
 				this->Padding.push_front('0');
 			}
 		}
-		
+
+		int nlength = (Command.size() + BinFileId.size() + BinFileSize.size() + TransId.size() + TransSeqNum.size() + DataLength.size() + DataCRC.size() + data.size()) / 2;
+		QString str = QString("%1").arg(nlength, 4, 16, QLatin1Char('0'));
+		this->Length = str.toUtf8().data();
 	}
 
 	void setDataLength()
@@ -91,6 +90,19 @@ struct ReqInterrFace
 		this->DataLength = str.toUtf8().data();
 	}
 
+	void setCRC()
+	{
+		char  chekSum = 0;
+		for (int i = 0; i < this->data.size();i++)
+		{
+			char temp = this->data.at(i);
+			chekSum = chekSum ^ temp;
+		}
+
+		this->DataCRC.clear();
+		QString str = QString("%1").arg(chekSum, 4, 16, QLatin1Char('0'));
+		this->DataCRC = str.toUtf8().data();
+	}
 	
 };
 Q_DECLARE_METATYPE(ReqInterrFace)

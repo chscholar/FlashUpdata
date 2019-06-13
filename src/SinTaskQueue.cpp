@@ -13,9 +13,9 @@ SinTaskQueue::~SinTaskQueue()
 }
 
 //有数据可以读
-void SinTaskQueue::pushBackReadData(QByteArray data)
+void SinTaskQueue::pushBackReadData(QByteArray readData)
 {
-	m_pReadData.enqueue(data);
+	m_pReadData.enqueue(readData);
 	emit signalReadData();
 }
 

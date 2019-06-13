@@ -104,7 +104,7 @@ void FlashUpdata::slotSwitchRadio(int radioID, bool bCheck)
 
 void FlashUpdata::slotUpDataLogEdit()
 {
-	QByteArray data = sinTaskQueueSingle::getInstance().popBackReadData();
+	QString data = sinTaskQueueSingle::getInstance().popBackReadData();
 
 	QString qstrText = m_pLogEdit->toHtml() +"\r ";
 

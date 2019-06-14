@@ -6,6 +6,26 @@
 
 #pragma pack(1) 
 
+///*
+//fp_tables[] =
+//{
+//{0x00000001, 0x20000000,   SIZE_1K,   0x12345678},  /* Boot partition */
+//	{0x00000002, 0x40000000, 5 * SIZE_1M, 0x00000000}, /* Work primary partition */
+//	{ 0x00000003, 0x40000000, 5 * SIZE_1M, 0x00000000 }, /* Work secondary partition */
+//	{ 0x00000004, 0x40000000, 5 * SIZE_1M, 0x00000000 }, /* McuTest partition */
+//	{ 0x00000005, 0x40000000, SIZE_1M, 0x00000000 },  /* McuData partition */
+//	{ 0x00000006, 0x40000000, SIZE_1M, 0x00000000 },  /* Dsp partition */
+//	{ 0x00000007, 0x40000000, SIZE_1M, 0x00000000 },  /* DspTest partition */
+//	{ 0x00000008, 0x40000000, SIZE_1M, 0x00000000 },  /* DspData partition */
+//	{ 0x00000009, 0x40000000, 160382, 0x00000000 },  /* TEST  */
+//	{ 0x0000000B, 0x10000000, SIZE_1K, 0x0 },  /* Test with PC */
+//	{ 0x0000000C, 0x10000000 + SIZE_1K, SIZE_1M, 0x0 },  /* Test with PC */
+//	{ 0x0000000D, 0x10000000 + SIZE_1K + SIZE_1M, 3 * SIZE_1M, 0x0 },  /* Test with PC2 */
+//};
+//
+//*/
+
+
 /* define command values. */
 const QByteArray    MSG_CMD_HANDSHAKE_SYN = "8000";
 const QByteArray     MSG_CMD_HANDSHAKE_SYNARK = "0001";
@@ -92,7 +112,7 @@ struct ReqInterrFace
 
 	void setCRC()
 	{
-		char  chekSum = 0;
+		char  chekSum = data[0];
 		for (int i = 0; i < this->data.size();i++)
 		{
 			char temp = this->data.at(i);

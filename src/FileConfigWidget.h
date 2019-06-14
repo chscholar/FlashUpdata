@@ -22,8 +22,9 @@ public:
 	void setFirst();
 	void setEnd();
 	void setNiddle();
-	void setDownload();
-	void setDownLoadStatus();
+	//void setDownload();
+	void setDownloadStatus();
+	void setUploadStatus();
 	int findItemById(int itemId);
 	QString getCheckedStatus();
 	QString getFilePath();

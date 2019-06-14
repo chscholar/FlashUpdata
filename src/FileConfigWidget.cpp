@@ -159,7 +159,15 @@ void FileConfigItemWidget::setNiddle()
 	delButton->show();
 }
 
-void FileConfigItemWidget::setDownLoadStatus()
+void FileConfigItemWidget::setDownloadStatus()
+{
+	/*delButton->hide();
+	addButton->hide();*/
+	m_pFileCheckbox->hide();
+	m_pAddressLabel->setText("选择文件路径:");
+}
+
+void FileConfigItemWidget::setUploadStatus()
 {
 	delButton->hide();
 	addButton->hide();
@@ -167,18 +175,19 @@ void FileConfigItemWidget::setDownLoadStatus()
 	m_pAddressLabel->setText("保存文件路径:");
 }
 
-void FileConfigItemWidget::setDownload()
-{
-	addButton->hide();
-	m_pAddressLabel->setText("保存文件路径：");
-	delButton->hide();
-}
+
+//void FileConfigItemWidget::setDownload()
+//{
+//	addButton->hide();
+//	m_pAddressLabel->setText("保存文件路径：");
+//	delButton->hide();
+//}
 
 FileConfigWidget::FileConfigWidget(QWidget *parent) :
 QWidget(parent)
 {
 	m_iItemId = 0;
-	m_bUpLoadChecked = true;
+	m_bUpLoadChecked = false;
 	connect(&sinXmlSingle::getInstance(), SIGNAL(signalsConfigChange()), this, SLOT(slotConfigFileChange()));
 	initUi();
 }
@@ -248,9 +257,12 @@ void FileConfigWidget::flushWidget()
 			item->setNiddle();
 		}
 
-		if (!isUpLoad)
+		if (isUpLoad)
 		{
-			item->setDownLoadStatus();
+			item->setUploadStatus();
+		}
+		else {
+			item->setDownloadStatus();
 		}
 		mainUpLoadLayout->addWidget(fileConfigVec[i]);
 	}

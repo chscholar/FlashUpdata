@@ -29,7 +29,7 @@ FlashUpdata::FlashUpdata(QWidget *parent)
 }
 
 void FlashUpdata::initUi()
-{
+{   
 	QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
 	QVBoxLayout  *workLayout = new QVBoxLayout(this);

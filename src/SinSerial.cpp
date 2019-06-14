@@ -291,9 +291,52 @@ bool SinSerial::isCompare(QByteArray byteData, int nError)
 	
 }
 
-void SinSerial::setTransType(bool isUplodType)
+void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>> fileListData)
 {
 	m_bIsUpLoadTrans = isUplodType;
+
+	m_pWriteData.clear();
+	for (int i = 0; i < fileListData.size(); i++)
+	{
+		QList<QByteArray> fileData = fileListData.at(i);
+		for (int j = 0; j < fileData.size(); j++)
+		{
+			ReqInterrFace reqStruct;
+			//头标记
+			reqStruct.Header = "eba846b9";
+
+			//binFileId
+			int nBinFileId = 1;
+			//reqStruct.BinFileId = QByteArray::number(nBinFileId);
+			reqStruct.BinFileId = "0000000D";
+
+			// 当前第i 个文件的大小
+			int nFileSize = fileListData[i].size();
+			QString strfileSize = QString("%1").arg(nFileSize, 4, 16, QLatin1Char('0'));
+			reqStruct.BinFileSize = strfileSize.toUtf8().data();
+
+			//事务id，当前文件标记
+			int nTransId = i;
+			QString strTranId = QString("%1").arg(nTransId, 4, 16, QLatin1Char('0'));
+			reqStruct.TransId = strTranId.toUtf8().data();
+
+			//当前文件传输序列号
+			int nTransSeqNum = j;
+			QString strTransDeqNum = QString("%1").arg(nTransSeqNum, 4, 16, QLatin1Char('0'));
+			reqStruct.TransSeqNum = strTransDeqNum.toUtf8().data();
+
+			//当前第j 个包的大小
+			int nDataLength = fileData[j].size();
+			QString strDataLength = QString("%1").arg(nDataLength, 4, 16, QLatin1Char('0'));
+			reqStruct.DataLength = strDataLength.toUtf8().data();
+
+			//传输的内容
+			reqStruct.data = fileData[j].toHex();
+
+			m_pWriteData.push_back(reqStruct);
+
+		}
+	}
 }
 
 ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
@@ -367,7 +410,9 @@ void SinSerial::fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteAr
 	handleReq.setCRC();
 	handleReq.setLength();
 	QByteArray handByteData = reqToByteArray(handleReq);
-	emit signalWriteData(strLogPrefix, handByteData);
+
+
+	emit signalWriteData(strLogPrefix, handByteData); //主线程发送
 
 }
 
@@ -429,7 +474,6 @@ QByteArray SinSerial::getReadData()
 						QString strShowLog = "reciveUE Handle Ok :" + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
-						m_bIsUpLoadTrans = false;
 						QByteArray command;
 						QString strLogPrefix;
 						if (m_bIsUpLoadTrans)
@@ -442,6 +486,7 @@ QByteArray SinSerial::getReadData()
 							command = MSG_CMD_DOWNLOADFILE_REQ;
 						}
 
+						//emit sendIndexPack(0);
 						fillWriteStruct(req, strLogPrefix, command, "0000000B", "00000002", "00000001","00000001",req.DataCRC, req.data);
 					}
 					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_REQ_RSP)) // //upload_Req
@@ -525,11 +570,9 @@ QByteArray SinSerial::getReadData()
 						qDebug() << "reciveUE show: " << readData << "currentThreadId:" << QThread::currentThread();
 
 						QDebug bug = qDebug() << readData;
-					
 
-						char * cReadData = readData.data();
-						QString strShowLog = "reciveUE show: " + QString(cReadData).toUtf8();
-						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+						//QString strShowLog = "reciveUE show: " + readData.toHex();
+						//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 					}
 
 				}

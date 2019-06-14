@@ -15,6 +15,8 @@ public:
 	ReqInterrFace startUploadReq();
 	void sendWriteDataPack(QString strLog,QByteArray byteData);
 protected:
+
+	ReqInterrFace getIndexWriteData(int index);
 	//QList<QList<QByteArray>> m_pWriteData;
 	QList<ReqInterrFace> m_pWriteData;
 	int m_nCurrentWriteIndex;

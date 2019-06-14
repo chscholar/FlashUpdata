@@ -42,25 +42,31 @@ void SinSerialWriteWork::setWriteData(QList<QList<QByteArray>> fileListData)
 
 			//binFileId
 			int nBinFileId = 1;
-			reqStruct.BinFileId = QByteArray::number(nBinFileId);
+			//reqStruct.BinFileId = QByteArray::number(nBinFileId);
+			reqStruct.BinFileId = "0000000D";
 
 			// 当前第i 个文件的大小
 			int nFileSize = fileListData[i].size();
-			reqStruct.BinFileSize = QByteArray::number(nFileSize, 10);
+			QString strfileSize = QString("%1").arg(nFileSize, 4, 16, QLatin1Char('0'));
+			reqStruct.BinFileSize = strfileSize.toUtf8().data();
 
 			//事务id，当前文件标记
 			int nTransId = i;
-			reqStruct.TransId = QByteArray::number(nTransId, 10);
+			QString strTranId = QString("%1").arg(nTransId, 4, 16, QLatin1Char('0'));
+			reqStruct.TransId = strTranId.toUtf8().data();
 
 			//当前文件传输序列号
 			int nTransSeqNum = j;
-			reqStruct.TransSeqNum = QByteArray::number(nTransSeqNum, 10);
+			QString strTransDeqNum = QString("%1").arg(nTransSeqNum, 4, 16, QLatin1Char('0'));
+			reqStruct.TransSeqNum = strTransDeqNum.toUtf8().data();
 
 			//当前第j 个包的大小
 			int nDataLength = fileData[j].size();
-			reqStruct.DataLength = QByteArray::number(nDataLength, 10);
+			QString strDataLength = QString("%1").arg(nDataLength, 4, 16, QLatin1Char('0'));
+			reqStruct.DataLength = strDataLength.toUtf8().data();
+
 			//传输的内容
-			reqStruct.data = fileData[j];
+			reqStruct.data = fileData[j].toHex();
 
 			m_pWriteData.push_back(reqStruct);
 
@@ -82,6 +88,13 @@ ReqInterrFace SinSerialWriteWork::startUploadReq()
 	req.Padding = "00000000";
 	return req;
 }
+
+ReqInterrFace SinSerialWriteWork::getIndexWriteData(int index)
+{
+	ReqInterrFace req  =  m_pWriteData.at(index);
+	return req;
+}
+
 
 void SinSerialWriteWork::sendData()
 {

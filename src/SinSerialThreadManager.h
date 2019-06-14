@@ -13,16 +13,17 @@ class SinSerialThreadManager : public QObject
 public:
 	SinSerialThreadManager(QObject *parent = 0);
 	~SinSerialThreadManager();
+	void start();
 	void stop();
 	void setWriteData(QList<QList<QByteArray>> fileListData);
 	void getReadData();
 	void sendData();
 protected:
-	SinSerialReadWork *m_pReadWork;
-	SinSerialWriteWork *m_pWriteWork;
+	//SinSerialReadWork *m_pReadWork;
+	//SinSerialWriteWork *m_pWriteWork;
 
-	QThread *m_pReadThread;
-	QThread *m_pWriteThread;;
+	//QThread *m_pReadThread;
+	//QThread *m_pWriteThread;;
 private:
 	public slots :
 	void slotWriteData(QString strLog,QByteArray byteData);

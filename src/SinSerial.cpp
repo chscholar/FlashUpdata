@@ -25,7 +25,8 @@ QSerialPort* SinSerial::getSerialPort()
 	if (serialPort == nullptr)
 	{
 		serialPort = new QSerialPort();
-		serialPort->setReadBufferSize(0);
+		connect(serialPort, SIGNAL(readyRead()), this, SLOT(slotGetReadData()));
+		serialPort->setReadBufferSize(4096);
 	}
 	return serialPort;
 }
@@ -179,9 +180,6 @@ QString SinSerial::findKeyFromMap(QMap<int, QString> fmap, int key)
 
 int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataIndex, int stopIndex, int parityIndex)
 {
-	
-	
-
 	QString portName = findKeyFromMap(portMap, portIndex);
 	QString rateValue = findKeyFromMap(rateMap,rateIndex);
 	QString dataValue = findKeyFromMap(dataMap, dataIndex);
@@ -312,17 +310,17 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 
 			// 当前第i 个文件的大小
 			int nFileSize = fileListData[i].size();
-			QString strfileSize = QString("%1").arg(nFileSize, 4, 16, QLatin1Char('0'));
+			QString strfileSize = QString("%1").arg(nFileSize, 8, 16, QLatin1Char('0'));
 			reqStruct.BinFileSize = strfileSize.toUtf8().data();
 
 			//事务id，当前文件标记
 			int nTransId = i;
-			QString strTranId = QString("%1").arg(nTransId, 4, 16, QLatin1Char('0'));
+			QString strTranId = QString("%1").arg(nTransId, 8, 16, QLatin1Char('0'));
 			reqStruct.TransId = strTranId.toUtf8().data();
 
 			//当前文件传输序列号
 			int nTransSeqNum = j;
-			QString strTransDeqNum = QString("%1").arg(nTransSeqNum, 4, 16, QLatin1Char('0'));
+			QString strTransDeqNum = QString("%1").arg(nTransSeqNum, 8, 16, QLatin1Char('0'));
 			reqStruct.TransSeqNum = strTransDeqNum.toUtf8().data();
 
 			//当前第j 个包的大小
@@ -395,6 +393,45 @@ QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
 	return result;
 }
 
+void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index)
+{
+	ReqInterrFace sendReq;
+
+	if (isCompare(command, MSG_CMD_HANDSHAKE_SYNARK))  
+	{
+		sendReq = req;
+		sendReq.Command = command;
+	}
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ))
+	{
+
+	}
+	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_REQ)) // download_req
+	{
+		ReqInterrFace writeReq = m_pWriteData.at(0);
+		sendReq = writeReq;
+		sendReq = writeReq;
+		sendReq.Command = command;
+		sendReq.data = "0000";
+		sendReq.BinFileId = "0000000D";
+	}
+	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_DATA))
+	{
+		ReqInterrFace writeReq = m_pWriteData.at(index);
+		sendReq = writeReq;
+		sendReq = writeReq;
+		sendReq.Command = command;
+		sendReq.BinFileId = "0000000D";
+	}
+
+	sendReq.setDataLength();
+	sendReq.setCRC();
+	sendReq.setLength();
+	QByteArray handByteData = reqToByteArray(sendReq);
+	//emit signalWriteData(strLogPrefix, handByteData); //主线程发送
+	sendData(strLogPrefix, handByteData);
+}
+
 void SinSerial::fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteArray command, QByteArray BinFileId, QByteArray BinFileSize, QByteArray TransId, QByteArray TransSeqNum, QByteArray dataCRC, QByteArray data)
 {
 	ReqInterrFace handleReq;
@@ -410,35 +447,28 @@ void SinSerial::fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteAr
 	handleReq.setCRC();
 	handleReq.setLength();
 	QByteArray handByteData = reqToByteArray(handleReq);
-
-
-	emit signalWriteData(strLogPrefix, handByteData); //主线程发送
-
+	//emit signalWriteData(strLogPrefix, handByteData); //主线程发送
+	sendData(strLogPrefix, handByteData);
 }
 
 
-QByteArray SinSerial::getReadData()
+void SinSerial::slotGetReadData()
 {;
 	QByteArray readData;
 	//if (getSerialPort()->canReadLine())
-	
 	if (getSerialPort()->bytesAvailable())
 	{
+		getSerialPort()->waitForReadyRead(500);
 		readData = getSerialPort()->readAll();
+		getSerialPort()->clear();
 		QString qstrTest = readData.toHex().data();
-		if (qstrTest.contains("0216"))
-		{
-			int a = 1;
-		}
+		
 		readData = readData.trimmed();
 		QString qstrtest1 = readData.toHex().data();
 		if (!readData.isEmpty())
 		{
+			int currentPackIndex = 0;
 			QString qstrReadData = readData.toHex().data();
-			if (qstrReadData.contains("0003"))
-			{
-				int a = 1;
-			}
 
 			QList<int> indexofList = indexOfHeader(qstrReadData, MSG_PROTO_HEADER_TAG);
 			
@@ -447,7 +477,7 @@ QByteArray SinSerial::getReadData()
 				qDebug() << "reciveUE Log: " << readData << "currentThreadId:" << QThread::currentThread();
 				QString strShowLog = "reciveUE Log: " + readData;
 				sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
-				return readData;
+				//return readData;
 			}
 			bool isValid = false;
 			for (int i = 0; i < indexofList.size();i++)
@@ -465,7 +495,8 @@ QByteArray SinSerial::getReadData()
 						QString strShowLog = " reciveUE handshake syn :" + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 						
-						fillWriteStruct(req, "pc send handshake synark", MSG_CMD_HANDSHAKE_SYNARK,req.BinFileId,req.BinFileId,req.TransId,req.TransSeqNum,req.DataCRC,req.data);
+						//fillWriteStruct(req, "pc send handshake synark", MSG_CMD_HANDSHAKE_SYNARK,req.BinFileId,req.BinFileId,req.TransId,req.TransSeqNum,req.DataCRC,req.data);
+						sendData(req, "pc send handshake synark", MSG_CMD_HANDSHAKE_SYNARK,0);
 					}
 					else if (isCompare(req.Command, MSG_CMD_HANDSHAKE_ARK)) //握手成功
 					{
@@ -474,6 +505,7 @@ QByteArray SinSerial::getReadData()
 						QString strShowLog = "reciveUE Handle Ok :" + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
+						m_bIsUpLoadTrans = false;
 						QByteArray command;
 						QString strLogPrefix;
 						if (m_bIsUpLoadTrans)
@@ -486,8 +518,8 @@ QByteArray SinSerial::getReadData()
 							command = MSG_CMD_DOWNLOADFILE_REQ;
 						}
 
-						//emit sendIndexPack(0);
-						fillWriteStruct(req, strLogPrefix, command, "0000000B", "00000002", "00000001","00000001",req.DataCRC, req.data);
+						//fillWriteStruct(req, strLogPrefix, command, "0000000B", "00000002", "00000001","00000001",req.DataCRC, req.data);
+						sendData(req, strLogPrefix, command, currentPackIndex);
 					}
 					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_REQ_RSP)) // //upload_Req
 					{
@@ -510,9 +542,12 @@ QByteArray SinSerial::getReadData()
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
 						if (isCompare(req.data, FILE_OK))
-						{
-							int a = 1;
-							fillWriteStruct(req,"pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA, "0000000B", "00000002", "00000001", "00000001", "0000", "0002");
+						{	
+							bool ok;
+							QString strSeqNum = req.TransSeqNum;
+							int nSeqNum = strSeqNum.toInt(&ok, 16);
+							currentPackIndex = nSeqNum;
+							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA, 0);
 						}
 					}
 					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_DATA_RSP)) //download data
@@ -524,8 +559,11 @@ QByteArray SinSerial::getReadData()
 
 						if (isCompare(req.data, FILE_OK))
 						{
-							int a = 1;
-							fillWriteStruct(req, "pc send download end", MSG_CMD_DOWNLOADFILE_END, "0000000B", "00000002", "00000001", "00000001", "0000", "0000");
+							bool ok;
+							QString strSeqNum = req.TransSeqNum;
+							int nSeqNum = strSeqNum.toInt(&ok, 16);
+							currentPackIndex = nSeqNum;
+							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA,currentPackIndex);
 							
 						}
 					}
@@ -569,10 +607,7 @@ QByteArray SinSerial::getReadData()
 					else { //unknow
 						qDebug() << "reciveUE show: " << readData << "currentThreadId:" << QThread::currentThread();
 
-						QDebug bug = qDebug() << readData;
-
-						//QString strShowLog = "reciveUE show: " + readData.toHex();
-						//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+					
 					}
 
 				}
@@ -581,6 +616,6 @@ QByteArray SinSerial::getReadData()
 	}
 	
 	
-	return readData;
+	//return readData;
 
 }

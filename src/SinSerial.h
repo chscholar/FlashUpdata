@@ -42,8 +42,9 @@ public:
 	QStringList getFlowControl();
 	QStringList getParity();
 	void sendData(ReqInterrFace req);
+	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index);
 	void sendData(QString strLog,QByteArray bytedata);
-	QByteArray getReadData();
+	
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
@@ -58,6 +59,9 @@ public:
 	void slotTest();
 signals :
 	void signalWriteData(QString  strLog,QByteArray bytedata);
+	void signalReadData();
+public slots :
+	void slotGetReadData();
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

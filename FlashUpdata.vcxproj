@@ -137,6 +137,7 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)WinPcap_dev\Include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork</IncludePath>
     </QtMoc>
+    <ClInclude Include="src\JQChecksum.h" />
     <ClInclude Include="src\SinByte.h" />
     <QtMoc Include="src\SinNetWorkCapThread.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)WinPcap_dev\Include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork</IncludePath>
@@ -166,6 +167,7 @@
     <ClCompile Include="src\FileConfigWidget.cpp" />
     <ClCompile Include="src\FileUtil.cpp" />
     <ClCompile Include="src\FlashUpdata.cpp" />
+    <ClCompile Include="src\JQChecksum.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\NetWorkConfigWidget.cpp" />
     <ClCompile Include="src\qhexview.cpp" />

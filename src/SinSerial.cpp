@@ -13,6 +13,7 @@ QObject(parent)
 , serialPort(nullptr)
 , m_bIsUpLoadTrans(true)
 {
+	connect(getSerialPort(), SIGNAL(readyRead), this, SLOT(slotGetReadData()));
 }
 
 SinSerial::~SinSerial()
@@ -306,7 +307,7 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 			//binFileId
 			int nBinFileId = 1;
 			//reqStruct.BinFileId = QByteArray::number(nBinFileId);
-			reqStruct.BinFileId = "0000000D";
+			reqStruct.BinFileId = "00000002";
 
 			// 当前第i 个文件的大小
 			int nFileSize = fileListData[i].size();
@@ -402,9 +403,12 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		sendReq = req;
 		sendReq.Command = command;
 	}
-	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ))
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ)) //upload_Req
 	{
 
+	}
+	else if (isCompare(command,MSG_CMD_UPLOADFILE_DATA)) //upload_data
+	{
 	}
 	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_REQ)) // download_req
 	{
@@ -412,16 +416,29 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		sendReq = writeReq;
 		sendReq = writeReq;
 		sendReq.Command = command;
-		sendReq.data = "0000";
-		sendReq.BinFileId = "0000000D";
+		//sendReq.data = "0000";
 	}
-	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_DATA))
+	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_DATA)) //download data
 	{
-		ReqInterrFace writeReq = m_pWriteData.at(index);
-		sendReq = writeReq;
-		sendReq = writeReq;
-		sendReq.Command = command;
-		sendReq.BinFileId = "0000000D";
+		if (index == 127)
+		{
+			int a = 1;
+		}
+		
+		if (index == m_pWriteData.size() - 1)
+		{
+			//MSG_CMD_DOWNLOADFILE_END
+			sendReq = req;
+			sendReq.Command = MSG_CMD_DOWNLOADFILE_END;
+			sendReq.data.clear();
+		}
+		else {
+			ReqInterrFace writeReq = m_pWriteData.at(index);
+			sendReq = writeReq;
+			sendReq.Command = command;
+		}
+
+		
 	}
 
 	sendReq.setDataLength();
@@ -451,6 +468,42 @@ void SinSerial::fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteAr
 	sendData(strLogPrefix, handByteData);
 }
 
+void SinSerial::handleTransError(QByteArray dataError)
+{
+	if (isCompare(dataError, FILE_NOT_EXIST)) // 02
+	{
+		qDebug() << "recive UE Error"<< "FILE_NOT_EXIST";
+	}
+	else if (isCompare(dataError, FILE_SIZE_TOO_BIG)) //03
+	{
+		qDebug() << "recive UE Error" << "FILE_SIZE_TOO_BIG";
+	}
+	else if (isCompare(dataError, FILE_HDR_INFO_NOT_MATCH)) //04
+	{
+		qDebug() << "recive UE Error" << "FILE_HDR_INFO_NOT_MATCH";
+	}
+	else if (isCompare(dataError, FILE_SIGNATURE_ERROR)) //05
+	{
+		qDebug() << "recive UE Error" << "FILE_SIGNATURE_ERROR";
+	}
+	else if (isCompare(dataError, FILE_WRITE_FLASH_ERROR)) //06
+	{
+		qDebug() << "recive UE Error" << "FILE_WRITE_FLASH_ERROR";
+	}
+	else if (isCompare(dataError, FILE_READ_FLASH_ERROR)) //07
+	{
+		qDebug() << "recive UE Error" << "FILE_READ_FLASH_ERROR";
+	}
+	else if (isCompare(dataError, FILE_MISSING_PACKET_ERROR)) //08
+	{
+		qDebug() << "recive UE Error" << "FILE_MISSING_PACKET_ERROR";
+	}
+	else if (isCompare(dataError, FILE_INNER_ERROR)) //09
+	{
+		qDebug() << "recive UE Error" << "FILE_INNER_ERROR";
+	}
+}
+
 
 void SinSerial::slotGetReadData()
 {;
@@ -458,7 +511,7 @@ void SinSerial::slotGetReadData()
 	//if (getSerialPort()->canReadLine())
 	if (getSerialPort()->bytesAvailable())
 	{
-		getSerialPort()->waitForReadyRead(500);
+		//getSerialPort()->waitForReadyRead(500);
 		readData = getSerialPort()->readAll();
 		getSerialPort()->clear();
 		QString qstrTest = readData.toHex().data();
@@ -478,6 +531,7 @@ void SinSerial::slotGetReadData()
 				QString strShowLog = "reciveUE Log: " + readData;
 				sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 				//return readData;
+				return;
 			}
 			bool isValid = false;
 			for (int i = 0; i < indexofList.size();i++)
@@ -547,7 +601,7 @@ void SinSerial::slotGetReadData()
 							QString strSeqNum = req.TransSeqNum;
 							int nSeqNum = strSeqNum.toInt(&ok, 16);
 							currentPackIndex = nSeqNum;
-							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA, 0);
+							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA, currentPackIndex);
 						}
 					}
 					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_DATA_RSP)) //download data
@@ -557,14 +611,17 @@ void SinSerial::slotGetReadData()
 						QString strShowLog = "reciveUE Download Data: " + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
-						if (isCompare(req.data, FILE_OK))
+						if (isCompare(req.data, FILE_OK)) //01
 						{
 							bool ok;
 							QString strSeqNum = req.TransSeqNum;
 							int nSeqNum = strSeqNum.toInt(&ok, 16);
 							currentPackIndex = nSeqNum;
-							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA,currentPackIndex);
 							
+							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA, nSeqNum+1);
+						}
+						else { //error
+							handleTransError(req.data);
 						}
 					}
 					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_DATA)) //upload data

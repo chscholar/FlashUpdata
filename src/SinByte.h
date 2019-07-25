@@ -3,6 +3,8 @@
 #include <QByteArray>
 #include <QObject>
 #include <QList>
+#include "JQChecksum.h"
+#include <QDebug>
 
 #pragma pack(1) 
 
@@ -55,19 +57,21 @@ QByteArray     MSG_PROTO_HEADER_TAG = "EBA846B9";
 {0x0000000A, 0x10000000,   3*SIZE_1M,   0x0},  /* Test with PC 
 
 */
-enum
-{
-	FILE_OK = 0x0,
-	FILE_NOT_EXIST = 0x1,
-	FILE_SIZE_TOO_BIG = 0x2,
-	FILE_CRC_ERROR = 0x3,
-	FILE_HDR_INFO_NOT_MATCH = 0x4,
-	FILE_SIGNATURE_ERROR = 0x5,
-	FILE_WRITE_FLASH_ERROR = 0x6,
-	FILE_READ_FLASH_ERROR = 0x7,
-	FILE_MISSING_PACKET_ERROR = 0x8,
-	FILE_INNER_ERROR = 0x9,
-};
+
+/* error code  */
+const QByteArray FILE_OK = "0000";
+const QByteArray FILE_NOT_EXIST = "0100";
+const QByteArray FILE_SIZE_TOO_BIG = "0200";
+const QByteArray FILE_SIZE_TOO_SMALL = "0300";
+const QByteArray FILE_CRC_ERROR = "0400";
+const QByteArray FILE_HDR_INFO_NOT_MATCH = "0500";
+const QByteArray FILE_SIGNATURE_ERROR = "0600";
+const QByteArray FILE_WRITE_FLASH_ERROR = "0700";
+const QByteArray FILE_READ_FLASH_ERROR = "0800";
+const QByteArray FILE_MISSING_PACKET_ERROR = "0900";
+const QByteArray FILE_INNER_ERROR = "0A00";
+
+
 struct ReqInterrFace
 {
 	QByteArray Header; //头标记 固定值
@@ -110,17 +114,71 @@ struct ReqInterrFace
 		this->DataLength = str.toUtf8().data();
 	}
 
+	QString getXORresult(QString str1, QString str2)
+	{
+		//QString str1 = "e7";
+		//QString str2 = "46";
+		bool OK;
+		int val1 = str1.toInt(&OK, 16);
+		int val2 = str2.toInt(&OK, 16);
+
+		int result = val1 ^ val2;
+		QString strCrc = QString::number(result, 16);
+		return strCrc;
+	}
 	void setCRC()
 	{
-		char  chekSum = data[0];
-		for (int i = 0; i < this->data.size();i++)
+
+		
+
+		/*char  chekSum = data[0];
+		for (int i = 0; i < this->data.size(); i++)
 		{
-			char temp = this->data.at(i);
-			chekSum = chekSum ^ temp;
+		char temp = this->data.at(i);
+		chekSum = chekSum ^ temp;
 		}
 
 		this->DataCRC.clear();
 		QString str = QString("%1").arg(chekSum, 4, 16, QLatin1Char('0'));
+		this->DataCRC = str.toUtf8().data();*/
+
+		QStringList dataCrc;
+		for (int i = 0; i < this->data.size();i+=2)
+		{  
+			QString temp = this->data.mid(i, 2);
+			dataCrc.push_back(temp);
+		}
+
+		QString strXor;
+		if (dataCrc.size() > 0)
+		{
+			strXor = dataCrc.at(0);
+		}
+		else {
+			this->DataCRC = "0000";
+			return;
+		}
+
+		for (int i = 1; i < dataCrc.size(); i++)
+		{
+			QString str1 = dataCrc.at(i);
+			
+			strXor = getXORresult(strXor, str1);
+		}
+		bool ok;
+		QString str;
+		int divCount = 4 - strXor.size();
+		if (divCount == 3)
+		{
+			str = "000" + strXor;
+		}
+		else if (divCount == 2){
+			str = "00" + strXor;
+		} 
+		else if (divCount == 1)
+		{
+			str = "0" + strXor;
+		}
 		this->DataCRC = str.toUtf8().data();
 	}
 	

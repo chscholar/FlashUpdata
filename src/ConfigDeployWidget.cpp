@@ -113,6 +113,6 @@ void ConfigDeployWidget::slotConfirmTrans()
 	FileUtil *futil = new FileUtil();
 	QList<QList<QByteArray>> fileListData =  futil->getDataFramFromFilePath(pathList);
 	sinserialSingle::getInstance().setTransTypeWriteData(m_bUpLoadTrans,fileListData);
-	sinSerialThreadManagerSingle::getInstance().start();
+	//sinSerialThreadManagerSingle::getInstance().start();
 
 }

@@ -164,6 +164,8 @@ void SerialConfigWidget::initUi()
 	buttonLayout->addStretch(2);
 	mainLayout->addLayout(buttonLayout);
 
+	
+
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 

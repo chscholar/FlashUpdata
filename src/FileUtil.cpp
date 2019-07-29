@@ -97,10 +97,11 @@ QList<QByteArray> FileUtil::toFileDataDecode(QByteArray fileByteData){
 		nResult--;
 	}
 
-	QByteArray data = sByte->getNData(nDiv);
-	Result.push_back(data);
-	
-
+	if (nDiv >=1)
+	{
+		QByteArray data = sByte->getNData(nDiv);
+		Result.push_back(data);
+	}
 	return Result;
 }
 
@@ -112,7 +113,7 @@ QList<QList<QByteArray>> FileUtil::getDataFramFromFilePath(QStringList pathList)
 		QString fileName = pathList.at(i);
 		QFile file(fileName);
 
-		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		if (!file.open(QIODevice::ReadOnly))
 			break;
 
 		int nFileSize = file.bytesAvailable();

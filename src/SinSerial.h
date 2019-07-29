@@ -31,6 +31,7 @@ private:
 	QMap<int, QString> flowMap;
 	bool m_bIsUpLoadTrans;
 	QList<ReqInterrFace> m_pWriteData;
+	QByteArray m_pReadData;
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();

@@ -7,7 +7,9 @@
 #include <QThread>
 #include <qendian.h>
 #include "SinTaskQueue.h"
-
+#include <QTime>
+#include <QFile>
+#include <QTextStream>
 SinSerial::SinSerial(QObject *parent):
 QObject(parent)
 , serialPort(nullptr)
@@ -196,6 +198,10 @@ int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataInd
 		getSerialPort()->setParity(QSerialPort::Parity(parityValue.toInt()));
 		getSerialPort()->setFlowControl(QSerialPort::FlowControl(flowValue.toInt()));
 		getSerialPort()->setStopBits(QSerialPort::StopBits(stopValue.toInt()));
+		
+		getSerialPort()->waitForBytesWritten(500); //设置写超时
+		getSerialPort()->waitForReadyRead(500); //设置读超时
+		getSerialPort()->clear(); //清空缓存
 		return 0;
 	}
 	else
@@ -307,10 +313,10 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 			//binFileId
 			int nBinFileId = 1;
 			//reqStruct.BinFileId = QByteArray::number(nBinFileId);
-			reqStruct.BinFileId = "00000002";
+			reqStruct.BinFileId = "00000003";
 
 			// 当前第i 个文件的大小
-			int nFileSize = fileListData[i].size();
+			int nFileSize = fileListData[i].size() * 256;
 			QString strfileSize = QString("%1").arg(nFileSize, 8, 16, QLatin1Char('0'));
 			reqStruct.BinFileSize = strfileSize.toUtf8().data();
 
@@ -403,29 +409,51 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		sendReq = req;
 		sendReq.Command = command;
 	}
-	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ)) //upload_Req
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ_RSP)) //upload_Req
 	{
+		sendReq = req;
+		m_pReadData.clear();
+		sendReq.Command = MSG_CMD_UPLOADFILE_REQ;
+		sendReq.data.clear();
 
 	}
 	else if (isCompare(command,MSG_CMD_UPLOADFILE_DATA)) //upload_data
 	{
+		sendReq = req;
+		m_pReadData.append(req.data);
+		sendReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;;
+		sendReq.data.clear();
+	}
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_END)) //upload_data_end
+	{
+		sendReq = req;
+		QString fileName = req.BinFileId + "_" + QTime::currentTime().toString();
+		
+		QFile file(fileName);
+		if (!file.open(QIODevice::ReadWrite))
+		{
+			//QMessageBox::warning(this, "file write", "can't open", QMessageBox::Yes);
+			
+		}
+		QTextStream in(&file);
+		in << m_pReadData << "\n";
+		file.close();
+
+		m_pReadData.clear();
+		sendReq.Command = MSG_CMD_UPLOADFILE_END_RSP;
+		sendReq.data.clear();
 	}
 	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_REQ)) // download_req
 	{
 		ReqInterrFace writeReq = m_pWriteData.at(0);
 		sendReq = writeReq;
-		sendReq = writeReq;
 		sendReq.Command = command;
-		//sendReq.data = "0000";
+		sendReq.data.clear();
 	}
 	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_DATA)) //download data
 	{
-		if (index == 127)
-		{
-			int a = 1;
-		}
 		
-		if (index == m_pWriteData.size() - 1)
+		if (index == m_pWriteData.size())
 		{
 			//MSG_CMD_DOWNLOADFILE_END
 			sendReq = req;
@@ -446,6 +474,7 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 	sendReq.setLength();
 	QByteArray handByteData = reqToByteArray(sendReq);
 	//emit signalWriteData(strLogPrefix, handByteData); //主线程发送
+	Sleep(1000);
 	sendData(strLogPrefix, handByteData);
 }
 
@@ -523,6 +552,8 @@ void SinSerial::slotGetReadData()
 			int currentPackIndex = 0;
 			QString qstrReadData = readData.toHex().data();
 
+			qDebug() << "reciveUE Log ReaData: " << readData << "currentThreadId:" << QThread::currentThread();
+
 			QList<int> indexofList = indexOfHeader(qstrReadData, MSG_PROTO_HEADER_TAG);
 			
 			if (indexofList.size() <= 0)
@@ -591,7 +622,7 @@ void SinSerial::slotGetReadData()
 					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_REQ_RSP)) //download Rep
 					{
 						qDebug() << "reciveUE Download Req: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-
+						 
 						QString strShowLog = "reciveUE Download Req: " + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
@@ -667,7 +698,10 @@ void SinSerial::slotGetReadData()
 					
 					}
 
-				}
+				} //un validate
+				 else {
+					 int a = 1;
+				 }
 			}
 		}
 	}

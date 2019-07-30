@@ -43,7 +43,7 @@ public:
 	QStringList getFlowControl();
 	QStringList getParity();
 	void sendData(ReqInterrFace req);
-	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index);
+	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0);
 	void sendData(QString strLog,QByteArray bytedata);
 	
 	bool isOPen();
@@ -55,7 +55,6 @@ public:
 	bool isCompare(QByteArray src, int nError);
 	QSerialPort::SerialPortError getError();
 	void setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>> writeData);
-	void fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteArray command, QByteArray BinFileId, QByteArray BinFileSize, QByteArray TransId, QByteArray TransSeqNum,QByteArray dataCRC,QByteArray data);
 	void handleTransError(QByteArray dataError);
 	public slots:
 	void slotTest();

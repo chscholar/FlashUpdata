@@ -8,26 +8,6 @@
 
 #pragma pack(1) 
 
-///*
-//fp_tables[] =
-//{
-//{0x00000001, 0x20000000,   SIZE_1K,   0x12345678},  /* Boot partition */
-//	{0x00000002, 0x40000000, 5 * SIZE_1M, 0x00000000}, /* Work primary partition */
-//	{ 0x00000003, 0x40000000, 5 * SIZE_1M, 0x00000000 }, /* Work secondary partition */
-//	{ 0x00000004, 0x40000000, 5 * SIZE_1M, 0x00000000 }, /* McuTest partition */
-//	{ 0x00000005, 0x40000000, SIZE_1M, 0x00000000 },  /* McuData partition */
-//	{ 0x00000006, 0x40000000, SIZE_1M, 0x00000000 },  /* Dsp partition */
-//	{ 0x00000007, 0x40000000, SIZE_1M, 0x00000000 },  /* DspTest partition */
-//	{ 0x00000008, 0x40000000, SIZE_1M, 0x00000000 },  /* DspData partition */
-//	{ 0x00000009, 0x40000000, 160382, 0x00000000 },  /* TEST  */
-//	{ 0x0000000B, 0x10000000, SIZE_1K, 0x0 },  /* Test with PC */
-//	{ 0x0000000C, 0x10000000 + SIZE_1K, SIZE_1M, 0x0 },  /* Test with PC */
-//	{ 0x0000000D, 0x10000000 + SIZE_1K + SIZE_1M, 3 * SIZE_1M, 0x0 },  /* Test with PC2 */
-//};
-//
-//*/
-
-
 /* define command values. */
 const QByteArray    MSG_CMD_HANDSHAKE_SYN = "8000";
 const QByteArray     MSG_CMD_HANDSHAKE_SYNARK = "0001";
@@ -74,15 +54,15 @@ const QByteArray FILE_INNER_ERROR = "0A00";
 
 struct ReqInterrFace
 {
-	QByteArray Header; //头标记 固定值
-	QByteArray Length; //后面所有数据长度（出去header 和本字段外） 如果是命令包则到dataLength字段
-	QByteArray Command; //命令 见含义
-	QByteArray BinFileId; //当前烧录文件id,boot中记录每个文件id 以及对应flash地址
-	QByteArray BinFileSize; //当前输入文件总大小
-	QByteArray TransId; //每个文件传输事务id， 如果有多个文件则每个文件传输id不一样
-	QByteArray TransSeqNum; //传输包序列
-	QByteArray DataLength; //data 数据长度
-	QByteArray DataCRC; //校验算法
+	QByteArray Header; //四字节					头标记 固定值 
+	QByteArray Length; //两字节					后面所有数据长度（出去header 和本字段外） 如果是命令包则到dataLength字段 
+	QByteArray Command; //两字节				命令 见含义
+	QByteArray BinFileId; // 四字节				当前烧录文件id,boot中记录每个文件id 以及对应flash地址
+	QByteArray BinFileSize; //四字节			当前输入文件总大小
+	QByteArray TransId; //四字节				每个文件传输事务id， 如果有多个文件则每个文件传输id不一样
+	QByteArray TransSeqNum; //四字节			传输包序列
+	QByteArray DataLength; //两字节				data 数据长度
+	QByteArray DataCRC; //2字节					校验算法
 	QByteArray data;
 	QByteArray Padding; //填充字段，保证每个字段4字节对齐
 

@@ -199,9 +199,9 @@ int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataInd
 		getSerialPort()->setFlowControl(QSerialPort::FlowControl(flowValue.toInt()));
 		getSerialPort()->setStopBits(QSerialPort::StopBits(stopValue.toInt()));
 		
-		getSerialPort()->waitForBytesWritten(500); //设置写超时
-		getSerialPort()->waitForReadyRead(500); //设置读超时
-		getSerialPort()->clear(); //清空缓存
+		//getSerialPort()->waitForBytesWritten(500); //设置写超时
+		//getSerialPort()->waitForReadyRead(500); //设置读超时
+		//getSerialPort()->clear(); //清空缓存
 		return 0;
 	}
 	else
@@ -301,9 +301,18 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 	m_bIsUpLoadTrans = isUplodType;
 
 	m_pWriteData.clear();
+
 	for (int i = 0; i < fileListData.size(); i++)
 	{
 		QList<QByteArray> fileData = fileListData.at(i);
+		//统计第i个文件的size
+		int iSize = 0;
+		for (int size = 0; size < fileData.size();size ++)
+		{
+			 iSize = iSize +  fileData.at(size).size();
+		}
+
+
 		for (int j = 0; j < fileData.size(); j++)
 		{
 			ReqInterrFace reqStruct;
@@ -316,7 +325,7 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 			reqStruct.BinFileId = "00000003";
 
 			// 当前第i 个文件的大小
-			int nFileSize = fileListData[i].size() * 256;
+			int nFileSize = iSize;
 			QString strfileSize = QString("%1").arg(nFileSize, 8, 16, QLatin1Char('0'));
 			reqStruct.BinFileSize = strfileSize.toUtf8().data();
 
@@ -330,8 +339,8 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 			QString strTransDeqNum = QString("%1").arg(nTransSeqNum, 8, 16, QLatin1Char('0'));
 			reqStruct.TransSeqNum = strTransDeqNum.toUtf8().data();
 
-			//当前第j 个包的大小
-			int nDataLength = fileData[j].size();
+			//当前第i个文件的第j 个包的大小
+			int nDataLength = fileListData[i][j].size();
 			QString strDataLength = QString("%1").arg(nDataLength, 4, 16, QLatin1Char('0'));
 			reqStruct.DataLength = strDataLength.toUtf8().data();
 
@@ -404,53 +413,52 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 {
 	ReqInterrFace sendReq;
 
-	if (isCompare(command, MSG_CMD_HANDSHAKE_SYNARK))  
+	if (isCompare(command, MSG_CMD_HANDSHAKE_SYNARK))  //握手
 	{
 		sendReq = req;
 		sendReq.Command = command;
+		sendReq.data.clear();
 	}
-	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ_RSP)) //upload_Req
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_REQ)) //上传请求
 	{
 		sendReq = req;
 		m_pReadData.clear();
-		sendReq.Command = MSG_CMD_UPLOADFILE_REQ;
+		sendReq.Command = command;
 		sendReq.data.clear();
 
 	}
-	else if (isCompare(command,MSG_CMD_UPLOADFILE_DATA)) //upload_data
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_DATA_RSP)) //上传中
 	{
 		sendReq = req;
 		m_pReadData.append(req.data);
-		sendReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;;
+		sendReq.Command = command;;
 		sendReq.data.clear();
 	}
-	else if (isCompare(command, MSG_CMD_UPLOADFILE_END)) //upload_data_end
+	else if (isCompare(command, MSG_CMD_UPLOADFILE_END_RSP)) //上传结束
 	{
 		sendReq = req;
-		QString fileName = req.BinFileId + "_" + QTime::currentTime().toString();
+		QString fileName = req.BinFileId + "_" + QTime::currentTime().toString()+".bin";
 		
 		QFile file(fileName);
 		if (!file.open(QIODevice::ReadWrite))
 		{
-			//QMessageBox::warning(this, "file write", "can't open", QMessageBox::Yes);
-			
+			qDebug() << "save file error";
 		}
 		QTextStream in(&file);
-		in << m_pReadData << "\n";
 		file.close();
 
 		m_pReadData.clear();
-		sendReq.Command = MSG_CMD_UPLOADFILE_END_RSP;
+		sendReq.Command = command;
 		sendReq.data.clear();
 	}
-	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_REQ)) // download_req
+	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_REQ)) // 下载请求
 	{
 		ReqInterrFace writeReq = m_pWriteData.at(0);
 		sendReq = writeReq;
 		sendReq.Command = command;
 		sendReq.data.clear();
 	}
-	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_DATA)) //download data
+	else if (isCompare(command, MSG_CMD_DOWNLOADFILE_DATA)) //下载中
 	{
 		
 		if (index == m_pWriteData.size())
@@ -465,8 +473,6 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 			sendReq = writeReq;
 			sendReq.Command = command;
 		}
-
-		
 	}
 
 	sendReq.setDataLength();
@@ -474,26 +480,7 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 	sendReq.setLength();
 	QByteArray handByteData = reqToByteArray(sendReq);
 	//emit signalWriteData(strLogPrefix, handByteData); //主线程发送
-	Sleep(1000);
-	sendData(strLogPrefix, handByteData);
-}
-
-void SinSerial::fillWriteStruct(ReqInterrFace req, QString strLogPrefix, QByteArray command, QByteArray BinFileId, QByteArray BinFileSize, QByteArray TransId, QByteArray TransSeqNum, QByteArray dataCRC, QByteArray data)
-{
-	ReqInterrFace handleReq;
-	handleReq = req;
-	handleReq.Command = command;
-	handleReq.BinFileId = BinFileId;
-	handleReq.BinFileSize = BinFileSize;
-	handleReq.TransId = TransId;
-	handleReq.TransSeqNum = TransSeqNum;
-	handleReq.DataCRC = dataCRC;
-	handleReq.data = data;
-	handleReq.setDataLength();
-	handleReq.setCRC();
-	handleReq.setLength();
-	QByteArray handByteData = reqToByteArray(handleReq);
-	//emit signalWriteData(strLogPrefix, handByteData); //主线程发送
+	//Sleep(1000);
 	sendData(strLogPrefix, handByteData);
 }
 
@@ -552,7 +539,7 @@ void SinSerial::slotGetReadData()
 			int currentPackIndex = 0;
 			QString qstrReadData = readData.toHex().data();
 
-			qDebug() << "reciveUE Log ReaData: " << readData << "currentThreadId:" << QThread::currentThread();
+			//qDebug() << "reciveUE Log ReaData: " << readData << "currentThreadId:" << QThread::currentThread();
 
 			QList<int> indexofList = indexOfHeader(qstrReadData, MSG_PROTO_HEADER_TAG);
 			
@@ -580,8 +567,7 @@ void SinSerial::slotGetReadData()
 						QString strShowLog = " reciveUE handshake syn :" + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 						
-						//fillWriteStruct(req, "pc send handshake synark", MSG_CMD_HANDSHAKE_SYNARK,req.BinFileId,req.BinFileId,req.TransId,req.TransSeqNum,req.DataCRC,req.data);
-						sendData(req, "pc send handshake synark", MSG_CMD_HANDSHAKE_SYNARK,0);
+						sendData(req, "pc send handshake synark", MSG_CMD_HANDSHAKE_SYNARK);
 					}
 					else if (isCompare(req.Command, MSG_CMD_HANDSHAKE_ARK)) //握手成功
 					{
@@ -603,23 +589,9 @@ void SinSerial::slotGetReadData()
 							command = MSG_CMD_DOWNLOADFILE_REQ;
 						}
 
-						//fillWriteStruct(req, strLogPrefix, command, "0000000B", "00000002", "00000001","00000001",req.DataCRC, req.data);
-						sendData(req, strLogPrefix, command, currentPackIndex);
+						sendData(req, strLogPrefix, command);
 					}
-					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_REQ_RSP)) // //upload_Req
-					{
-						qDebug() << "reciveUE upload Req Rsp: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-
-						QString strShowLog ="reciveUE upload Req Rsp: " + reqToByteArray(req);
-						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
-
-						if (isCompare(req.data, FILE_OK))
-						{
-							int a = 1;
-
-						}
-					} 
-					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_REQ_RSP)) //download Rep
+					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_REQ_RSP)) //下载请求
 					{
 						qDebug() << "reciveUE Download Req: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						 
@@ -628,14 +600,13 @@ void SinSerial::slotGetReadData()
 
 						if (isCompare(req.data, FILE_OK))
 						{	
-							bool ok;
-							QString strSeqNum = req.TransSeqNum;
-							int nSeqNum = strSeqNum.toInt(&ok, 16);
-							currentPackIndex = nSeqNum;
-							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA, currentPackIndex);
+							sendData(req, "pc send downloadfile data", MSG_CMD_DOWNLOADFILE_DATA);
+						}
+						else {
+							handleTransError(req.data);
 						}
 					}
-					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_DATA_RSP)) //download data
+					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_DATA_RSP)) //下载中
 					{
 						qDebug() << "reciveUE Download Data: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
@@ -655,7 +626,36 @@ void SinSerial::slotGetReadData()
 							handleTransError(req.data);
 						}
 					}
-					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_DATA)) //upload data
+					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_END_RSP)) //下载结束
+					{
+						qDebug() << "reciveUE download End: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+
+						QString strShowLog = "reciveUE download End: " + reqToByteArray(req);
+						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+
+						if (isCompare(req.data, FILE_OK))
+						{
+							int a = 1;
+						}
+						else {
+							handleTransError(req.data);
+						}
+					}
+					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_REQ_RSP)) // 上传请求
+					{
+						qDebug() << "reciveUE upload Req Rsp: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
+
+						QString strShowLog = "reciveUE upload Req Rsp: " + reqToByteArray(req);
+						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+
+						if (isCompare(req.data, FILE_OK))
+						{
+							//MSG_CMD_UPLOADFILE_REQ
+							sendData(req, "pc send upload Req", MSG_CMD_UPLOADFILE_REQ);
+
+						}
+					}
+					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_DATA)) //上传中
 					{
 						qDebug() << "reciveUE upload Data: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
@@ -664,34 +664,19 @@ void SinSerial::slotGetReadData()
 
 						QByteArray fileData = req.data;
 						QByteArray fromhexData = QByteArray::fromHex(fileData).data();
-
-						fillWriteStruct(req,"pc send uploadfile data rep", MSG_CMD_UPLOADFILE_DATA_RSP, req.BinFileId, req.BinFileSize, req.TransId, req.TransSeqNum, req.DataCRC, "0000");
+				
+						
+						sendData(req, "pc send Upload Data Rsp:", MSG_CMD_UPLOADFILE_DATA_RSP);
 					}
-					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_END)) // upload end
+					else if (isCompare(req.Command, MSG_CMD_UPLOADFILE_END)) // 上传结束
 					{
 						qDebug() << "reciveUE upload End: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
 						QString strShowLog = "reciveUE upload End: " + reqToByteArray(req);
 						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
-						fillWriteStruct(req,"pc send uploadfile end rsp", MSG_CMD_UPLOADFILE_END_RSP, req.BinFileId, req.BinFileSize, req.TransId, req.TransSeqNum, req.DataCRC, "0000");
+						sendData(req, "PC send Upload End Rsp", MSG_CMD_UPLOADFILE_END_RSP);
 					} 
-					else if (isCompare(req.Command, MSG_CMD_DOWNLOADFILE_END_RSP)) //download end
-					{
-						qDebug() << "reciveUE download End: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
-
-						QString strShowLog = "reciveUE download End: " + reqToByteArray(req);
-						sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
-
-						if (isCompare(req.data,FILE_OK))
-						{
-							int a = 1;
-						}
-						else if (isCompare(req.data, FILE_WRITE_FLASH_ERROR))
-						{
-							int a = 1;
-						}
-					}
 					else { //unknow
 						qDebug() << "reciveUE show: " << readData << "currentThreadId:" << QThread::currentThread();
 

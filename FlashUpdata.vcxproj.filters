@@ -40,9 +40,6 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="src\ConfigDeployWidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="src\ConfigEditWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -91,6 +88,9 @@
     <QtMoc Include="src\SinSerial.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="src\ConfigDeployWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSingleTon.h">
@@ -106,6 +106,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\JQChecksum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\QdebugToLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

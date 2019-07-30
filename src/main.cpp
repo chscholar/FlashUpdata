@@ -1,9 +1,11 @@
 #include "FlashUpdata.h"
 #include <QtWidgets/QApplication>
 #include <QDir>
+#include "QdebugToLog.h"
 
 int main(int argc, char *argv[])
 {
+	UpData::useTxtLog();
 	QApplication a(argc, argv);
 
 	QString dir = QApplication::applicationDirPath();

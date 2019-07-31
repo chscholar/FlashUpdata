@@ -99,8 +99,8 @@ ReqInterrFace SinSerialWriteWork::getIndexWriteData(int index)
 void SinSerialWriteWork::sendData()
 {
 	
-	ReqInterrFace req = startUploadReq();
-	sinserialSingle::getInstance().sendData(req);
+	//ReqInterrFace req = startUploadReq();
+	//sinserialSingle::getInstance().sendData(req);
 }
 
 

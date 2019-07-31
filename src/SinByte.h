@@ -108,9 +108,6 @@ struct ReqInterrFace
 	}
 	void setCRC()
 	{
-
-		
-
 		/*char  chekSum = data[0];
 		for (int i = 0; i < this->data.size(); i++)
 		{
@@ -123,8 +120,8 @@ struct ReqInterrFace
 		this->DataCRC = str.toUtf8().data();*/
 
 		QStringList dataCrc;
-		for (int i = 0; i < this->data.size();i+=2)
-		{  
+		for (int i = 0; i < this->data.size(); i += 2)
+		{
 			QString temp = this->data.mid(i, 2);
 			dataCrc.push_back(temp);
 		}
@@ -142,7 +139,7 @@ struct ReqInterrFace
 		for (int i = 1; i < dataCrc.size(); i++)
 		{
 			QString str1 = dataCrc.at(i);
-			
+
 			strXor = getXORresult(strXor, str1);
 		}
 		bool ok;
@@ -154,13 +151,29 @@ struct ReqInterrFace
 		}
 		else if (divCount == 2){
 			str = "00" + strXor;
-		} 
+		}
 		else if (divCount == 1)
 		{
 			str = "0" + strXor;
 		}
 		this->DataCRC = str.toUtf8().data();
 	}
+	
+		int getSize(){
+			int headerSize = this->Header.size();
+			int lengthSize = this->Length.size();
+			int commandSize = this->Command.size();
+			int binfileIdSize = this->BinFileId.size();
+			int binfilesize = this->BinFileSize.size();
+			int transIdSize = this->TransId.size();
+			int transSeqNumSize = this->TransSeqNum.size();
+			int datalengthSize = this->DataLength.size();
+			int dataCrcSize = this->DataCRC.size();
+			int dataSize = this->data.size();
+			int paddingSize = this->Padding.size();
+
+			return headerSize + lengthSize + commandSize + binfileIdSize + binfileIdSize + transIdSize + transSeqNumSize + datalengthSize + dataCrcSize + dataSize + paddingSize;
+		}
 	
 };
 Q_DECLARE_METATYPE(ReqInterrFace)

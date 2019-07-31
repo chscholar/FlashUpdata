@@ -2,6 +2,7 @@
 #define CONFIDEPLOYWIDGET_H
 #include <QWidget>
 #include "FileConfigWidget.h"
+#include <QButtonGroup>
 
 class ConfigDeployWidget : public QWidget
 {
@@ -9,9 +10,12 @@ class ConfigDeployWidget : public QWidget
 public:
 	ConfigDeployWidget(QWidget *parent = 0);
 	~ConfigDeployWidget();
+	QButtonGroup *radioGroup;
 	public slots:
 	void slotConfirmTrans();
 	void slotSwitchRadio(int, bool);
+signals:
+	void signalUpdateTransType(bool transType);
 protected:
 	void initUi();
 private:

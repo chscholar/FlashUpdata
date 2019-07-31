@@ -18,6 +18,7 @@ ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 {
 
 	initUi();
+	connect(this, SIGNAL(signalUpdateTransType(bool)), &sinserialSingle::getInstance(), SLOT(slotUpdateTransType(bool)));
 }
 
 ConfigDeployWidget::~ConfigDeployWidget()
@@ -29,15 +30,17 @@ void ConfigDeployWidget::initUi()
 {
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 
-	QButtonGroup *radioGroup = new QButtonGroup();
+	radioGroup = new QButtonGroup();
 	QHBoxLayout *radioLayout = new QHBoxLayout();
 	radioLayout->addStretch(1);
 
 	QRadioButton *downloadRadio = new QRadioButton("下载");
+	radioGroup->setId(downloadRadio, 0);
 	radioLayout->addWidget(downloadRadio);
 	radioLayout->addStretch(1);
 
 	QRadioButton *uploadRadio = new QRadioButton("上传");
+	radioGroup->setId(downloadRadio, 1);
 	radioLayout->addWidget(uploadRadio);
 
 	connect(radioGroup, SIGNAL(buttonToggled(int, bool)), this, SLOT(slotSwitchRadio(int, bool)));
@@ -91,28 +94,42 @@ void ConfigDeployWidget::slotConfirmTrans()
 {
 	QStringList pathList = m_pFileConfigWidget->getAllSelectPath();
 	
-
-	if (pathList.size() <= 0)
+	int checkId =  radioGroup->checkedId();
+	if (checkId == 0)
 	{
-		QMessageBox::information(this, "请选择文件", "请选择文件", QMessageBox::Ok);
-		return;
-	};
-
-	for (int i = 0; i < pathList.size(); i++)
+		m_bUpLoadTrans = true;
+	} else if (checkId == 1)
 	{
-		QString strPath = pathList.at(i);
-		QFile file(strPath);
-		if (!file.exists())
-		{
-			QMessageBox::information(this, "请选择文件", "文件不存在 请重新选择你这", QMessageBox::Ok);
-			return;
-		}
-		
+		m_bUpLoadTrans = false;
 	}
+	emit signalUpdateTransType(m_bUpLoadTrans);
+	if (m_bUpLoadTrans == false)
+	{
+		if (pathList.size() <= 0)
+		{
+			QMessageBox::information(this, "请选择文件", "请选择文件", QMessageBox::Ok);
+			return;
+		};
 
-	FileUtil *futil = new FileUtil();
-	QList<QList<QByteArray>> fileListData =  futil->getDataFramFromFilePath(pathList);
-	sinserialSingle::getInstance().setTransTypeWriteData(m_bUpLoadTrans,fileListData);
-	//sinSerialThreadManagerSingle::getInstance().start();
+		for (int i = 0; i < pathList.size(); i++)
+		{
+			QString strPath = pathList.at(i);
+			QFile file(strPath);
+			if (!file.exists())
+			{
+				QMessageBox::information(this, "请选择文件", "文件不存在 请重新选择你这", QMessageBox::Ok);
+				return;
+			}
+
+		}
+
+		FileUtil *futil = new FileUtil();
+		QList<QList<QByteArray>> fileListData = futil->getDataFramFromFilePath(pathList);
+		sinserialSingle::getInstance().setTransTypeWriteData(m_bUpLoadTrans, fileListData);
+	}
+	else {
+
+	}
+	
 
 }

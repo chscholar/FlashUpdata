@@ -32,6 +32,7 @@ private:
 	bool m_bIsUpLoadTrans;
 	QList<ReqInterrFace> m_pWriteData;
 	QByteArray m_pReadData;
+	QByteArray m_pReciveData;
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();
@@ -42,7 +43,7 @@ public:
 	QStringList getStopBits();
 	QStringList getFlowControl();
 	QStringList getParity();
-	void sendData(ReqInterrFace req);
+	//void sendData(ReqInterrFace req);
 	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0);
 	void sendData(QString strLog,QByteArray bytedata);
 	
@@ -56,6 +57,7 @@ public:
 	QSerialPort::SerialPortError getError();
 	void setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>> writeData);
 	void handleTransError(QByteArray dataError);
+	ReqInterrFace findFirstReqFromReciveData(QByteArray reciveData);
 	public slots:
 	void slotTest();
 signals :
@@ -63,6 +65,7 @@ signals :
 	void signalReadData();
 public slots :
 	void slotGetReadData();
+	void slotUpdateTransType(bool);
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

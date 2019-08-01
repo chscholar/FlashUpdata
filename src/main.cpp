@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-	//UpData::useTxtLog();
+	UpData::useTxtLog();
 	QApplication a(argc, argv);
 
 	QString dir = QApplication::applicationDirPath();

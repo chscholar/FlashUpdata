@@ -7,6 +7,7 @@
 #include "QObject"
 #include "SinByte.h"
 #include <QList>
+#include <QTimer>
 
 #pragma execution_character_set("utf-8")
 class SinSerial :public QObject
@@ -21,7 +22,6 @@ private:
 	ReqInterrFace byteToReq(QByteArray data);
 	ReqInterrFace indexToReq(QByteArray data, int Index);
 	QByteArray reqToByteArray(ReqInterrFace req);
-	//QByteArray fromHex(QByteArray byteData);
 
 	QMap<int, QString> portMap;
 	QMap<int, QString> rateMap;
@@ -33,6 +33,9 @@ private:
 	QList<ReqInterrFace> m_pWriteData;
 	QByteArray m_pReadData;
 	QByteArray m_pReciveData;
+	QTimer *m_pErrorTimer;
+	ReqInterrFace m_pErrorPreReq;
+
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();
@@ -43,8 +46,7 @@ public:
 	QStringList getStopBits();
 	QStringList getFlowControl();
 	QStringList getParity();
-	//void sendData(ReqInterrFace req);
-	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0);
+	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0, bool normal = true);
 	void sendData(QString strLog,QByteArray bytedata);
 	
 	bool isOPen();
@@ -56,7 +58,7 @@ public:
 	bool isCompare(QByteArray src, int nError);
 	QSerialPort::SerialPortError getError();
 	void setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>> writeData);
-	void handleTransError(QByteArray dataError);
+	void handleTransError(QByteArray dataError,int currentIndex = 0);
 	ReqInterrFace findFirstReqFromReciveData(QByteArray reciveData);
 	public slots:
 	void slotTest();
@@ -66,6 +68,7 @@ signals :
 public slots :
 	void slotGetReadData();
 	void slotUpdateTransType(bool);
+	void slotTimerOut();
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

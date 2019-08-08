@@ -21,6 +21,7 @@ private:
 
 	ReqInterrFace byteToReq(QByteArray data);
 	ReqInterrFace indexToReq(QByteArray data, int Index);
+	ReqInterrFace indexToReqHeader(QByteArray data, int index);
 	QByteArray reqToByteArray(ReqInterrFace req);
 
 	QMap<int, QString> portMap;
@@ -35,7 +36,7 @@ private:
 	QByteArray m_pReciveData;
 	QTimer *m_pErrorTimer;
 	ReqInterrFace m_pErrorPreReq;
-
+	QString m_pStrErrorLog;
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();

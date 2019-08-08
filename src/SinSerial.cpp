@@ -366,6 +366,35 @@ QByteArray SinSerial::getValueFromData(QByteArray data, int findIndex, int offse
 	
 }
 
+ReqInterrFace SinSerial::indexToReqHeader(QByteArray data, int Index)
+{
+	bool ok;
+	ReqInterrFace req;
+	ReqInterrFace tempReq;
+
+	req.Header = getValueFromData(data, Index, 0, 8);
+	req.Length = getValueFromData(data, Index, 8, 4);
+	req.Command = getValueFromData(data, Index, 12, 4);
+	req.BinFileId = getValueFromData(data, Index, 16, 8);
+	req.BinFileSize = getValueFromData(data, Index, 24, 8);
+	req.TransId = getValueFromData(data, Index, 32, 8);
+	req.TransSeqNum = getValueFromData(data, Index, 40, 8);
+	req.DataLength = getValueFromData(data, Index, 48, 4);
+	req.DataCRC = getValueFromData(data, Index, 52, 4);
+
+
+	if (req.isNull())
+	{
+		//头字段有空值 不正确
+		return tempReq;
+	}
+	else {
+		return req;
+	}
+
+}
+
+
 ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 {
 	bool ok;
@@ -385,6 +414,8 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 
 	if (req.isNull())
 	{
+		//头字段有空值 不正确
+		m_pStrErrorLog = "头部字段缺失 长度不正确";
 		return tempReq;
 	}
 
@@ -397,12 +428,34 @@ ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 	req.data = getValueFromData(data, Index, 56, dataLength * 2);
 	if (req.data.size()<=0 && dataLength != 0)
 	{
+		//data长队不正确
+		m_pStrErrorLog = "Data字段缺失 长度不正确";
 		return tempReq;
 	}
 
 	int paddingLength = dataLength % 4; 
 	req.Padding = getValueFromData(data, Index, 56 + dataLength * 2, paddingLength * 2);
+
+
+	int reqLength = req.Command.size() + req.BinFileId.size() + req.BinFileSize.size() + req.TransId.size() + req.TransSeqNum.size() + req.DataLength.size() + req.DataCRC.size() + req.data.size();
+
+	//if (Length != (reqLength/2))
+	//{
+	//	//长度不够
+	//	m_pStrErrorLog = "总长度不正确";
+	//	return tempReq;
+	//}
+
+	//if ((req.getSize() % 8) != 0)
+	//{
+	//	//没对齐
+	//	m_pStrErrorLog = "没四字节对齐";
+	//	return tempReq;
+	//}
+
 	return req;
+
+
 }
 
 QList<int> SinSerial::indexOfHeader(QString strSrc,QByteArray header)
@@ -599,25 +652,24 @@ void SinSerial::handleUploadError(QByteArray dataError){
 		m_pErrorPreReq.Command = MSG_CMD_UPLOADFILE_END_RSP;
 	}
 
-	bool ok;
-	QString strSeqNum = m_pErrorPreReq.TransSeqNum;
-	int tempInt = strSeqNum.toInt(&ok, 16);
-	int nSeqNum = strSeqNum.toInt(&ok, 16)  +1;
-	QString strTransSeqNum = QString("%1").arg(nSeqNum, 8, 16, QLatin1Char('0'));
+	//bool ok;
+	//QString strSeqNum = m_pErrorPreReq.TransSeqNum;
+	//int tempInt = strSeqNum.toInt(&ok, 16);
+	//int nSeqNum = strSeqNum.toInt(&ok, 16)  +1;
+	//QString strTransSeqNum = QString("%1").arg(nSeqNum, 8, 16, QLatin1Char('0'));
 
-	m_pErrorPreReq.TransSeqNum = strTransSeqNum.toUtf8().data();
+	//m_pErrorPreReq.TransSeqNum = strTransSeqNum.toUtf8().data();
 
+	m_pReciveData.clear();//出错，清除之前的缓存
 	if (isCompare(dataError,FILE_CRC_ERROR))
 	{
 		m_pErrorPreReq.data = FILE_CRC_ERROR;
-		m_pReciveData.clear(); //上传出错 ，清除之前的缓存
 		sendData(m_pErrorPreReq, "CRC校验失败重传", MSG_CMD_UPLOADFILE_DATA_RSP, 0, false);
 	}
 	else if (isCompare(dataError, FILE_MISSING_PACKET_ERROR))
 	{
 		m_pErrorPreReq.data = FILE_MISSING_PACKET_ERROR;
-		m_pReciveData.clear();
-		sendData(m_pErrorPreReq, "接收超时，文件包缺失重传", MSG_CMD_UPLOADFILE_DATA_RSP, 0, false);
+		sendData(m_pErrorPreReq, "接收超时，"+m_pStrErrorLog+",文件包缺失重传", MSG_CMD_UPLOADFILE_DATA_RSP, 0, false);
 	}
 }
 
@@ -625,6 +677,7 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 {
 	ReqInterrFace req;
 	QString strReciveData = reciveData;
+	ReqInterrFace reqHeader;
 	if (strReciveData.isEmpty() || strReciveData.size() <= 0)
 	{
 		return req;
@@ -638,14 +691,20 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 	else{
 
 	}
+	
 
+	reqHeader = indexToReqHeader(reciveData, findIndex);
+	if (!reqHeader.isNull())
+	{
+		m_pErrorPreReq = reqHeader;
+	}
+	m_pStrErrorLog = "";
 	req = indexToReq(reciveData, findIndex);
 	int reqSize = req.getSize();
 
 	
 	if (reqSize == 0)
 	{
-		//qDebug() << "当前包数据缺少";
 		m_pErrorTimer->start(3000);
 		ReqInterrFace temp;
 		return temp;;
@@ -667,9 +726,6 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 		ReqInterrFace temp;
 		return temp;;
 	}
-
-
-	m_pErrorPreReq = req;
 	return req;
 }
 
@@ -686,7 +742,7 @@ void SinSerial::slotGetReadData()
 		getSerialPort()->clear();
 		QString qstrTest = readData.toHex().data();
 		
-		readData = readData.trimmed();
+		//readData = readData.trimmed();
 		QString qstrtest1 = readData.toHex().data();
 		if (!readData.isEmpty())
 		{

@@ -87,12 +87,12 @@ QList<QByteArray> FileUtil::toFileDataDecode(QByteArray fileByteData){
 		Result.push_back(transIFace);
 	}*/
 	SinByte *sByte = new SinByte(fileByteData);
-	int nResult = fileByteData.size() / 256;
-	int nDiv = fileByteData.size() - nResult * 256;
+	int nResult = fileByteData.size() / PACKBUFFER;
+	int nDiv = fileByteData.size() - nResult * PACKBUFFER;
 
 	while (nResult >=1)
 	{
-		QByteArray data = sByte->getNData(256);
+		QByteArray data = sByte->getNData(PACKBUFFER);
 		Result.push_back(data);
 		nResult--;
 	}

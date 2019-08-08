@@ -35,24 +35,24 @@ namespace UpData {
 		switch (type) {
 		case QtDebugMsg:
 			//log.append(QString("Debug File: %1 %2 Line: %3 Content:%4 timeSec:%5").arg(context.file).arg(context.function).arg(context.line).arg(msg).arg(QDateTime::currentDateTime().toTime_t()));
-			log.append(QString("时间戳:%1 内容:%2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
+			log.append(QString("TimeMillon:%1 %2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
 
 			break;
 		case QtInfoMsg:
 			//log.append(QString("Info: %1 %2 %3 %4 timeSec:%5").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function).arg(QDateTime::currentDateTime().toTime_t()));
-			log.append(QString("时间戳:%1 内容:%2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
+			log.append(QString("TimeMillon:%1 %2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
 			break;
 		case QtWarningMsg:
 		//	log.append(QString("Warning: %1  %2  %3  %4 timeSec:%5").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function).arg(QDateTime::currentDateTime().toTime_t()));
-			log.append(QString("时间戳:%1 内容:%2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
+			log.append(QString("TimeMillon:%1 %2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
 			break;
 		case QtCriticalMsg:
 			//log.append(QString("Critical: %1  %2  %3  %4 timeSec:%5").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function).arg(QDateTime::currentDateTime().toTime_t()));
-			log.append(QString("时间戳:%1 内容:%2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
+			log.append(QString("TimeMillon:%1 %2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
 			break;
 		case QtFatalMsg:
 			//log.append(QString("Fatal: %1  %2  %3  %4 timeSec:%5").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function).arg(QDateTime::currentDateTime().toTime_t()));
-			log.append(QString("时间戳:%1 内容:%2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
+			log.append(QString("TimeMillon:%1 %2 ").arg(QDateTime::currentDateTime().toTime_t()).arg(msg));
 			abort();
 		}
 

@@ -353,42 +353,55 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 	}
 }
 
+QByteArray SinSerial::getValueFromData(QByteArray data, int findIndex, int offset, int length)
+{
+	QByteArray temp;
+
+	if (length == 0 || findIndex + offset + length > data.size())
+	{
+		return temp;;
+	}
+
+	return data.mid(findIndex + offset, length);
+	
+}
+
 ReqInterrFace SinSerial::indexToReq(QByteArray data, int Index)
 {
 	bool ok;
 	ReqInterrFace req;
-	req.Header = data.mid(Index, 8);
-	req.Length = data.mid(Index+8, 4);
+	ReqInterrFace tempReq;
+
+	req.Header = getValueFromData(data, Index, 0, 8);
+	req.Length = getValueFromData(data, Index, 8, 4);
+	req.Command = getValueFromData(data, Index, 12, 4);
+	req.BinFileId = getValueFromData(data, Index, 16, 8);
+	req.BinFileSize = getValueFromData(data, Index, 24, 8);
+	req.TransId = getValueFromData(data, Index, 32, 8);
+	req.TransSeqNum = getValueFromData(data, Index, 40, 8);
+	req.DataLength = getValueFromData(data, Index, 48, 4);
+	req.DataCRC = getValueFromData(data, Index, 52, 4);
+
+
+	if (req.isNull())
+	{
+		return tempReq;
+	}
+
 	QString qstrLength = req.Length;
-	int Length = qstrLength.toInt(&ok, 16);
+	int Length = qstrLength.toInt(&ok, 16);	
 
-	req.Command = data.mid(Index + 12, 4);
-	req.BinFileId = data.mid(Index + 16, 8);
-	req.BinFileSize = data.mid(Index + 24, 8);
-
-	req.TransId = data.mid(Index + 32, 8);
-	req.TransSeqNum = data.mid(Index + 40, 8);
-	req.DataLength = data.mid(Index + 48, 4);
-	req.DataCRC = data.mid(Index + 52, 4);
-
-	
 	QString qstrDataLength = req.DataLength;
 	int dataLength =  qstrDataLength.toInt(&ok, 16);
-	
 
-	if (Index + 56 + dataLength*2 > data.size())
+	req.data = getValueFromData(data, Index, 56, dataLength * 2);
+	if (req.data.size()<=0 && dataLength != 0)
 	{
-		ReqInterrFace temp;
-		return temp;
+		return tempReq;
 	}
-	req.data = data.mid(Index + 56, dataLength * 2);
 
-	int paddingLength = dataLength % 4;
-	if (paddingLength != 0)
-	{
-		req.Padding = data.mid(Index + 56 + dataLength * 2, paddingLength * 2);
-	}
-	
+	int paddingLength = dataLength % 4; 
+	req.Padding = getValueFromData(data, Index, 56 + dataLength * 2, paddingLength * 2);
 	return req;
 }
 
@@ -447,7 +460,7 @@ void SinSerial::handleTransError(QByteArray dataError,int currentIndex)
 	}
 }
 
-void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index,bool normal)
+void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index,QByteArray dataError)
 {
 	ReqInterrFace sendReq;
 
@@ -471,9 +484,12 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		sendReq = req;
 		m_pReadData.append(req.data);
 		sendReq.Command = command;
-		if (normal == true)
+		if (dataError == FILE_OK)
 		{
-			sendReq.data.clear();
+			sendReq.data = FILE_OK;
+		}
+		else { //上传出错
+			sendReq = req;
 		}
 		
 	}
@@ -517,10 +533,6 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 			sendReq.Command = command;
 		}
 	}
-	else if (isCompare(command, FILE_INNER_ERROR)) //错误
-	{
-		sendReq = req;
-	}
 
 	sendReq.setDataLength();
 	sendReq.setCRC();
@@ -543,18 +555,70 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 
 void SinSerial::slotTimerOut()
 {
+	handleUploadError(FILE_MISSING_PACKET_ERROR);
+}
+
+void SinSerial::delReqFromReadBuffer(QByteArray readData, ReqInterrFace req)
+{
+	QByteArray reqByte =  reqToByteArray(req);
+	int findIndex = readData.indexOf(reqByte);
+	
+	if (findIndex != -1)
+	{
+		m_pReciveData.remove(findIndex, reqByte.size());
+	} 
+}
+ 
+void SinSerial::handleUploadError(QByteArray dataError){
+
+
 	m_pErrorPreReq.data.clear();
-	m_pErrorPreReq.data = "0100";
+
+	if (isCompare(m_pErrorPreReq.Command, MSG_CMD_DOWNLOADFILE_REQ_RSP)) //8002
+	{
+		m_pErrorPreReq.Command = MSG_CMD_DOWNLOADFILE_REQ;
+	}
+	else if (isCompare(m_pErrorPreReq.Command, MSG_CMD_DOWNLOADFILE_DATA_RSP)) //8003
+	{
+		m_pErrorPreReq.Command = MSG_CMD_DOWNLOADFILE_DATA;
+	}
+	else if (isCompare(m_pErrorPreReq.Command, MSG_CMD_DOWNLOADFILE_END_RSP)) //8004
+	{
+		m_pErrorPreReq.Command = MSG_CMD_DOWNLOADFILE_END;
+	}
+	else if (isCompare(m_pErrorPreReq.Command, MSG_CMD_UPLOADFILE_REQ_RSP)) //8005
+	{
+		m_pErrorPreReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;
+	}
+	else if (isCompare(m_pErrorPreReq.Command, MSG_CMD_UPLOADFILE_DATA)) //8006
+	{
+		m_pErrorPreReq.Command = MSG_CMD_UPLOADFILE_DATA_RSP;
+	}
+	else if (isCompare(m_pErrorPreReq.Command, MSG_CMD_UPLOADFILE_END)) //8007
+	{
+		m_pErrorPreReq.Command = MSG_CMD_UPLOADFILE_END_RSP;
+	}
 
 	bool ok;
 	QString strSeqNum = m_pErrorPreReq.TransSeqNum;
-	int nSeqNum = strSeqNum.toInt(&ok, 16) |+ 1;
-	
+	int tempInt = strSeqNum.toInt(&ok, 16);
+	int nSeqNum = strSeqNum.toInt(&ok, 16)  +1;
 	QString strTransSeqNum = QString("%1").arg(nSeqNum, 8, 16, QLatin1Char('0'));
-	m_pErrorPreReq.TransSeqNum = strTransSeqNum.toUtf8().data();
-	m_pErrorPreReq.data = "0100";
 
-	sendData(m_pErrorPreReq, "接收超时，请求重传", MSG_CMD_UPLOADFILE_DATA_RSP,0,false);
+	m_pErrorPreReq.TransSeqNum = strTransSeqNum.toUtf8().data();
+
+	if (isCompare(dataError,FILE_CRC_ERROR))
+	{
+		m_pErrorPreReq.data = FILE_CRC_ERROR;
+		m_pReciveData.clear(); //上传出错 ，清除之前的缓存
+		sendData(m_pErrorPreReq, "CRC校验失败重传", MSG_CMD_UPLOADFILE_DATA_RSP, 0, false);
+	}
+	else if (isCompare(dataError, FILE_MISSING_PACKET_ERROR))
+	{
+		m_pErrorPreReq.data = FILE_MISSING_PACKET_ERROR;
+		m_pReciveData.clear();
+		sendData(m_pErrorPreReq, "接收超时，文件包缺失重传", MSG_CMD_UPLOADFILE_DATA_RSP, 0, false);
+	}
 }
 
 ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
@@ -571,14 +635,17 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 	{
 		return req;
 	}
+	else{
+
+	}
 
 	req = indexToReq(reciveData, findIndex);
 	int reqSize = req.getSize();
 
 	
-	if (findIndex + 56 > strReciveData.size() || reqSize == 0 || reqSize % 8 != 0 || reqSize + findIndex > strReciveData.size())
+	if (reqSize == 0)
 	{
-		qDebug() << "当前包数据缺少";
+		//qDebug() << "当前包数据缺少";
 		m_pErrorTimer->start(3000);
 		ReqInterrFace temp;
 		return temp;;
@@ -589,7 +656,19 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 	{
 		m_pReciveData.remove(0, findIndex);
 	}
+
 	m_pErrorTimer->stop();
+
+	QByteArray CalcCRC = req.getCRC();
+	QByteArray reqCRC = req.DataCRC;
+	if (CalcCRC != reqCRC)
+	{
+		handleUploadError(FILE_CRC_ERROR);
+		ReqInterrFace temp;
+		return temp;;
+	}
+
+
 	m_pErrorPreReq = req;
 	return req;
 }
@@ -615,7 +694,7 @@ void SinSerial::slotGetReadData()
 			
 			QString qstrReadData = readData.toHex().data();
 
-			qDebug() << "读取到的数据: " << qstrtest1;
+			qDebug() << "读到数据: " << qstrtest1;
 
 			m_pReciveData.append(readData.toHex());
 			//从缓存列表找到一个req
@@ -717,7 +796,8 @@ void SinSerial::slotGetReadData()
 				if (isCompare(req.data, FILE_OK))
 				{
 					//MSG_CMD_UPLOADFILE_REQ
-					sendData(req, "PC发送上传文件请求：", MSG_CMD_UPLOADFILE_REQ);
+					//sendData(req, "PC发送上传文件请求：", MSG_CMD_UPLOADFILE_REQ);
+					delReqFromReadBuffer(m_pReciveData, req);
 
 				}
 				else {

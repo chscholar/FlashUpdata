@@ -8,6 +8,8 @@
 
 #pragma pack(1) 
 
+const int PACKBUFFER = 1024;
+
 /* define command values. */
 const QByteArray    MSG_CMD_HANDSHAKE_SYN = "8000";
 const QByteArray     MSG_CMD_HANDSHAKE_SYNARK = "0001";
@@ -62,7 +64,7 @@ struct ReqInterrFace
 	QByteArray TransId; //四字节				每个文件传输事务id， 如果有多个文件则每个文件传输id不一样
 	QByteArray TransSeqNum; //四字节			传输包序列
 	QByteArray DataLength; //两字节				data 数据长度
-	QByteArray DataCRC; //2字节					校验算法
+	QByteArray DataCRC; //两字节					校验算法
 	QByteArray data;
 	QByteArray Padding; //填充字段，保证每个字段4字节对齐
 
@@ -106,19 +108,9 @@ struct ReqInterrFace
 		QString strCrc = QString::number(result, 16);
 		return strCrc;
 	}
-	void setCRC()
+
+	QByteArray getCRC()
 	{
-		/*char  chekSum = data[0];
-		for (int i = 0; i < this->data.size(); i++)
-		{
-		char temp = this->data.at(i);
-		chekSum = chekSum ^ temp;
-		}
-
-		this->DataCRC.clear();
-		QString str = QString("%1").arg(chekSum, 4, 16, QLatin1Char('0'));
-		this->DataCRC = str.toUtf8().data();*/
-
 		QStringList dataCrc;
 		for (int i = 0; i < this->data.size(); i += 2)
 		{
@@ -132,8 +124,8 @@ struct ReqInterrFace
 			strXor = dataCrc.at(0);
 		}
 		else {
-			this->DataCRC = "0000";
-			return;
+			//this->DataCRC = "0000";
+			return "0000";
 		}
 
 		for (int i = 1; i < dataCrc.size(); i++)
@@ -156,24 +148,40 @@ struct ReqInterrFace
 		{
 			str = "0" + strXor;
 		}
-		this->DataCRC = str.toUtf8().data();
+
+		return str.toUtf8().data();
+
+	}
+
+	void setCRC()
+	{
+		this->DataCRC = getCRC();
+	}
+
+
+	bool isNull(){
+		if (this->Header.size() <= 0 || this->Length.size() <= 0 || this->Command.size() <= 0 || this->BinFileId.size() <= 0 || this->BinFileSize.size() <= 0 || this->TransId.size() <= 0 || this->TransSeqNum.size() <= 0 || this->DataLength.size() <= 0 || this->DataCRC.size() <= 0)
+		{
+			return true;
+		}
+		return false;
 	}
 	
-		int getSize(){
-			int headerSize = this->Header.size();
-			int lengthSize = this->Length.size();
-			int commandSize = this->Command.size();
-			int binfileIdSize = this->BinFileId.size();
-			int binfilesize = this->BinFileSize.size();
-			int transIdSize = this->TransId.size();
-			int transSeqNumSize = this->TransSeqNum.size();
-			int datalengthSize = this->DataLength.size();
-			int dataCrcSize = this->DataCRC.size();
-			int dataSize = this->data.size();
-			int paddingSize = this->Padding.size();
+	int getSize(){
+		int headerSize = this->Header.size();
+		int lengthSize = this->Length.size();
+		int commandSize = this->Command.size();
+		int binfileIdSize = this->BinFileId.size();
+		int binfilesize = this->BinFileSize.size();
+		int transIdSize = this->TransId.size();
+		int transSeqNumSize = this->TransSeqNum.size();
+		int datalengthSize = this->DataLength.size();
+		int dataCrcSize = this->DataCRC.size();
+		int dataSize = this->data.size();
+		int paddingSize = this->Padding.size();
 
-			return headerSize + lengthSize + commandSize + binfileIdSize + binfileIdSize + transIdSize + transSeqNumSize + datalengthSize + dataCrcSize + dataSize + paddingSize;
-		}
+		return headerSize + lengthSize + commandSize + binfileIdSize + binfileIdSize + transIdSize + transSeqNumSize + datalengthSize + dataCrcSize + dataSize + paddingSize;
+	}
 	
 };
 Q_DECLARE_METATYPE(ReqInterrFace)

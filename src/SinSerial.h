@@ -46,7 +46,7 @@ public:
 	QStringList getStopBits();
 	QStringList getFlowControl();
 	QStringList getParity();
-	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0, bool normal = true);
+	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0, QByteArray dataError = FILE_OK);
 	void sendData(QString strLog,QByteArray bytedata);
 	
 	bool isOPen();
@@ -60,6 +60,9 @@ public:
 	void setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>> writeData);
 	void handleTransError(QByteArray dataError,int currentIndex = 0);
 	ReqInterrFace findFirstReqFromReciveData(QByteArray reciveData);
+	void handleUploadError(QByteArray dataError);
+	QByteArray getValueFromData (QByteArray data, int findIndex, int offset, int length);
+	void delReqFromReadBuffer(QByteArray readData,ReqInterrFace req);
 	public slots:
 	void slotTest();
 signals :

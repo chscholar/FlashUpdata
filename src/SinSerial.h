@@ -31,6 +31,7 @@ private:
 	QMap<int, QString> parityMap;
 	QMap<int, QString> flowMap;
 	bool m_bIsUpLoadTrans;
+	QString m_pUpFileSavePath;
 	QList<ReqInterrFace> m_pWriteData;
 	QByteArray m_pReadData;
 	QByteArray m_pReciveData;
@@ -71,7 +72,7 @@ signals :
 	void signalReadData();
 public slots :
 	void slotGetReadData();
-	void slotUpdateTransType(bool);
+	void slotUpdateTransType(bool,QString);
 	void slotTimerOut();
 };
 

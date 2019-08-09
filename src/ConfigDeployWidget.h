@@ -15,7 +15,7 @@ public:
 	void slotConfirmTrans();
 	void slotSwitchRadio(int, bool);
 signals:
-	void signalUpdateTransType(bool transType);
+	void signalUpdateTransType(bool transType,QString upFilePath);
 protected:
 	void initUi();
 private:

@@ -18,7 +18,7 @@ ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 {
 
 	initUi();
-	connect(this, SIGNAL(signalUpdateTransType(bool)), &sinserialSingle::getInstance(), SLOT(slotUpdateTransType(bool)));
+	connect(this, SIGNAL(signalUpdateTransType(bool,QString)), &sinserialSingle::getInstance(), SLOT(slotUpdateTransType(bool,QString)));
 }
 
 ConfigDeployWidget::~ConfigDeployWidget()
@@ -92,7 +92,8 @@ void ConfigDeployWidget::slotSwitchRadio(int index, bool isChecked)
 
 void ConfigDeployWidget::slotConfirmTrans()
 {
-	QStringList pathList = m_pFileConfigWidget->getAllSelectPath();
+	QStringList downFilePathList = m_pFileConfigWidget->getAllSelectPath();
+	QString upFilePath = m_pFileConfigWidget->getUpFileSavePath();
 	
 	int checkId =  radioGroup->checkedId();
 	if (checkId == 0)
@@ -102,18 +103,18 @@ void ConfigDeployWidget::slotConfirmTrans()
 	{
 		m_bUpLoadTrans = false;
 	}
-	emit signalUpdateTransType(m_bUpLoadTrans);
+	emit signalUpdateTransType(m_bUpLoadTrans,upFilePath);
 	if (m_bUpLoadTrans == false)
 	{
-		if (pathList.size() <= 0)
+		if (downFilePathList.size() <= 0)
 		{
 			QMessageBox::information(this, "请选择文件", "请选择文件", QMessageBox::Ok);
 			return;
 		};
 
-		for (int i = 0; i < pathList.size(); i++)
+		for (int i = 0; i < downFilePathList.size(); i++)
 		{
-			QString strPath = pathList.at(i);
+			QString strPath = downFilePathList.at(i);
 			QFile file(strPath);
 			if (!file.exists())
 			{
@@ -124,7 +125,7 @@ void ConfigDeployWidget::slotConfirmTrans()
 		}
 
 		FileUtil *futil = new FileUtil();
-		QList<QList<QByteArray>> fileListData = futil->getDataFramFromFilePath(pathList);
+		QList<QList<QByteArray>> fileListData = futil->getDataFramFromFilePath(downFilePathList);
 		sinserialSingle::getInstance().setTransTypeWriteData(m_bUpLoadTrans, fileListData);
 	}
 	else {

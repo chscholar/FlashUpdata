@@ -57,6 +57,7 @@ public:
 	~FileConfigWidget();
 	void switchWidget(bool isUpLoad);
 	QStringList getAllSelectPath();
+	QString getUpFileSavePath();
 	
 protected:
 	void initUi();

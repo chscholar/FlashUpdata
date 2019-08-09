@@ -114,12 +114,38 @@ void FileConfigItemWidget::slotDel()
 
 void FileConfigItemWidget::slotBrowFile()
 {
-	QString path = QFileDialog::getOpenFileName(this, tr("Open File"), "./", tr("Text File(*.*)"));
-	if (!path.isEmpty())
+	QString path;
+	if (!m_bisUpLoad)
 	{
-		m_pAddressEdit->setText(path);
-		sinXmlSingle::getInstance().updateUpLoadFile(m_bisUpLoad, QString::number(m_iItemId), getCheckedStatus(), path);
+		path = QFileDialog::getOpenFileName(this, tr("选择上传文件"), "./", tr("Text File(*.*)"));
+		if (!path.isEmpty())
+		{
+			m_pAddressEdit->setText(path);
+
+			sinXmlSingle::getInstance().updateUpLoadFile(m_bisUpLoad, QString::number(m_iItemId), getCheckedStatus(), path);
+		}
 	}
+	else {
+		//path = QFileDialog::getOpenFileName(this, tr("Open File"), "./", tr("Text File(*.*)"));
+		QFileDialog* fileDialog = new QFileDialog(this);
+		fileDialog->setWindowTitle("选择保存文件路径");
+		fileDialog->setFileMode(QFileDialog::DirectoryOnly);
+		
+		QStringList fileName;
+		if (fileDialog->exec() == QDialog::Accepted)
+		{
+			fileName = fileDialog->selectedFiles();
+			path = fileName.join(",");
+			m_pAddressEdit->setText(path);
+		}
+		
+		if (!path.isEmpty())
+		{
+			sinXmlSingle::getInstance().updateUpLoadFile(m_bisUpLoad, QString::number(m_iItemId), getCheckedStatus(), path);
+		}
+
+	}
+	
 }
 
 void FileConfigItemWidget::slotChecboxStateChange(int state)
@@ -301,6 +327,23 @@ QStringList FileConfigWidget::getAllSelectPath()
 	}
 
 	return pathList;
+}
+
+QString FileConfigWidget::getUpFileSavePath()
+{
+	
+	QList<FileConfigItem> itemList = sinXmlSingle::getInstance().getFileConfigItemFromXmlConfig(true);
+	for (int i = 0; i < itemList.size(); i++)
+	{
+		QString qstrId = itemList.at(i).fileConfigId;
+		QString qstrChecked = itemList.at(i).fileConfigChecked;
+		QString qstrPath = itemList.at(i).fileConfigPath;
+
+		FileConfigItemWidget *itemWidget = new FileConfigItemWidget(true, qstrId.toInt(), qstrChecked, qstrPath);
+		fileConfigVec.push_back(itemWidget);
+		return qstrPath;
+	}
+	
 }
 
 void FileConfigWidget::showEvent(QShowEvent *e)

@@ -10,6 +10,7 @@
 #include <QTime>
 #include <QFile>
 #include <QTextStream>
+#include <QDateTime>
 SinSerial::SinSerial(QObject *parent):
 QObject(parent)
 , serialPort(nullptr)
@@ -271,9 +272,10 @@ void SinSerial::slotTest()
 
 }
 
-void SinSerial::slotUpdateTransType(bool upTransType)
+void SinSerial::slotUpdateTransType(bool upTransType,QString upFileSavePath)
 {
 	m_bIsUpLoadTrans = upTransType;
+	m_pUpFileSavePath = upFileSavePath;
 }
 
 bool SinSerial::isCompare(QByteArray src, QByteArray dest)
@@ -549,15 +551,25 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 	else if (isCompare(command, MSG_CMD_UPLOADFILE_END_RSP)) //上传结束
 	{
 		sendReq = req;
-		QString fileName = req.BinFileId + "_" + QTime::currentTime().toString()+".bin";
+		QString fileName =m_pUpFileSavePath + "/"+ req.BinFileId + "_" + QString::number(QDateTime::currentDateTime().toTime_t())+ ".bin";
 		
 		QFile file(fileName);
-		if (!file.open(QIODevice::ReadWrite))
+		if (!file.open(QIODevice::WriteOnly))
 		{
 			qDebug() << "save file error";
 		}
-		QTextStream in(&file);
+		QTextStream out(&file);
+		out << m_pReadData;
+		out.flush();
 		file.close();
+		bool ok;
+
+		QString strFileSize = req.BinFileSize;
+		int nFileSize = strFileSize.toInt(&ok, 16);
+		if (m_pReadData.size() / 2 == nFileSize)
+		{
+			int a = 1;
+		}
 
 		m_pReadData.clear();
 		sendReq.Command = command;
@@ -886,14 +898,7 @@ void SinSerial::slotGetReadData()
 				QString strShowLog = "reciveUE upload End: " + reqToByteArray(req);
 				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
 
-				if (isCompare(req.data, FILE_OK))
-				{
-					sendData(req, "PC发送上传文件数据包结束回复", MSG_CMD_UPLOADFILE_END_RSP);
-
-				}
-				else {
-					handleTransError(req.data);
-				}
+				sendData(req, "PC发送上传文件数据包结束回复", MSG_CMD_UPLOADFILE_END_RSP);
 			} 
 			else { //unknow
 				qDebug() << "reciveUE show: " << readData << "currentThreadId:" << QThread::currentThread();

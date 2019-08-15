@@ -1,3 +1,4 @@
+#pragma once
 #ifndef		SINSERIAL_H
 #define  SINSERIAL_H
 #include <qDebug>
@@ -5,11 +6,14 @@
 #include <QStringList>
 #include "CSingleTon.h"
 #include "QObject"
-#include "SinByte.h"
 #include <QList>
 #include <QTimer>
+#include "CommonHeader.hpp"
 
 #pragma execution_character_set("utf-8")
+
+extern struct  ReqInterrFace;
+
 class SinSerial :public QObject
 {
 	Q_OBJECT

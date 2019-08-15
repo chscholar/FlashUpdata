@@ -59,6 +59,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -134,6 +135,7 @@
     <QtMoc Include="src\ConfigEditWidget.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CommonHeader.hpp" />
     <ClInclude Include="src\CSingleTon.h" />
     <ClInclude Include="src\head.h" />
     <QtMoc Include="src\qhexview.h">

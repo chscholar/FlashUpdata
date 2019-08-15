@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QDomDocument>
 #include <QTextStream>
+#include <QCoreApplication>
 
 
 const QString configFileName = "./config.xml";
@@ -33,7 +34,7 @@ void SinXml::initXml()
 	if (!file.open(QFile::WriteOnly | QFile::Truncate)) //可以用QIODevice，Truncate表示清空原来的内容
 		return;
 
-
+	 QString currentPath =  QCoreApplication::applicationDirPath();
 	QDomDocument doc;
 	QDomProcessingInstruction instruction;
 	instruction = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
@@ -54,7 +55,7 @@ void SinXml::initXml()
 	File.setAttributeNode(check);
 
 	QDomAttr path = doc.createAttribute("path");
-	path.setValue("./upload/test.txt");
+	path.setValue( currentPath);
 	File.setAttributeNode(path);
 
 	uploadConfig.appendChild(File);
@@ -71,7 +72,7 @@ void SinXml::initXml()
 	File.setAttributeNode(check);
 
 	path = doc.createAttribute("path");
-	path.setValue("./download/test.txt");
+	path.setValue( currentPath + "/test.txt");
 	File.setAttributeNode(path);
 
 	downloadConfig.appendChild(File);

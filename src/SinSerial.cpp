@@ -11,6 +11,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
+#include "SinByte.h"
+#include "CommonHeader.hpp"
+
 SinSerial::SinSerial(QObject *parent):
 QObject(parent)
 , serialPort(nullptr)
@@ -235,9 +238,8 @@ void SinSerial::sendData(QString strLog,QByteArray bytedata)
 	QByteArray writeData = QByteArray::fromHex(bytedata);
 	int writeByte = getSerialPort()->write(writeData);
 	qDebug() << strLog << bytedata;
-	QString strShowLog = strLog +":"+ bytedata;
 
-	//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+	//sinTaskQueueSingle::getInstance().pushBackReadData(strLog.toLocal8Bit());
 }
 
 QByteArray SinSerial::reqToByteArray(ReqInterrFace req)
@@ -558,9 +560,8 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		{
 			qDebug() << "save file error";
 		}
-		QTextStream out(&file);
+		QDataStream out(&file);
 		out << m_pReadData;
-		out.flush();
 		file.close();
 		bool ok;
 
@@ -609,7 +610,6 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 	
 	
 	//发送完，清理已经发送的缓存
-
 	int reqSize = req.getSize();
 	QByteArray sendDataArray = reqToByteArray(req);
 	QString strTempReciveData = m_pReciveData;
@@ -744,12 +744,9 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 void SinSerial::slotGetReadData()
 {;
 	QByteArray readData;
-	//if (getSerialPort()->canReadLine())
 	getSerialPort()->waitForReadyRead(10);
 	if (getSerialPort()->bytesAvailable())
-	//if (getSerialPort()->waitForReadyRead(-1))
 	{
-		//getSerialPort()->waitForReadyRead(500);
 		readData = getSerialPort()->readAll();
 		getSerialPort()->clear();
 		QString qstrTest = readData.toHex().data();
@@ -777,8 +774,8 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE握手请求 :" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						
-				QString strShowLog = " reciveUE handshake syn :" + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				QString strShowLog = "收到UE握手请求";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 						
 				sendData(req, "PC发送握手回复", MSG_CMD_HANDSHAKE_SYNARK);
 			}
@@ -786,8 +783,8 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE握手成功回复:" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-				QString strShowLog = "reciveUE Handle Ok :" + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				QString strShowLog = "收到UE握手成功回复";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 
 				//m_bIsUpLoadTrans = false;
 				QByteArray command;
@@ -795,10 +792,10 @@ void SinSerial::slotGetReadData()
 				if (m_bIsUpLoadTrans)
 				{
 					command = MSG_CMD_UPLOADFILE_REQ;
-					strLogPrefix = "PC发送上传文件请求：";
+					strLogPrefix = "PC发送上传文件请求";
 				}
 				else {
-					strLogPrefix = "PC 发送下载文件请求：";
+					strLogPrefix = "PC 发送下载文件请求";
 					command = MSG_CMD_DOWNLOADFILE_REQ;
 				}
 
@@ -808,12 +805,12 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE下载文件请求回复： " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 						 
-				QString strShowLog = "reciveUE Download Req: " + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				QString strShowLog = "收到UE下载文件请求回复";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 
 				if (isCompare(req.data, FILE_OK))
 				{	
-					sendData(req, "PC 发送下载文件数据包：", MSG_CMD_DOWNLOADFILE_DATA);
+					sendData(req, "PC 发送下载文件数据包", MSG_CMD_DOWNLOADFILE_DATA);
 				}
 				else {
 					handleTransError(req.data);
@@ -823,17 +820,19 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE下载文件数据包回复： " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-				QString strShowLog = "reciveUE Download Data: " + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
-
 				bool ok;
 				QString strSeqNum = req.TransSeqNum;
 				int nSeqNum = strSeqNum.toInt(&ok, 16);
 				currentPackIndex = nSeqNum;
 
+				QString strShowLog = "收到UE下载文件"+QString::number(nSeqNum)+"数据包回复";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
+
+				
+
 				if (isCompare(req.data, FILE_OK)) //01 发送成功发送下一个包
 				{
-					sendData(req, "PC 发送下载文件数据包：", MSG_CMD_DOWNLOADFILE_DATA, nSeqNum+1);
+					sendData(req, "PC 发送下载"+QString::number((nSeqNum+1))+"文件数据包", MSG_CMD_DOWNLOADFILE_DATA, nSeqNum+1);
 				}
 				else { //error 发送不成功
 					handleTransError(req.data,nSeqNum);
@@ -843,8 +842,8 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE下载文件结束回复：" << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-				QString strShowLog = "reciveUE download End: " + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				QString strShowLog = "收到UE下载文件结束回复";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 
 				if (isCompare(req.data, FILE_OK))
 				{
@@ -858,8 +857,8 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE上传文件请求回复: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-				QString strShowLog = "reciveUE upload Req Rsp: " + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				QString strShowLog = "收到UE上传文件请求回复";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 
 				if (isCompare(req.data, FILE_OK))
 				{
@@ -876,15 +875,16 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE上传文件数据包: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-				QString strShowLog = "reciveUE upload Data: " + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				bool ok;
+				QString strShowLog = "收到UE上传文件"+QString::number(req.TransSeqNum.toInt(&ok,16))+"数据包";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 
 				QByteArray fileData = req.data;
 				QByteArray fromhexData = QByteArray::fromHex(fileData).data();
 
 				//if (isCompare(req.data, FILE_OK))
 				//{
-					sendData(req, "PC 发送上传文件数据包回复:", MSG_CMD_UPLOADFILE_DATA_RSP);
+				sendData(req, "PC 发送上传文件" + QString::number(req.TransSeqNum.toInt(&ok, 16)) + "数据包回复", MSG_CMD_UPLOADFILE_DATA_RSP);
 
 				//}
 				//else {
@@ -895,8 +895,8 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE上传文件数据包结束: " << reqToByteArray(req) << "currentThreadId:" << QThread::currentThread();
 
-				QString strShowLog = "reciveUE upload End: " + reqToByteArray(req);
-				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLatin1());
+				QString strShowLog = "收到UE上传文件数据包结束 ";
+				//sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog.toLocal8Bit());
 
 				sendData(req, "PC发送上传文件数据包结束回复", MSG_CMD_UPLOADFILE_END_RSP);
 			} 

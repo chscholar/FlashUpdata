@@ -1,7 +1,6 @@
 #include "SinByte.h"
 
 #define  TRANS_LENGTH 10;
-
 SinByte::SinByte(QByteArray byte, QObject *parent) :QObject(parent)
 {
 	m_pByte = byte;

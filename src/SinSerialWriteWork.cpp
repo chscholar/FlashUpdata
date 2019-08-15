@@ -2,6 +2,7 @@
 #include "SinSerial.h"
 #include "SinTaskQueue.h"
 #include <QDebug>
+#include "CommonHeader.hpp"
 
 SinSerialWriteWork::SinSerialWriteWork(QObject *parent)
 	:QObject(parent)

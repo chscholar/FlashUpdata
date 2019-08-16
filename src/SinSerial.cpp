@@ -23,6 +23,7 @@ QObject(parent)
 	m_pErrorTimer = new QTimer();
 	m_pWriteErrorTimer = new QTimer();
 	connect(m_pErrorTimer, SIGNAL(timeout()), this, SLOT(slotTimerOut()));
+	connect(m_pWriteErrorTimer, SIGNAL(timeout()), this, SLOT(slotWriteErrorTimeOut()));
 	connect(getSerialPort(), SIGNAL(readyRead), this, SLOT(slotGetReadData()));
 }
 

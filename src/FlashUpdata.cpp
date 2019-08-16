@@ -17,6 +17,7 @@
 #include "ConfigEditWidget.h"
 #include "SinTaskQueue.h"
 #include "pcap.h"
+#include "SinSerial.h"
 
 
 FlashUpdata::FlashUpdata(QWidget *parent)
@@ -26,6 +27,7 @@ FlashUpdata::FlashUpdata(QWidget *parent)
 	initUi();
 
 	connect(&sinTaskQueueSingle::getInstance(), SIGNAL(signalReadData()), this, SLOT(slotUpDataLogEdit()));
+	connect(&sinserialSingle::getInstance(), SIGNAL(signalUpDateProgressBar(int)), this, SLOT(slotUpdataProgressBar(int)));
 }
 
 void FlashUpdata::initUi()
@@ -45,7 +47,8 @@ void FlashUpdata::initUi()
 	m_pTabWindow->addView(configEdit, "属性编辑");
 
 	m_pLogEdit = new QTextEdit();
-	m_pLogEdit->append("this is log info");
+	m_pLogEdit->setPlaceholderText("this is log info");
+	m_pLogEdit->setAcceptRichText(true);
 	workLayout->addWidget(m_pLogEdit);
 
 
@@ -54,11 +57,15 @@ void FlashUpdata::initUi()
 	progressLabel->setText("传输进度");
 	progrressLayout->addWidget(progressLabel);
 
-	QProgressBar *progressBar = new QProgressBar();
-	progrressLayout->addWidget(progressBar);
+	m_pProgressBar= new QProgressBar();
+	m_pProgressBar->setMinimum(0);
+	m_pProgressBar->setMaximum(100);
+	m_pProgressBar->setRange(0, 100);
+	m_pProgressBar->setOrientation(Qt::Horizontal);
+	progrressLayout->addWidget(m_pProgressBar);
 
 	QLabel *progressValue = new QLabel();
-	progressValue->setText("0%");
+	//progressValue->setText("0%");
 	progrressLayout->addWidget(progressValue);
 	progrressLayout->setStretch(0, 1);
 	progrressLayout->setStretch(1, 8);
@@ -104,11 +111,23 @@ void FlashUpdata::slotSwitchRadio(int radioID, bool bCheck)
 
 void FlashUpdata::slotUpDataLogEdit()
 {
+	//更新界面日志
 	QString data = sinTaskQueueSingle::getInstance().popBackReadData();
 
-	QString qstrText = m_pLogEdit->toHtml() +"\r ";
+	QString qstrText = m_pLogEdit->toPlainText() +"\r ";
+
+	QString  qstrPlainText =  m_pLogEdit->toPlainText();
+	QString qstrTextHtml = m_pLogEdit->toHtml();
+
+	QString  qstrPlainTextL = m_pLogEdit->toPlainText().toLocal8Bit();
+	QString qstrTextHtmlL = m_pLogEdit->toHtml().toLocal8Bit();
 
 	QString newText = qstrText + data;
 
-	m_pLogEdit->setText(newText);
+	m_pLogEdit->setPlainText(newText);
+}
+
+void FlashUpdata::slotUpdataProgressBar(int value)
+{
+	m_pProgressBar->setValue(value);
 }

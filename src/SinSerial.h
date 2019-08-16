@@ -40,8 +40,13 @@ private:
 	QByteArray m_pReadData;
 	QByteArray m_pReciveData;
 	QTimer *m_pErrorTimer;
+	QTimer *m_pWriteErrorTimer;
 	ReqInterrFace m_pErrorPreReq;
 	QString m_pStrErrorLog;
+	ReqInterrFace m_pLastSendReq;
+
+	int m_nTotalPackage;
+	int m_nCurrentPackage;
 public:
 	SinSerial(QObject *parent = 0);
 	~SinSerial();
@@ -53,7 +58,7 @@ public:
 	QStringList getFlowControl();
 	QStringList getParity();
 	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0, QByteArray dataError = FILE_OK);
-	void sendData(QString strLog,QByteArray bytedata);
+	void sendData(QString strLog,QByteArray bytedata,bool isShowOnWidget);
 	
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
@@ -74,10 +79,12 @@ public:
 signals :
 	void signalWriteData(QString  strLog,QByteArray bytedata);
 	void signalReadData();
+	void signalUpDateProgressBar(int);
 public slots :
 	void slotGetReadData();
 	void slotUpdateTransType(bool,QString);
 	void slotTimerOut();
+	void slotWriteErrorTimeOut();
 };
 
 typedef CSingleton<SinSerial> sinserialSingle;

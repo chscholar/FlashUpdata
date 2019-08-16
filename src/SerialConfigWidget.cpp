@@ -53,6 +53,10 @@ void SerialItem::initUi()
 	setLayout(itemLayout);
 }
 
+void SerialItem::setComandBoxEnable(bool isEnable){
+	m_pCombox->setEnabled(isEnable);
+}
+
 void SerialItem::setTipText(QString str)
 {
 	m_pLabel->setText(str);
@@ -107,6 +111,7 @@ void SerialConfigWidget::initUi()
 	m_pPortName->setTipText("串口：");
 	QStringList comList = sinserialSingle::getInstance().getEnablePorts();
 	m_pPortName->setValuItems(comList);
+	//m_pPortName->setComandBoxEnable(false); //不能选择 自动搜索串口
 	mainLayout->addWidget(m_pPortName);
 
 	m_pRate = new SerialItem();

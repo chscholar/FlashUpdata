@@ -5,7 +5,7 @@
 #include "FileConfigWidget.h"
 #include "SinTabWindow.h"
 #include <QTextEdit>
-#pragma execution_character_set("utf-8")
+#include <QProgressBar>
 
 enum RadioId
 {
@@ -27,7 +27,9 @@ private:
 	FileConfigWidget *m_pFileConfigWidget;
 	SinTabWindow *m_pTabWindow;
 	QTextEdit *m_pLogEdit;
+	QProgressBar *m_pProgressBar;
 public slots:
 	void slotSwitchRadio(int, bool);
 	void slotUpDataLogEdit();
+	void slotUpdataProgressBar(int value);
 };

@@ -13,16 +13,16 @@ SinTaskQueue::~SinTaskQueue()
 }
 
 //有数据可以读
-void SinTaskQueue::pushBackReadData(QByteArray readData)
+void SinTaskQueue::pushBackReadData(QString readData)
 {
 	m_pReadData.enqueue(readData);
 	emit signalReadData();
 }
 
 //可以继续 写下一个数据
-QByteArray SinTaskQueue::popBackReadData()
+QString SinTaskQueue::popBackReadData()
 {
-	QByteArray data = m_pReadData.dequeue();
+	QString data = m_pReadData.dequeue();
 	//emit signalWriteNextData();
 	return data;
 }

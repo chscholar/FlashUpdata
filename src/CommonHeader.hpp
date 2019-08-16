@@ -92,6 +92,14 @@ struct ReqInterrFace
 		this->Length = str.toUtf8().data();
 	}
 
+	int getIntValue(QByteArray data)
+	{
+		bool ok;
+		QString strFileSize = data;
+		int intValue = strFileSize.toInt(&ok, 16);
+		return intValue;
+	}
+
 	void setDataLength()
 	{
 		int nDataLength = data.size() / 2;

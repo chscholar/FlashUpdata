@@ -65,5 +65,5 @@ void SinSerialThreadManager::sendData()
 void SinSerialThreadManager::slotWriteData(QString qstrLog,QByteArray byteData)
 {
 	//m_pWriteWork->sendWriteDataPack(qstrLog,byteData);
-	sinserialSingle::getInstance().sendData(qstrLog, byteData);
+	//sinserialSingle::getInstance().sendData(qstrLog, byteData);
 }

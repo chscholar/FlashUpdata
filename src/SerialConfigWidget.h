@@ -17,6 +17,7 @@ public:
 	void setStatus(bool isOpen);
 	int getSelectIndex();
 	void setDefaultIndex(int defaultIndex);
+	void setComandBoxEnable(bool isEnable);
 protected:
 	
 private:

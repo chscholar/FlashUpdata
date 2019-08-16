@@ -14,8 +14,8 @@ class SinTaskQueue : public QObject
 public:
 	SinTaskQueue(QObject *parent = 0);
 	~SinTaskQueue();
-	void pushBackReadData(QByteArray data);
-	QByteArray popBackReadData();
+	void pushBackReadData(QString data);
+	QString popBackReadData();
 
 	void pushBackCapData(CapData data);
 	CapData popBackCapData();
@@ -28,7 +28,7 @@ public:
 	u_char *popIndexPktDataData(int index);
 private:
 
-	QQueue<QByteArray> m_pReadData;
+	QQueue<QString> m_pReadData;
 	QQueue<CapData> m_pCapData;
 
 	QList<pcap_pkthdr *> m_pPktHeader;

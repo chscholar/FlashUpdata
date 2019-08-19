@@ -194,5 +194,20 @@ struct ReqInterrFace
 		return headerSize + lengthSize + commandSize + binfileIdSize + binfileIdSize + transIdSize + transSeqNumSize + datalengthSize + dataCrcSize + dataSize + paddingSize;
 	}
 
+	void clear()
+	{
+		this->Header.clear(); 
+		this->Length.clear();
+		this->Command.clear();
+		this->BinFileId.clear();
+		this->BinFileSize.clear();
+		this->TransId.clear();
+		this->TransSeqNum.clear();
+		this->DataLength.clear();
+		this->DataCRC.clear();
+		this->data.clear();
+		this->Padding.clear();
+	}
+
 };
 #endif

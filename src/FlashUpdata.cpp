@@ -49,6 +49,7 @@ void FlashUpdata::initUi()
 	m_pLogEdit = new QTextEdit();
 	m_pLogEdit->setPlaceholderText("this is log info");
 	m_pLogEdit->setAcceptRichText(true);
+	m_pLogEdit->setReadOnly(true);
 	workLayout->addWidget(m_pLogEdit);
 
 

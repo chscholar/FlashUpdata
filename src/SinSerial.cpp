@@ -658,6 +658,8 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 	QByteArray handByteData = reqToByteArray(sendReq);
 	//emit signalWriteData(strLogPrefix, handByteData); //主线程发送
 	//Sleep(1000);
+	m_pLastSendReq.clear();
+	m_pLastSendReq = sendReq;
 	sendData(strLogPrefix, handByteData,isShowOnWidget);
 	
 	
@@ -668,7 +670,6 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 	int findIndex = strTempReciveData.indexOf(sendDataArray, 0, Qt::CaseInsensitive);
 
 	m_pReciveData.remove(findIndex, reqSize);
-	m_pLastSendReq = sendReq;
 }
 
 void SinSerial::slotTimerOut()
@@ -680,7 +681,8 @@ void SinSerial::slotTimerOut()
 void SinSerial::slotWriteErrorTimeOut()
 {
 	//sendData(QString::fromLocal8Bit("发送失败 重传上一次包"), reqToByteArray(m_pLastSendReq),false);
-	sendData(m_pLastSendReq,"发送失败，重传上一次包", m_pLastSendReq.Command, false);
+	int index = m_pLastSendReq.getIntValue(m_pLastSendReq.TransSeqNum);
+	sendData(m_pLastSendReq,"发送失败，重传上一次包", m_pLastSendReq.Command,index);
 }
 
 void SinSerial::delReqFromReadBuffer(QByteArray readData, ReqInterrFace req)
@@ -835,7 +837,7 @@ void SinSerial::slotGetReadData()
 			{
 				qDebug() << "收到UE握手请求 :" << reqToByteArray(req) ;
 						
-				QString strShowLog = QString::fromLocal8Bit("收到UE握手请求");
+				QString strShowLog = "收到UE握手请求";
 				sinTaskQueueSingle::getInstance().pushBackReadData(strShowLog);
 						
 				sendData(req, "PC发送握手回复", MSG_CMD_HANDSHAKE_SYNARK);
@@ -962,11 +964,15 @@ void SinSerial::slotGetReadData()
 				sendData(req, "PC发送上传文件数据包结束回复", MSG_CMD_UPLOADFILE_END_RSP);
 			} 
 			else { //unknow
-				qDebug() << "reciveUE show: " << readData ;
-				sinTaskQueueSingle::getInstance().pushBackReadData(readData);
+				
 					
 			}
 		}
+ else {
+	 qDebug() << "reciveUE show: " << readData;
+	 sinTaskQueueSingle::getInstance().pushBackReadData(readData);
+
+ }
 	}
 	
 	

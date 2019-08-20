@@ -4,6 +4,9 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QVector>
+#include "SinSerialChoose.h"
+
 #pragma execution_character_set("utf-8")
 
 class SerialItem : public QWidget
@@ -18,6 +21,8 @@ public:
 	int getSelectIndex();
 	void setDefaultIndex(int defaultIndex);
 	void setComandBoxEnable(bool isEnable);
+	QStringList getValues();
+	QString getSelectValue();
 protected:
 	
 private:
@@ -37,8 +42,11 @@ class SerialConfigWidget : public QWidget
 public:
 	SerialConfigWidget(QWidget *parent = 0);
 	~SerialConfigWidget();
+
+	QSerialPort* chooseSerial();
 public slots:
 void slotOpenCloseCom();
+void slotChooseCom();
 protected:
 	void initUi();
 private:
@@ -54,6 +62,8 @@ private:
 	SerialItem *m_pStatus;
 
 	QPushButton *m_pCloseOpenButton;
+
+	QVector <SinSerialChoose*> m_vSerialPortList;
 };
 
 #endif

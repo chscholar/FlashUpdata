@@ -7,6 +7,10 @@
 #include "SinSerial.h"
 #include <QStringList>
 #include <QMessageBox>
+#include "SinSerialChoose.h"
+#include <QFuture>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent>
 
 SerialItem::SerialItem(bool isCombox,  QWidget *parent):
 QWidget(parent)
@@ -66,6 +70,23 @@ void SerialItem::setValuItems(QStringList strList)
 {
 	m_pCombox->addItems(strList);
 }
+
+QStringList SerialItem::getValues()
+{
+	QStringList strList;
+	for (int i = 0; i < m_pCombox->count();i++)
+	{
+		strList.append(m_pCombox->itemText(i));
+	}
+	
+	return strList;
+}
+
+QString SerialItem::getSelectValue()
+{
+	return m_pCombox->currentText();
+}
+
 
 void SerialItem::setStatus(bool isOpen)
 {
@@ -174,7 +195,67 @@ void SerialConfigWidget::initUi()
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
-	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
+	//connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
+	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotChooseCom()));
+}
+
+//遍历选择打开串口
+void SerialConfigWidget::slotChooseCom()
+{
+	QStringList portNameList = m_pPortName->getValues();
+	QString rateValue = m_pRate->getSelectValue();
+	QString flowValue = m_pFlow->getSelectValue();
+	QString dataValue = m_pDataBit->getSelectValue();
+	QString stopValue = m_pStopDataBit->getSelectValue();
+	QString parityValue = m_pParity->getSelectValue();
+
+	if (rateValue.isEmpty()|| flowValue.isEmpty() || dataValue.isEmpty()|| stopValue.isEmpty()|| parityValue.isEmpty())
+	{
+		QMessageBox::information(this, "错误", "速率,流控，数据位，校验位，停止位", QMessageBox::Ok);
+		return;
+	}
+
+	
+	m_vSerialPortList.clear();
+	for (int portIndex = 1; portIndex< portNameList.count(); portIndex++)
+	{
+		SinSerialChoose *serialcChoose = new SinSerialChoose();
+		m_vSerialPortList.append(serialcChoose);
+	}
+
+	QFuture<QSerialPort*> ft = QtConcurrent::run(this,&SerialConfigWidget::chooseSerial);
+	ft.waitForFinished();
+
+	QSerialPort *serial = ft.result();
+
+
+	//QFuture <QSerialPort*> f1 = QtConcurrent::run(chooseSerial);
+	//QtConcurrent::run(chooseSerial,"123");
+
+	//QSerialPort* fut = std::async(chooseSerial)
+
+	//std::cout << "非异步" << std::endl;
+	//int res = fut.get();
+	//std::cout << res << std::endl;
+	
+}
+
+QSerialPort* SerialConfigWidget::chooseSerial()
+{
+	for (int i = 0; i < m_vSerialPortList.count(); i++)
+	{
+		SinSerialChoose *serial = m_vSerialPortList.at(i);
+		bool isHandOk =  serial->chooseSerial();
+		if (isHandOk)
+		{
+			return serial->getSerialPort();
+		}
+
+		if (i == m_vSerialPortList.count())
+		{
+			int a = 0;
+		}
+	}
 }
 
 void SerialConfigWidget::slotOpenCloseCom()

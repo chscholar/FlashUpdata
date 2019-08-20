@@ -762,9 +762,6 @@ ReqInterrFace SinSerial::findFirstReqFromReciveData(QByteArray reciveData)
 	{
 		return req;
 	}
-	else{
-
-	}
 	
 
 	reqHeader = indexToReqHeader(reciveData, findIndex);

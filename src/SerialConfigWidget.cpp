@@ -11,6 +11,7 @@
 #include <QFuture>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtConcurrent>
+#include <QDebug>
 
 SerialItem::SerialItem(bool isCombox,  QWidget *parent):
 QWidget(parent)
@@ -195,13 +196,14 @@ void SerialConfigWidget::initUi()
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
-	//connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
-	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotChooseCom()));
+	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
+	//connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotChooseCom()));
 }
 
 //遍历选择打开串口
 void SerialConfigWidget::slotChooseCom()
 {
+
 	QStringList portNameList = m_pPortName->getValues();
 	QString rateValue = m_pRate->getSelectValue();
 	QString flowValue = m_pFlow->getSelectValue();
@@ -219,24 +221,19 @@ void SerialConfigWidget::slotChooseCom()
 	m_vSerialPortList.clear();
 	for (int portIndex = 1; portIndex< portNameList.count(); portIndex++)
 	{
+		QString portName = portNameList.at(portIndex);
 		SinSerialChoose *serialcChoose = new SinSerialChoose();
-		m_vSerialPortList.append(serialcChoose);
+		int isOpenResult = serialcChoose->openCom(portName, rateValue, flowValue, dataValue, stopValue, parityValue);
+		if (isOpenResult == 1){
+		
+			m_vSerialPortList.append(serialcChoose);
+		}
 	}
 
 	QFuture<QSerialPort*> ft = QtConcurrent::run(this,&SerialConfigWidget::chooseSerial);
 	ft.waitForFinished();
 
 	QSerialPort *serial = ft.result();
-
-
-	//QFuture <QSerialPort*> f1 = QtConcurrent::run(chooseSerial);
-	//QtConcurrent::run(chooseSerial,"123");
-
-	//QSerialPort* fut = std::async(chooseSerial)
-
-	//std::cout << "非异步" << std::endl;
-	//int res = fut.get();
-	//std::cout << res << std::endl;
 	
 }
 
@@ -249,12 +246,15 @@ QSerialPort* SerialConfigWidget::chooseSerial()
 		if (isHandOk)
 		{
 			return serial->getSerialPort();
+			qDebug() << "握手成功，找寻到串口";
 		}
 
-		if (i == m_vSerialPortList.count())
+		if (i == m_vSerialPortList.count() - 1)
 		{
-			int a = 0;
+			i = 0;
 		}
+		
+		qDebug() << "正在搜索串口信息";
 	}
 }
 

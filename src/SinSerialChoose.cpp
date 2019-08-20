@@ -6,7 +6,7 @@ SinSerialChoose::SinSerialChoose(QWidget *parent)
 	:m_bHandOk(false)
 {
 	m_pSerialPort = new QSerialPort();
-	connect(m_pSerialPort, SIGNAL(readyRead), this, SLOT(slotReadData()));
+	connect(m_pSerialPort, SIGNAL(readyRead()), this, SLOT(slotReadData()));
 
 }
 
@@ -32,7 +32,7 @@ int SinSerialChoose::openCom(QString portName, QString rateValue, QString flowVa
 		//getSerialPort()->clear(); //Çå¿Õ»º´æ
 		//getSerialPort()->setReadBufferSize(0); 
 
-		return 0;
+		return 1;
 	}
 	else {
 		return -1;

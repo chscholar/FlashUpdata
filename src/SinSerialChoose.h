@@ -32,7 +32,7 @@ public:
 	bool m_bHandOk;
 private:
 	
-	public slots:
+public slots:
 	void slotReadData();
 };
 

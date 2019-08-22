@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include "CommonHeader.hpp"
 #include <QThread>
+#include <QTimer>
 #pragma execution_character_set("utf-8")
 struct SerialConfig
 {
@@ -50,19 +51,24 @@ public slots:
 	void slotReadData();
 };
 
-class SinSerialChoose : public QThread
+class SinSerialChoose : public QObject
 {
 	Q_OBJECT
 public:
 	SinSerialChoose(QObject *parent = NULL);
 	~SinSerialChoose();
 	void setSerialConfig(QVector<SerialConfig> config);
-	void run();
+	
 protected:
 private:
 	QVector<SerialConfig> m_vSerialConfig;
 	QVector<SerialChooseOperation*> m_vSerialList;
+
+	QTimer *m__pChooseTimer;
+
 	public slots:
+	void slotRun();
+	void slotTimerOut();
 signals :
 	void signalsHandOkSerial(QString portName);
 };

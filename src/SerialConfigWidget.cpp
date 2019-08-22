@@ -118,6 +118,14 @@ void SerialItem::setDefaultIndex(int defaultIndex)
 SerialConfigWidget::SerialConfigWidget(QWidget*parent){
 	initUi();
 	m_pChoose = new SinSerialChoose();
+	m_pChooseThread = new QThread();
+
+	m_pChoose->moveToThread(m_pChooseThread);
+	
+	connect(m_pChooseThread, SIGNAL(started()), m_pChoose, SLOT(slotRun()));
+	connect(m_pChooseThread, SIGNAL(finished()), m_pChoose, SLOT(deleteLater()));
+	//m_pChooseThread->start();
+
 	connect(m_pChoose, SIGNAL(signalsHandOkSerial(QString)), this, SLOT(slotSetSinSerialSignal(QString)));
 }
 
@@ -242,7 +250,7 @@ void SerialConfigWidget::slotChooseCom()
 	}
 
 	m_pChoose->setSerialConfig(m_vSerialConfigList);
-	m_pChoose->start();
+	m_pChooseThread->start();
 	
 	/*QFuture<QSerialPort*> ft = QtConcurrent::run(this,&SerialConfigWidget::chooseSerial);
 	ft.waitForFinished();

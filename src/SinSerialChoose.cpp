@@ -57,6 +57,7 @@ QString SerialChooseOperation::getPortName()
 
 void SerialChooseOperation::slotReadData()
 {
+	
 	QByteArray readData;
 	m_pSerialPort->waitForReadyRead(10);
 	if (m_pSerialPort->bytesAvailable())
@@ -309,6 +310,8 @@ ReqInterrFace SerialChooseOperation::findFirstReqFromReciveData(QByteArray reciv
 
 SinSerialChoose::SinSerialChoose(QObject *parent)
 {
+	m__pChooseTimer = new QTimer();
+	connect(m__pChooseTimer, SIGNAL(timeout()), this, SLOT(slotTimerOut()));
 
 }
 
@@ -317,13 +320,14 @@ SinSerialChoose::~SinSerialChoose()
 
 }
 
+
 void SinSerialChoose::setSerialConfig(QVector<SerialConfig> config)
 {
 	m_vSerialConfig.clear();
 	m_vSerialConfig = config;
 }
 
-void SinSerialChoose::run()
+void SinSerialChoose::slotRun()
 {
 	m_vSerialList.clear();
 	for (int i = 0; i < m_vSerialConfig.count() - 1;i++)
@@ -337,37 +341,43 @@ void SinSerialChoose::run()
 		}
 	}
 
+	m__pChooseTimer->start(1000);
+
+}
+
+//一秒一轮询
+void SinSerialChoose::slotTimerOut()
+{
 	int count = m_vSerialList.count();
-	for (int i = 0; i < count;i++)
+	for (int i = 0; i < count; i++)
 	{
 		SerialChooseOperation *op = m_vSerialList.at(i);
-		 QSerialPort* handOkserial = op->chooseSerial();
-		 QString qstrPortName = op->getPortName();
+		QSerialPort* handOkserial = op->chooseSerial();
+		QString qstrPortName = op->getPortName();
 		if (handOkserial != nullptr)
 		{
 			emit signalsHandOkSerial(qstrPortName);
+			m__pChooseTimer->stop();
 			op->closeCom();
 			int findIndex = i;
-			for (int j = 0; j < m_vSerialList.count() - 1;j++)
+			for (int j = 0; j < m_vSerialList.count() - 1; j++)
 			{
-				
+
 				SerialChooseOperation *seriOp = m_vSerialList.at(i);
 				delete seriOp;
 				seriOp = nullptr;
-				
+
 			}
 			return;
-			
+
 		}
 		else {
-			if (i == count - 1 )
+			/*if (i == count - 1 )
 			{
-				i = 0;
-			}
-			//qDebug() << "轮询第" + QString::number(i) +"个"+ qstrPortName+"握手包";
+			i = 0;
+			}*/
+			qDebug() << "轮询第" + QString::number(i) + "个" + qstrPortName + "握手包";
 		}
-
-
 	}
 
 }

@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QVector>
 #include "SinSerialChoose.h"
+#include <QThread>
 
 #pragma execution_character_set("utf-8")
 
@@ -66,6 +67,7 @@ private:
 
 	QVector <SerialConfig> m_vSerialConfigList;
 	SinSerialChoose *m_pChoose;
+	QThread *m_pChooseThread;
 };
 
 #endif

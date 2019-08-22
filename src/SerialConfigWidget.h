@@ -22,6 +22,7 @@ public:
 	int getSelectIndex();
 	void setDefaultIndex(int defaultIndex);
 	void setComandBoxEnable(bool isEnable);
+	void setCurrentIndex(int currentIndex);
 	QStringList getValues();
 	QString getSelectValue();
 protected:
@@ -43,8 +44,6 @@ class SerialConfigWidget : public QWidget
 public:
 	SerialConfigWidget(QWidget *parent = 0);
 	~SerialConfigWidget();
-
-	QSerialPort* chooseSerial();
 public slots:
 void slotOpenCloseCom();
 void slotChooseCom();

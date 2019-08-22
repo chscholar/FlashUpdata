@@ -72,6 +72,11 @@ void SerialItem::setValuItems(QStringList strList)
 	m_pCombox->addItems(strList);
 }
 
+void SerialItem::setCurrentIndex(int currentIndex)
+{
+	m_pCombox->setCurrentIndex(currentIndex);
+}
+
 QStringList SerialItem::getValues()
 {
 	QStringList strList;
@@ -212,8 +217,44 @@ void SerialConfigWidget::initUi()
 
 void SerialConfigWidget::slotSetSinSerialSignal(QString portName)
 {
-	//slotOpenCloseCom();
-	int a = 1;
+	//int portIndex = m_pPortName->getSelectIndex();
+	int portIndex = sinserialSingle::getInstance().findPortIndexFromPortName(portName);
+	int rateIndex = m_pRate->getSelectIndex();
+	int flowIndex = m_pFlow->getSelectIndex();
+	int dataIndex = m_pDataBit->getSelectIndex();
+	int stopIndex = m_pStopDataBit->getSelectIndex();
+	int parityIndex = m_pParity->getSelectIndex();
+
+	m_pPortName->setCurrentIndex(portIndex);
+	
+
+	if (portIndex <= 0 || rateIndex <= 0 || flowIndex <= 0 || dataIndex <= 0 || stopIndex <= 0 || parityIndex <= 0)
+	{
+		QMessageBox::information(this, "错误", "请选择端口,速率,流控，数据位，校验位，停止位", QMessageBox::Ok);
+		return;
+	}
+
+
+	bool isOpen = sinserialSingle::getInstance().isOPen();
+	if (isOpen)
+	{
+		sinserialSingle::getInstance().closeCom();
+		m_pStatus->setStatus(false);
+		m_pCloseOpenButton->setText("打开串口");
+	}
+	else {
+		int nResult = sinserialSingle::getInstance().openCom(portIndex, rateIndex, flowIndex, dataIndex, stopIndex, parityIndex);
+		if (nResult == 0)
+		{
+			m_pStatus->setStatus(true);
+			m_pCloseOpenButton->setText("关闭串口");
+		}
+		else {
+			m_pStatus->setStatus(false);
+			m_pCloseOpenButton->setText("打开串口");
+		}
+	}
+
 
 }
 
@@ -256,29 +297,6 @@ void SerialConfigWidget::slotChooseCom()
 	ft.waitForFinished();
 	QSerialPort *serial = ft.result();*/
 	
-}
-
-QSerialPort* SerialConfigWidget::chooseSerial()
-{
-	/*for (int i = 0; i < m_vSerialPortList.count(); i++)
-	{
-	SerialChooseOperation *serial = m_vSerialPortList.at(i);
-	bool isHandOk =  serial->chooseSerial();
-	if (isHandOk)
-	{
-	return serial->getSerialPort();
-	qDebug() << "握手成功，找寻到串口";
-	}
-
-	if (i == m_vSerialPortList.count() - 1)
-	{
-	i = 0;
-	}
-
-	qDebug() << "正在搜索串口信息";
-	}*/
-
-	return NULL;
 }
 
 void SerialConfigWidget::slotOpenCloseCom()

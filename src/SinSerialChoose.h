@@ -64,9 +64,9 @@ private:
 	QVector<SerialConfig> m_vSerialConfig;
 	QVector<SerialChooseOperation*> m_vSerialList;
 
-	QTimer *m__pChooseTimer;
+	QTimer *m_pChooseTimer;
 
-	public slots:
+public slots:
 	void slotRun();
 	void slotTimerOut();
 signals :

@@ -23,6 +23,7 @@ private:
 	QSerialPort *getSerialPort();
 	QString findValueFromMapForKey(QMap<int,QString> fmap,int key);
 	int findKeyFromMapForValue(QMap<int,QString> fmap ,QString value);
+	
 
 	ReqInterrFace byteToReq(QByteArray data);
 	ReqInterrFace indexToReq(QByteArray data, int Index);
@@ -60,7 +61,8 @@ public:
 	QStringList getParity();
 	void sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index = 0, QByteArray dataError = FILE_OK);
 	void sendData(QString strLog,QByteArray bytedata,bool isShowOnWidget);
-	
+	int findPortIndexFromPortName(QString portName);
+
 	bool isOPen();
 	int openCom(int portIndex,int rateIndex,int flowIndex,int dataIndex,int stopIndex,int parityIndex);
 	void closeCom();
@@ -75,6 +77,7 @@ public:
 	void handleUploadError(QByteArray dataError);
 	QByteArray getValueFromData (QByteArray data, int findIndex, int offset, int length);
 	void delReqFromReadBuffer(QByteArray readData,ReqInterrFace req);
+
 	public slots:
 	void slotTest();
 signals :

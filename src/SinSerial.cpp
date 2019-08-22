@@ -203,6 +203,10 @@ int SinSerial::findKeyFromMapForValue(QMap<int, QString> fmap, QString value)
 	return -1;
 }
 
+int SinSerial::findPortIndexFromPortName(QString portName)
+{
+	return findKeyFromMapForValue(portMap, portName);
+}
 
 int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataIndex, int stopIndex, int parityIndex)
 {

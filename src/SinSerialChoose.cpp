@@ -2,7 +2,7 @@
 #include <QSerialPort>
 #include "SinByte.h"
 
-SinSerialChoose::SinSerialChoose(QWidget *parent)
+SerialChooseOperation::SerialChooseOperation(QObject *parent)
 	:m_bHandOk(false)
 {
 	m_pSerialPort = new QSerialPort();
@@ -11,13 +11,14 @@ SinSerialChoose::SinSerialChoose(QWidget *parent)
 }
 
 
-SinSerialChoose::~SinSerialChoose()
+SerialChooseOperation::~SerialChooseOperation()
 {
 
 }
 
-int SinSerialChoose::openCom(QString portName, QString rateValue, QString flowValue, QString dataValue, QString stopValue, QString parityValue)
+int SerialChooseOperation::openCom(QString portName, QString rateValue, QString flowValue, QString dataValue, QString stopValue, QString parityValue)
 {
+	m_qStrPortName = portName;
 	m_pSerialPort->setPortName(portName);
 	if (m_pSerialPort->open(QIODevice::ReadWrite))
 	{
@@ -39,17 +40,22 @@ int SinSerialChoose::openCom(QString portName, QString rateValue, QString flowVa
 	}
 }
 
-void SinSerialChoose::closeCom()
+void SerialChooseOperation::closeCom()
 {
 	m_pSerialPort->close();
 }
 
-QSerialPort* SinSerialChoose::getSerialPort()
+QSerialPort* SerialChooseOperation::getSerialPort()
 {
 	return m_pSerialPort;
 }
 
-void SinSerialChoose::slotReadData()
+QString SerialChooseOperation::getPortName()
+{
+	return m_qStrPortName;
+}
+
+void SerialChooseOperation::slotReadData()
 {
 	QByteArray readData;
 	m_pSerialPort->waitForReadyRead(10);
@@ -62,7 +68,7 @@ void SinSerialChoose::slotReadData()
 		if (!readData.isEmpty())
 		{
 			QString qstrReadData = readData.toHex().data();
-			//qDebug() << "读到数据: " << readData;
+			qDebug() << "读到数据: " << readData;
 
 			m_pReadData.append(readData.toHex());
 		}
@@ -70,6 +76,7 @@ void SinSerialChoose::slotReadData()
 		bool isValid = isValidHandPackage();
 		if (isValid)
 		{
+			qDebug() << "验证数据通过";
 			connectSerialWithHandPack();
 		}
 	}
@@ -79,31 +86,33 @@ void SinSerialChoose::slotReadData()
 	
 }
 
-bool SinSerialChoose::isValidHandPackage()
+bool SerialChooseOperation::isValidHandPackage()
 {
 	ReqInterrFace req = findFirstReqFromReciveData(m_pReadData);
 	if (req.isNull())
 	{
+		qDebug() << "验证数据不通过";
 		return false;
 	}
 	m_pCurrentReq = req;
 	return true;
 }
 
-QSerialPort* SinSerialChoose::chooseSerial()
+QSerialPort* SerialChooseOperation::chooseSerial()
 {
 	if (m_bHandOk)
 	{
 		return m_pSerialPort;
 	} 
 
-	return NULL;
+	return nullptr;
 }
 
-void SinSerialChoose::connectSerialWithHandPack()
+void SerialChooseOperation::connectSerialWithHandPack()
 {
 	if (isCompare(m_pCurrentReq.Command, MSG_CMD_HANDSHAKE_SYN)) //收到UE握手请求
 	{
+		qDebug() << "收到UE握手请求";
 		ReqInterrFace sendReq = m_pCurrentReq;
 		sendReq.Command = MSG_CMD_HANDSHAKE_SYNARK;
 
@@ -111,6 +120,8 @@ void SinSerialChoose::connectSerialWithHandPack()
 		sendReq.setLength();
 		QByteArray handByteData = reqToByteArray(sendReq);
 		int writeByte = m_pSerialPort->write(handByteData);
+		qDebug() << "PC回复UE握手";
+		m_bHandOk = true;
 	}
 	else if (isCompare(m_pCurrentReq.Command, MSG_CMD_HANDSHAKE_ARK))
 	{
@@ -122,14 +133,14 @@ void SinSerialChoose::connectSerialWithHandPack()
 	
 }
 
-QByteArray SinSerialChoose  ::reqToByteArray(ReqInterrFace req)
+QByteArray SerialChooseOperation  ::reqToByteArray(ReqInterrFace req)
 {
 	QByteArray writeByte;
 	writeByte = req.Header + req.Length + req.Command + req.BinFileId + req.BinFileSize + req.TransId + req.TransSeqNum + req.DataLength + req.DataCRC + req.data + req.Padding;
 	return writeByte;
 }
 
-QByteArray SinSerialChoose::getValueFromData(QByteArray data, int findIndex, int offset, int length)
+QByteArray SerialChooseOperation::getValueFromData(QByteArray data, int findIndex, int offset, int length)
 {
 	QByteArray temp;
 
@@ -142,7 +153,7 @@ QByteArray SinSerialChoose::getValueFromData(QByteArray data, int findIndex, int
 
 }
 
-bool SinSerialChoose::isCompare(QByteArray src, QByteArray dest)
+bool SerialChooseOperation::isCompare(QByteArray src, QByteArray dest)
 {
 	QString strSrc = src;
 	QString strDest = dest;
@@ -151,7 +162,7 @@ bool SinSerialChoose::isCompare(QByteArray src, QByteArray dest)
 	return result == 0;
 }
 
-ReqInterrFace SinSerialChoose::indexToReq(QByteArray data, int Index)
+ReqInterrFace SerialChooseOperation::indexToReq(QByteArray data, int Index)
 {
 	bool ok;
 	ReqInterrFace req;
@@ -215,7 +226,7 @@ ReqInterrFace SinSerialChoose::indexToReq(QByteArray data, int Index)
 }
 
 
-ReqInterrFace SinSerialChoose::indexToReqHeader(QByteArray data, int Index)
+ReqInterrFace SerialChooseOperation::indexToReqHeader(QByteArray data, int Index)
 {
 	bool ok;
 	ReqInterrFace req;
@@ -243,7 +254,7 @@ ReqInterrFace SinSerialChoose::indexToReqHeader(QByteArray data, int Index)
 
 }
 
-ReqInterrFace SinSerialChoose::findFirstReqFromReciveData(QByteArray reciveData)
+ReqInterrFace SerialChooseOperation::findFirstReqFromReciveData(QByteArray reciveData)
 {
 	ReqInterrFace req;
 	QString strReciveData = reciveData;
@@ -294,4 +305,69 @@ ReqInterrFace SinSerialChoose::findFirstReqFromReciveData(QByteArray reciveData)
 		return temp;;
 	}
 	return req;
+}
+
+SinSerialChoose::SinSerialChoose(QObject *parent)
+{
+
+}
+
+SinSerialChoose::~SinSerialChoose()
+{
+
+}
+
+void SinSerialChoose::setSerialConfig(QVector<SerialConfig> config)
+{
+	m_vSerialConfig.clear();
+	m_vSerialConfig = config;
+}
+
+void SinSerialChoose::run()
+{
+	m_vSerialList.clear();
+	for (int i = 0; i < m_vSerialConfig.count() - 1;i++)
+	{
+		SerialConfig config = m_vSerialConfig.at(i);
+		SerialChooseOperation *serialOp = new SerialChooseOperation();
+		int nResult = serialOp->openCom(config.portName,config.rateValue,config.flowValue,config.dataValue,config.stopValue,config.parityValue);
+		if (nResult == 1)
+		{
+			m_vSerialList.append(serialOp);
+		}
+	}
+
+	int count = m_vSerialList.count();
+	for (int i = 0; i < count;i++)
+	{
+		SerialChooseOperation *op = m_vSerialList.at(i);
+		 QSerialPort* handOkserial = op->chooseSerial();
+		 QString qstrPortName = op->getPortName();
+		if (handOkserial != nullptr)
+		{
+			emit signalsHandOkSerial(qstrPortName);
+			op->closeCom();
+			int findIndex = i;
+			for (int j = 0; j < m_vSerialList.count() - 1;j++)
+			{
+				
+				SerialChooseOperation *seriOp = m_vSerialList.at(i);
+				delete seriOp;
+				seriOp = nullptr;
+				
+			}
+			return;
+			
+		}
+		else {
+			if (i == count - 1 )
+			{
+				i = 0;
+			}
+			//qDebug() << "轮询第" + QString::number(i) +"个"+ qstrPortName+"握手包";
+		}
+
+
+	}
+
 }

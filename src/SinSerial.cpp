@@ -176,7 +176,7 @@ bool SinSerial::isOPen()
 	return getSerialPort()->isOpen();
 }
 
-QString SinSerial::findKeyFromMap(QMap<int, QString> fmap, int key)
+QString SinSerial::findValueFromMapForKey(QMap<int, QString> fmap, int key)
 {
 
 	QMap<int, QString>::iterator it;
@@ -190,14 +190,28 @@ QString SinSerial::findKeyFromMap(QMap<int, QString> fmap, int key)
 	return "";
 }
 
+int SinSerial::findKeyFromMapForValue(QMap<int, QString> fmap, QString value)
+{
+	QMap<int, QString>::iterator it;
+	for (it = fmap.begin(); it != fmap.end(); it++)
+	{
+		if (it.value() == value)
+		{
+			return it.key();
+		}
+	}
+	return -1;
+}
+
+
 int  SinSerial::openCom(int portIndex, int rateIndex, int flowIndex, int dataIndex, int stopIndex, int parityIndex)
 {
-	QString portName = findKeyFromMap(portMap, portIndex);
-	QString rateValue = findKeyFromMap(rateMap,rateIndex);
-	QString dataValue = findKeyFromMap(dataMap, dataIndex);
-	QString parityValue = findKeyFromMap(parityMap, parityIndex);
-	QString flowValue = findKeyFromMap(flowMap, flowIndex);
-	QString stopValue = findKeyFromMap(stopMap, stopIndex);
+	QString portName = findValueFromMapForKey(portMap, portIndex);
+	QString rateValue = findValueFromMapForKey(rateMap,rateIndex);
+	QString dataValue = findValueFromMapForKey(dataMap, dataIndex);
+	QString parityValue = findValueFromMapForKey(parityMap, parityIndex);
+	QString flowValue = findValueFromMapForKey(flowMap, flowIndex);
+	QString stopValue = findValueFromMapForKey(stopMap, stopIndex);
 
 	getSerialPort()->setPortName(portName);
 	if (getSerialPort()->open(QIODevice::ReadWrite))

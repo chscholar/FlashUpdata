@@ -47,6 +47,7 @@ public:
 public slots:
 void slotOpenCloseCom();
 void slotChooseCom();
+void slotSetSinSerialSignal(QString portName);
 protected:
 	void initUi();
 private:
@@ -63,7 +64,8 @@ private:
 
 	QPushButton *m_pCloseOpenButton;
 
-	QVector <SinSerialChoose*> m_vSerialPortList;
+	QVector <SerialConfig> m_vSerialConfigList;
+	SinSerialChoose *m_pChoose;
 };
 
 #endif

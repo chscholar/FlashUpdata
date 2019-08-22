@@ -21,7 +21,8 @@ private:
 
 	QSerialPort *serialPort;
 	QSerialPort *getSerialPort();
-	QString findKeyFromMap(QMap<int,QString> fmap,int key);
+	QString findValueFromMapForKey(QMap<int,QString> fmap,int key);
+	int findKeyFromMapForValue(QMap<int,QString> fmap ,QString value);
 
 	ReqInterrFace byteToReq(QByteArray data);
 	ReqInterrFace indexToReq(QByteArray data, int Index);

@@ -117,6 +117,8 @@ void SerialItem::setDefaultIndex(int defaultIndex)
 
 SerialConfigWidget::SerialConfigWidget(QWidget*parent){
 	initUi();
+	m_pChoose = new SinSerialChoose();
+	connect(m_pChoose, SIGNAL(signalsHandOkSerial(QString)), this, SLOT(slotSetSinSerialSignal(QString)));
 }
 
 SerialConfigWidget::~SerialConfigWidget(){
@@ -196,14 +198,20 @@ void SerialConfigWidget::initUi()
 	mainLayout->addStretch(3);
 	setLayout(mainLayout);
 
-	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
-	//connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotChooseCom()));
+	//connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseCom()));
+	connect(m_pCloseOpenButton, SIGNAL(clicked()), this, SLOT(slotChooseCom()));
+}
+
+void SerialConfigWidget::slotSetSinSerialSignal(QString portName)
+{
+	//slotOpenCloseCom();
+	int a = 1;
+
 }
 
 //遍历选择打开串口
 void SerialConfigWidget::slotChooseCom()
 {
-
 	QStringList portNameList = m_pPortName->getValues();
 	QString rateValue = m_pRate->getSelectValue();
 	QString flowValue = m_pFlow->getSelectValue();
@@ -217,45 +225,52 @@ void SerialConfigWidget::slotChooseCom()
 		return;
 	}
 
-	
-	m_vSerialPortList.clear();
+	m_vSerialConfigList.clear();
 	for (int portIndex = 1; portIndex< portNameList.count(); portIndex++)
 	{
 		QString portName = portNameList.at(portIndex);
-		SinSerialChoose *serialcChoose = new SinSerialChoose();
-		int isOpenResult = serialcChoose->openCom(portName, rateValue, flowValue, dataValue, stopValue, parityValue);
-		if (isOpenResult == 1){
 		
-			m_vSerialPortList.append(serialcChoose);
-		}
+		SerialConfig config;
+		config.portName = portName;
+		config.rateValue = rateValue;
+		config.flowValue = flowValue;
+		config.dataValue = dataValue;
+		config.stopValue = stopValue;
+		config.parityValue = parityValue;
+
+		m_vSerialConfigList.append(config);
 	}
 
-	QFuture<QSerialPort*> ft = QtConcurrent::run(this,&SerialConfigWidget::chooseSerial);
+	m_pChoose->setSerialConfig(m_vSerialConfigList);
+	m_pChoose->start();
+	
+	/*QFuture<QSerialPort*> ft = QtConcurrent::run(this,&SerialConfigWidget::chooseSerial);
 	ft.waitForFinished();
-
-	QSerialPort *serial = ft.result();
+	QSerialPort *serial = ft.result();*/
 	
 }
 
 QSerialPort* SerialConfigWidget::chooseSerial()
 {
-	for (int i = 0; i < m_vSerialPortList.count(); i++)
+	/*for (int i = 0; i < m_vSerialPortList.count(); i++)
 	{
-		SinSerialChoose *serial = m_vSerialPortList.at(i);
-		bool isHandOk =  serial->chooseSerial();
-		if (isHandOk)
-		{
-			return serial->getSerialPort();
-			qDebug() << "握手成功，找寻到串口";
-		}
-
-		if (i == m_vSerialPortList.count() - 1)
-		{
-			i = 0;
-		}
-		
-		qDebug() << "正在搜索串口信息";
+	SerialChooseOperation *serial = m_vSerialPortList.at(i);
+	bool isHandOk =  serial->chooseSerial();
+	if (isHandOk)
+	{
+	return serial->getSerialPort();
+	qDebug() << "握手成功，找寻到串口";
 	}
+
+	if (i == m_vSerialPortList.count() - 1)
+	{
+	i = 0;
+	}
+
+	qDebug() << "正在搜索串口信息";
+	}*/
+
+	return NULL;
 }
 
 void SerialConfigWidget::slotOpenCloseCom()

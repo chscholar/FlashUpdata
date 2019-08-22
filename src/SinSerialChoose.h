@@ -5,13 +5,25 @@
 #include <QSerialPort>
 #include <QByteArray>
 #include "CommonHeader.hpp"
+#include <QThread>
+#pragma execution_character_set("utf-8")
+struct SerialConfig
+{
+	QString portName;
+	QString rateValue;
+	QString flowValue;
+	QString dataValue;
+	QString stopValue;
+	QString parityValue;
+};
 
-class SinSerialChoose : public QWidget
+
+class SerialChooseOperation : public QObject
 {
 	Q_OBJECT
 public:
-	SinSerialChoose(QWidget *parent = nullptr);
-	~SinSerialChoose();
+	SerialChooseOperation(QObject *parent = nullptr);
+	~SerialChooseOperation();
 public:
 	int openCom(QString portName, QString rate, QString flow, QString dataBit, QString stopBit, QString parity);
 	QSerialPort *chooseSerial();
@@ -25,15 +37,35 @@ public:
 	QByteArray reqToByteArray(ReqInterrFace req);
 	void closeCom();
 	QSerialPort *getSerialPort();
+	QString getPortName();
 
 	QByteArray m_pReadData;
 	QSerialPort *m_pSerialPort;
 	ReqInterrFace m_pCurrentReq;
 	bool m_bHandOk;
+	QString m_qStrPortName;
 private:
 	
 public slots:
 	void slotReadData();
 };
+
+class SinSerialChoose : public QThread
+{
+	Q_OBJECT
+public:
+	SinSerialChoose(QObject *parent = NULL);
+	~SinSerialChoose();
+	void setSerialConfig(QVector<SerialConfig> config);
+	void run();
+protected:
+private:
+	QVector<SerialConfig> m_vSerialConfig;
+	QVector<SerialChooseOperation*> m_vSerialList;
+	public slots:
+signals :
+	void signalsHandOkSerial(QString portName);
+};
+
 
 #endif // !SINSERIALCHOOSE_H

@@ -299,10 +299,28 @@ void SinSerial::slotTest()
 
 }
 
-void SinSerial::slotUpdateTransType(bool upTransType,QString upFileSavePath)
+void SinSerial::slotUpdateTransType(bool upTransType,QString upFileSavePath,QByteArray binFileId)
 {
 	m_bIsUpLoadTrans = upTransType;
 	m_pUpFileSavePath = upFileSavePath;
+	//发送上传 或 下载文件请求
+	ReqInterrFace req;
+	req.Header = MSG_PROTO_HEADER_TAG;
+	req.TransId = "00000000";
+	req.BinFileSize = "00000000";
+	req.TransSeqNum = "00000000";
+	req.BinFileId = binFileId;
+
+	if (m_bIsUpLoadTrans) //上传文件请求
+	{
+		req.Command = MSG_CMD_UPLOADFILE_REQ;
+		sendData(req, "PC发送上传文件请求", req.Command, 0);
+	}
+	else {
+		//下载文件请求
+		req.Command = MSG_CMD_DOWNLOADFILE_REQ;
+		sendData(req, "PC发送下载文件请求", req.Command, 0);
+	}
 }
 
 bool SinSerial::isCompare(QByteArray src, QByteArray dest)
@@ -351,7 +369,7 @@ void SinSerial::setTransTypeWriteData(bool isUplodType, QList<QList<QByteArray>>
 			//binFileId
 			int nBinFileId = 1;
 			//reqStruct.BinFileId = QByteArray::number(nBinFileId);
-			reqStruct.BinFileId = "00000003";
+			reqStruct.BinFileId = "00000000";
 
 			// 当前第i 个文件的大小
 			int nFileSize = iSize;
@@ -544,6 +562,7 @@ void SinSerial::handleTransError(QByteArray dataError,int currentIndex)
 
 void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray command, int index,QByteArray dataError)
 {
+
 	ReqInterrFace sendReq;
 	bool isShowOnWidget;
 	if (isCompare(command, MSG_CMD_HANDSHAKE_SYNARK))  //握手
@@ -558,7 +577,7 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		sendReq = req;
 		m_pReadData.clear();
 		sendReq.Command = command;
-		sendReq.BinFileId = "00000003";
+		//sendReq.BinFileId = "00000003";
 		sendReq.data.clear();
 		isShowOnWidget = true;
 	}
@@ -629,6 +648,7 @@ void SinSerial::sendData(ReqInterrFace req, QString strLogPrefix, QByteArray com
 		ReqInterrFace writeReq = m_pWriteData.at(0);
 		sendReq = writeReq;
 		sendReq.Command = command;
+		sendReq.BinFileId = req.BinFileId;
 		sendReq.data.clear();
 		isShowOnWidget = true;
 	}

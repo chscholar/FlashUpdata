@@ -86,7 +86,7 @@ signals :
 	void signalUpDateProgressBar(int);
 public slots :
 	void slotGetReadData();
-	void slotUpdateTransType(bool,QString);
+	void slotUpdateTransType(bool,QString,QByteArray);
 	void slotTimerOut();
 	void slotWriteErrorTimeOut();
 };

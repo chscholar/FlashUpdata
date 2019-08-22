@@ -18,7 +18,7 @@ ConfigDeployWidget::ConfigDeployWidget(QWidget *parent)
 {
 
 	initUi();
-	connect(this, SIGNAL(signalUpdateTransType(bool,QString)), &sinserialSingle::getInstance(), SLOT(slotUpdateTransType(bool,QString)));
+	connect(this, SIGNAL(signalUpdateTransType(bool,QString,QByteArray)), &sinserialSingle::getInstance(), SLOT(slotUpdateTransType(bool,QString,QByteArray)));
 }
 
 ConfigDeployWidget::~ConfigDeployWidget()
@@ -103,7 +103,7 @@ void ConfigDeployWidget::slotConfirmTrans()
 	{
 		m_bUpLoadTrans = false;
 	}
-	emit signalUpdateTransType(m_bUpLoadTrans,upFilePath);
+	
 	if (m_bUpLoadTrans == false)
 	{
 		if (downFilePathList.size() <= 0)
@@ -131,6 +131,8 @@ void ConfigDeployWidget::slotConfirmTrans()
 	else {
 
 	}
-	
+
+	binFileId = "00000003";
+	emit signalUpdateTransType(m_bUpLoadTrans, upFilePath,binFileId);
 
 }

@@ -3,6 +3,7 @@
 #include <QWidget>
 #include "FileConfigWidget.h"
 #include <QButtonGroup>
+#include <QByteArray>
 
 class ConfigDeployWidget : public QWidget
 {
@@ -15,12 +16,13 @@ public:
 	void slotConfirmTrans();
 	void slotSwitchRadio(int, bool);
 signals:
-	void signalUpdateTransType(bool transType,QString upFilePath);
+	void signalUpdateTransType(bool transType, QString upFilePath, QByteArray BinFileId);
 protected:
 	void initUi();
 private:
 	FileConfigWidget *m_pFileConfigWidget;
 	bool m_bUpLoadTrans;
+	QByteArray binFileId;
 };
 
 #endif

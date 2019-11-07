@@ -163,7 +163,7 @@ QMainWindow(parent)
 
 SinTabWindow::~SinTabWindow()
 {
-	delete tabs;
+	//delete tabs;
 }
 
 

@@ -38,7 +38,7 @@ QSerialPort* SinSerial::getSerialPort()
 	{
 		serialPort = new QSerialPort();
 		connect(serialPort, SIGNAL(readyRead()), this, SLOT(slotGetReadData()));
-		//serialPort->setReadBufferSize(4096);
+		//serialPort->setReadBufferSize(4096);1111
 	}
 	return serialPort;
 }

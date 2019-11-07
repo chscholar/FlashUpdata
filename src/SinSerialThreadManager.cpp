@@ -17,7 +17,7 @@ SinSerialThreadManager::SinSerialThreadManager(QObject *parent)
 	//m_pWriteWork->moveToThread(m_pWriteThread);
 
 	//connect(m_pReadThread, SIGNAL(started()), m_pReadWork, SLOT(getReadData()));
-	//connect(m_pReadThread, SIGNAL(finished()), m_pReadWork, SLOT(deleteLater()));
+	//connect(m_pRea/dThread, SIGNAL(finished()), m_pReadWork, SLOT(deleteLater()));
 	//m_pReadWork->moveToThread(m_pReadThread);
 
 	////读线程默认开启
